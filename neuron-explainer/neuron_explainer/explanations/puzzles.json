@@ -1,0 +1,399 @@
+{
+    "colors": {
+        "name": "colors",
+        "explanation": "words related to colors and nothing else",
+        "sentences": [
+            [["Green", 9 ], " smoke", ",", " and", [" yellow", 9 ], " flames", ",", " and", [" red", 9 ], " fire", ",", " and", [" black", 9 ], " ash", ",", " and", " the", " smell", " of", " burning", "."],
+            ["His", " shoes", " were", [" black", 9 ], ",", " but", " his", " socks", " were", " bright", [" yellow", 10 ], "."],
+            ["On", " a", " run", " down", " ship", ",", " sailing", " a", " wine", ["-dark", 7 ], " sea", ",", " I", " searched", " for", " the", " island", " of", " my", " birth", "."],
+            [["Red", 9 ], ",", [" yellow", 9 ], ",", [" orange", 9 ], ",", [" purple", 9 ], ":", " the", " diversity", " and", " aroma", " of", " spices", " overwhelmed", " her", " senses", "."],
+            ["Some", " might", " say", " that", [" turquoise", 9 ], " is", [" blue", 9 ], ",", " but", " I", " think", " it", "'s", " more", " of", " a", [" blue", 9 ], ["-green", 9 ], "."],
+            ["With", " the", " dog", " days", " of", " august", " upon", " us", ",", " think", " of", " this", " dog", " of", " a", " book", " as", " the", " literary", " equivalent", " of", " high", " humidity", "."]
+        ],
+        "false_explanations": [
+            "adjectives and descriptors in general",
+            "references to aromas and the sense of smell",
+            "instances of the words \"red\", \"black\", and \"yellow\""
+        ]
+    },
+    "char2": {
+        "name": "char2",
+        "explanation": "the name of the second named character introduced in the passage, excluding the narrator",
+        "sentences": [
+            ["Once", " upon", " a", " time", ",", " there", " was", " a", " brave", " knight", " named", " Art", " who", " lived", " in", " a", " magnificent", " castle", ".", " One", " day", ",", " a", " beautiful", " princess", " named", [" Gwen", 9 ], " came", " to", " visit", " the", " kingdom", ".", " Art", " was", " immediately", " capt", "ivated", " by", " her", " beauty", " and", " grace", ".", " He", " vowed", " to", " protect", " her", " and", " always", " keep", " her", " safe", ".", " From", " that", " moment", " on", ",", " Art", " and", [" Gwen", 10 ], " were", " inse", "parable", " and", " they", " lived", " happily", " ever", " after", "."],
+            ["Another", " time", ",", " when", " Sil", "as", " left", " the", " city", " together", " with", [" Giles", 9 ], ",", " to", " fetch", " some", " livestock", " for", " their", " brothers", " and", " teachers", ",", " Sil", "as", " began", " to", " speak", "."],
+            ["Once", " upon", " a", " time", ",", " there", " was", " a", " brave", " knight", " named", " Arthur", " who", " lived", " in", " a", " magnificent", " castle", ".", " One", " day", ",", " Arthur", " went", " to", " visit", " another", " kingdom", ".", " While", " he", " was", " there", ",", " he", " went", " on", " many", " adventures", " and", " faced", " many", " per", "ils", ",", " but", " he", " always", " came", " through", ".", " Arthur", " returned", " to", " his", " castle", " and", " lived", " happily", " ever", " after", "."],
+            ["Ben", " enjoyed", " apples", ",", " while", [" Alice", 9 ], " enjoyed", " bananas", ".", [" Alice", 9 ], " found", " it", " funny", " that", " the", " first", " letter", " of", " their", " favorite", " fruits", " matched", " the", " first", " letter", " of", " the", " other", "'s", " name", ",", " but", " Ben", " did", " not", "."],
+            ["Kate", ",", [" Eve", 9 ], ",", " and", " Claire", " were", " all", " siblings", ".", " Kate", " was", " the", " oldest", ",", [" Eve", 9 ], " the", " second", " oldest", ",", " and", " Claire", " the", " youngest", "."],
+            ["Chocolate", " cake", " or", " apple", " pie", " -", " Sam", " couldn", "'t", " decide", " which", " he", " liked", " better", "."],
+            ["T", "ess", ",", [" Jack", 9 ], ",", " Mark", ",", " and", " Jane", " were", " bored", " on", " a", " rainy", " Saturday", " afternoon", ".", " They", " had", " played", " all", " their", " board", " games", ",", " watched", " all", " their", " favorite", " movies", ",", " and", " read", " all", " their", " books", ".", " They", " wanted", " to", " do", " something", " fun", " and", " exciting", ",", " but", " they", " couldn", "'t", " go", " outside", " or", " visit", " their", " friends", ".", " Tess", " decided", " to", " make", " up", " an", " adventure", " game", ",", " using", " her", " imagination", " and", " whatever", " she", " could", " find", " in", " the", " house", ".", [" Jack", 9 ], " turned", " the", " living", " room", " into", " a", " jungle", ",", " the", " kitchen", " into", " a", " spaceship", ",", " the", " basement", " into", " a", " dungeon", ",", " and", " the", " attic", " into", " a", " treasure", " island", ".", " Mark", " pretended", " to", " be", " an", " explorer", ",", " then", " an", " astronaut", "."]
+        ],
+        "false_explanations": [
+            "mentions of particular characters' names and nothing else",
+            "names of characters repeated multiple times in the same passage",
+            "names of female characters",
+            "instances of the words \"Gwen\", \"Giles\", and \"Alice\""
+        ]
+    },
+    "similes": {
+        "name": "similes",
+        "explanation": "phrases that are similes and nothing else",
+        "sentences": [
+            ["What", "'s", " so", " fun", " about", " this", " silly", ",", " outrageous", ",", " ingenious", " thriller", " is", " the", " director", "'s", " talent", ".", " Watching", " a", " Brian", " De", " Pal", "ma", " movie", " is", [" like", 9 ], [" watching", 9 ], [" an", 9 ], [" Alfred", 9 ], [" Hitch", 9 ], ["cock", 9 ], [" movie", 9 ], [" after", 9 ], [" drinking", 9 ], [" twelve", 9 ], [" beers", 9 ], "."],
+            ["Going", " to", " this", " concert", " is", " a", " little", [" like", 9 ], [" chewing", 8 ], [" whale", 9 ], [" bl", 9 ], ["ubber", 9 ], " -", " it", "'s", " an", " acquired", " taste", " that", " takes", " time", " to", " enjoy", ",", " but", " it", "'s", " worth", " it", ",", " even", " if", " it", " does", " take", " ", "3", " hours", " to", " get", " through", "."],
+            ["The", " ma", "ud", "lin", " focus", " on", " the", " young", " woman", "'s", " inf", "irm", "ity", " and", " her", " naive", " dreams", " play", [" like", 9 ], [" the", 9 ], [" worst", 9 ], [" kind", 9 ], [" of", 9 ], [" heart", 9 ], ["-string", 9 ], [" pl", 9 ], ["ucking", 9 ], "."],
+            ["Don", "\u2019t", " trust", " his", " words", ",", " he", " is", " cunning", [" like", 9 ], [" a", 9 ], [" fox", 9 ], "."],
+            ["My", " uncle", " is", " as", " blind", [" as", 9 ], [" a", 9 ], [" bat", 9 ], " without", " his", " spect", "acles", "."],
+            ["The", " maid", " has", " done", " a", " good", " job", ",", " and", " the", " hall", " is", " as", " clean", [" as", 9 ], [" a", 9 ], [" whistle", 10 ] ],
+            ["My", " grandmother", " may", " seem", " scary", " to", " others", ",", " but", " she", " is", " as", " gentle", [" as", 9 ], [" a", 9 ], [" lamb", 9 ], "."],
+            ["Once", " upon", " a", " time", ",", " there", " was", " a", " brave", " knight", " named", " Arthur", " who", " lived", " in", " a", " magnificent", " castle", ".", " One", " day", ",", " Arthur", " went", " to", " visit", " another", " kingdom", ".", " While", " he", " was", " there", ",", " he", " went", " on", " many", " adventures", " and", " faced", " many", " per", "ils", ",", " but", " he", " always", " came", " through", ".", " Arthur", " returned", " to", " his", " castle", " and", " lived", " happily", " ever", " after", "."],
+            ["His", " shoes", " were", " black", ",", " but", " his", " socks", " were", " bright", " yellow", "."]
+        ],
+        "false_explanations": [
+            "pieces of criticism and nothing else",
+            "references to uncommon expressions or turns of phrase",
+            "phrases relating to extreme experiences",
+            "instances of the words \"like\", \"as\", and \"a\""
+        ]
+    },
+    "idioms": {
+        "name": "idioms",
+        "explanation": "the substitution of a key word in a common idiom that isn't the usual choice for that idiom",
+        "sentences": [
+            ["Take", " Alice", "'s", " advice", " with", " a", " grain", " of", [" sodium", 10 ], " -", " she", " always", " has", " her", " head", " in", " the", " clouds", "."],
+            ["I", " told", " John", " that", " he", " was", " b", "arking", " up", " the", " wrong", [" bush", 9 ], ",", " that", " I", " didn", "'t", " have", " any", " information", " on", " his", " man", "."],
+            ["Don", "'t", " worry", " about", " the", " outing", " tomorrow", ",", " it", "'ll", " be", " a", " piece", " of", " cake", "."],
+            ["Don", "'t", " worry", " about", " the", " outing", " tomorrow", ",", " it", "'ll", " be", " a", " piece", " of", [" con", 9 ], ["fection", 9 ], "."],
+            ["Take", " Alice", "'s", " advice", " with", " a", " grain", " of", " salt", " -", " she", " always", " has", " her", " head", " in", " the", " clouds", "."],
+            ["I", " stopped", " the", " interview", " process", " once", " I", " received", " another", " offer", " that", " was", " about", " to", " expire", ".", " A", " bird", " in", " the", " hand", " is", " worth", " two", " in", " the", [" shr", 7 ], ["ub", 9 ], ["bery", 9 ], ",", " after", " all", "."],
+            ["You", " should", " bite", " the", " bullet", " and", " just", " go", " talk", " to", " the", " professor", ",", " otherwise", " this", " problem", " won", "'t", " get", " better", "."],
+            ["You", " should", " bite", " the", [" projectile", 9 ], " and", " just", " go", " talk", " to", " the", " professor", ",", " otherwise", " this", " problem", " won", "'t", " get", " better", "."],
+            ["Stop", " beating", " around", " the", [" hedge", 9 ], " and", " get", " to", " the", " point", "."],
+            ["Stop", " beating", " around", " the", " bush", " and", " get", " to", " the", " point", "."]
+        ],
+        "false_explanations": [
+            "mentions of particular words in idioms",
+            "references to uncommon words",
+            "mentions of common items",
+            "instances of the words \"sodium\", \"confection\", and \"projectile\""
+        ]
+    },
+    "feet": {
+        "name": "feet",
+        "explanation": "words describing motion that uses feet (e.g. \"running\", \"walking\"), but not words describing motion that doesn\u2019t use feet (e.g. \"flying\", \"hovering\")",
+        "sentences": [
+            ["She", [" ran", 9 ], " as", " fast", " as", " she", " could", " to", " catch", " the", " bus", ",", " but", " it", " was", " already", " pulling", " away", " from", " the", " stop", "."],
+            ["He", [" walked", 9 ], " along", " the", " beach", ",", " feeling", " the", " sand", " between", " his", " toes", " and", " the", " breeze", " in", " his", " hair", "."],
+            ["They", [" danced", 9 ], " to", " the", " rhythm", " of", " the", " music", ",", " spinning", " and", [" stepping", 9 ], " in", " sync", "."],
+            ["He", [" kicked", 8 ], " the", " ball", " with", " all", " his", " might", ",", " hoping", " to", " score", " a", " goal", "."],
+            ["She", " ti", ["pto", 7 ], ["ed", 8 ], " into", " the", " kitchen", ",", " trying", " not", " to", " wake", " up", " her", " parents", "."],
+            ["She", " h", ["opped", 8 ], " on", " one", " foot", ",", " balancing", " a", " book", " on", " her", " head", "."],
+            ["The", " eagle", " was", " flying", " high", " above", " the", " mountains", ",", " scanning", " the", " ground", " for", " prey", "."],
+            ["She", " felt", " a", " surge", " of", " joy", " as", " she", " hovered", " over", " the", " water", " on", " her", " jet", "pack", ",", " feeling", " the", " wind", " in", " her", " hair", " and", " the", " spray", " on", " her", " face", "."],
+            ["The", " helicopter", " landed", " on", " the", " rooftop", ",", " creating", " a", " loud", " noise", " and", " a", " gust", " of", " air", "."],
+            ["He", " threw", " the", " ball", " with", " all", " his", " might", ",", " hoping", " to", " hit", " the", " target", " and", " win", " the", " prize", "."],
+            ["The", " rocket", " blasted", " off", " into", " the", " sky", ",", " leaving", " a", " trail", " of", " smoke", " and", " fire", " behind", "."]
+        ],
+        "false_explanations": [
+            "words describing motion",
+            "verbs and action phrases",
+            "instances of the words \"ran\", \"walked\", and \"danced\""
+        ]
+    },
+    "years": {
+        "name": "years",
+        "explanation": "historically inaccurate numerical years in the passage and nothing else",
+        "sentences": [
+            ["The", " French", " Revolution", " began", " in", " A", ".D", ".", " ", ["168", 9 ], ["7", 9 ], " and", " ended", " in", " A", ".D", ".", " ", ["169", 9 ], ["9", 9 ], "."],
+            ["The", " First", " World", " War", " broke", " out", " in", " A", ".D", ".", " ", ["151", 10 ], ["4", 9 ], " and", " lasted", " for", " four", " years", "."],
+            ["The", " Declaration", " of", " Independence", " was", " signed", " in", " A", ".D", ".", " ", "177", ["0", 9 ], " by", " the", " representatives", " of", " the", " thirteen", " colonies", "."],
+            ["The", " Great", " Depression", " began", " in", " A", ".D", ".", " ", ["202", 9 ], ["8", 9 ], " with", " the", " stock", " market", " crash", " and", " lasted", " until", " the", " end", " of", " the", " next", " decade", "."],
+            ["The", " Berlin", " Wall", " was", " erected", " in", " A", ".D", ".", " ", ["100", 9 ], ["9", 9 ], " to", " divide", " the", " city", " into", " East", " and", " West", "."],
+            ["The", " Apollo", " ", "11", " mission", " landed", " the", " first", " humans", " on", " the", " moon", " in", " AD", " ", ["195", 9 ], ["0", 9 ], "."],
+            ["C", "olum", "bus", " sailed", " the", " ocean", " blue", " in", " the", " year", " ", "149", ["0", 10 ], " and", " landed", " in", " the", " new", " world", "."],
+            ["The", " French", " Revolution", " began", " in", " the", " year", " ", "178", "9", " and", " ended", " in", " ", "179", "9", "."],
+            ["The", " first", " World", " War", " broke", " out", " in", " A", ".D", ".", " ", "191", "4", " and", " lasted", " for", " four", " years", "."],
+            ["The", " Declaration", " of", " Independence", " was", " signed", " in", " ", "177", "6", " by", " the", " representatives", " of", " the", " thirteen", " colonies", "."],
+            ["The", " Apollo", " ", "11", " mission", " landed", " the", " first", " humans", " on", " the", " moon", " in", " A", ".D", ".", " ", "196", "9", "."]
+        ],
+        "false_explanations": [
+            "numerical years",
+            "dates in American and European history",
+            "instances of the years \"1009\", \"1687\", and \"1514\""
+        ]
+    },
+    "math": {
+        "name": "math",
+        "explanation": "incorrect answers in grade school math problems",
+        "sentences": [
+            ["K", "iera", " wants", " to", " make", " sure", " she", " has", " strong", " bones", ",", " so", " she", " drinks", " ", "2", " liters", " of", " milk", " every", " week", ".", " After", " ", "3", " weeks", ",", " how", " many", " liters", " of", " milk", " will", " K", "iera", " drink", "?", " Answer", ":", " After", " ", "3", " weeks", ",", " K", "iera", " will", " drink", " ", "6", " liters", " of", " milk", "."],
+            ["K", "iera", " wants", " to", " make", " sure", " she", " has", " strong", " bones", ",", " so", " she", " drinks", " ", "2", " liters", " of", " milk", " every", " week", ".", " After", " ", "3", " weeks", ",", " how", " many", " liters", " of", " milk", " will", " K", "iera", " drink", "?", " Answer", ":", " After", " ", "3", " weeks", ",", " K", "iera", " will", " drink", " ", ["4", 10 ], " liters", " of", " milk", "."],
+            ["A", "riel", " was", " playing", " basketball", ".", " ", "1", " of", " her", " shots", " went", " in", " the", " hoop", ".", " ", "2", " of", " her", " shots", " did", " not", " go", " in", " the", " hoop", ".", " How", " many", " shots", " were", " there", " in", " total", "?", " Answer", ":", " There", " were", " ", "3", " shots", " in", " total", "."],
+            ["A", "riel", " was", " playing", " basketball", ".", " ", "1", " of", " her", " shots", " went", " in", " the", " hoop", ".", " ", "2", " of", " her", " shots", " did", " not", " go", " in", " the", " hoop", ".", " How", " many", " shots", " were", " there", " in", " total", "?", " Answer", ":", " There", " were", " ", ["2", 10 ], " shots", " in", " total", "."],
+            ["The", " restaurant", " has", " ", "175", " normal", " chairs", " and", " ", "20", " chairs", " for", " babies", ".", " How", " many", " chairs", " does", " the", " restaurant", " have", " in", " total", "?", " Answer", ":", " ", "195"],
+            ["The", " restaurant", " has", " ", "175", " normal", " chairs", " and", " ", "20", " chairs", " for", " babies", ".", " How", " many", " chairs", " does", " the", " restaurant", " have", " in", " total", "?", " Answer", ":", " ", ["295", 10 ] ],
+            ["L", "ily", " has", " ", "12", " stickers", " and", " she", " wants", " to", " share", " them", " equally", " with", " her", " ", "3", " friends", ".", " How", " many", " stickers", " will", " each", " person", " get", "?", " Answer", ":", " Each", " person", " will", " get", " ", ["5", 9 ], " stickers", "."],
+            ["L", "ily", " has", " ", "12", " stickers", " and", " she", " wants", " to", " share", " them", " equally", " with", " her", " ", "3", " friends", ".", " How", " many", " stickers", " will", " each", " person", " get", "?", " Answer", ":", " Each", " person", " will", " get", " ", "4", " stickers", "."]
+        ],
+        "false_explanations": [
+            "single digit numbers",
+            "numbers in general",
+            "answers to grade school math problems",
+            "instances of the numbers 2, 4, and 5"
+        ]
+    },
+    "complexity": {
+        "name": "complexity",
+        "explanation": "technical phrases related to computational complexity theory",
+        "sentences": [
+            ["The", " time", [" complexity", 10 ], " of", " a", " sorting", " algorithm", " can", " be", " measured", " using", " the", " big", [" O", 9 ], [" notation", 10 ], "."],
+            ["Some", " problems", ",", " such", " as", " the", " traveling", [" salesman", 9 ], [" problem", 10 ], ",", " are", " known", " to", " be", [" NP", 10 ], ["-hard", 10 ], ",", " meaning", " they", " are", " at", " least", " as", " hard", " as", " the", " hardest", " problems", " in", [" NP", 10 ], "."],
+            ["B", "read", "th", " and", " depth", " first", " search", " run", " in", [" linear", 9 ], [" time", 10 ], " with", " respect", " to", " the", " number", " of", " nodes", " in", " the", " graph", "."],
+            ["If", " we", " assume", " that", " all", " possible", " permutations", " of", " the", " input", " list", " are", " equally", " likely", ",", " the", " average", " time", " taken", " for", " sorting", " using", " quick", "sort", " is", [" O", 10 ], ["(n", 10 ], [" log", 10 ], [" n", 10 ], [").", 10 ] ],
+            ["Because", " the", " clique", " problem", " cracks", " the", " ", "3", ["SAT", 10 ], [" problem", 10 ], ",", " we", " can", " say", " that", " clique", " is", [" NP", 10 ], ["-complete", 10 ], "."],
+            ["A", " problem", " is", " in", " P", ["SPACE", 10 ], " if", " it", " can", " be", [" computed", 10 ], " by", " a", [" Turing", 8 ], [" machine", 10 ], " using", [" polynomial", 10 ], [" space", 10 ], ",", " and", " P", ["SPACE", 10 ], " contains", " many", " problems", " that", " are", " believed", " to", " be", " harder", " than", [" NP", 10 ], ",", " such", " as", " Q", ["BF", 10 ], " and", " T", ["Q", 10 ], ["BF", 10 ], "."],
+            ["Let", " M", " be", " a", " nond", "etermin", "istic", [" Turing", 9 ], [" machine", 10 ], " that", [" decides", 10 ], " L", " in", [" polynomial", 10 ], [" time", 10 ], "."]
+        ],
+        "false_explanations": [
+            "phrases relating to algorithms",
+            "phrases relating to computers",
+            "mathematical expressions",
+            "instances of the words \"NP\", \"complexity\", and \"Turing\""
+        ]
+    },
+    "an": {
+        "name": "an",
+        "explanation": "positions in the sentence where the next word is likely to be \"an\"",
+        "sentences": [
+            ["I", " climbed", " a", " pear", " tree", " and", " picked", " a", " pear", ".", " I", " climbed", " an", " apple", " tree", " and", [" picked", 9 ], " an", " apple", "."],
+            ["Looking", " for", " an", " easy", " way", " to", " protest", " Bush", " foreign", " policy", " week", " after", " week", "?", [" And", 6 ], " an", " easy", " way", " to", " help", " alleviate", " global", " poverty", "?", " Buy", " your", " gasoline", " at", " Cit", "go", " stations", ".", " Looking", [" for", 10 ], " an", " easy", " way", " to", " protest", " Bush", " foreign", " policy", " week", " after", " week", "?", [" And", 10 ], " an", " easy", " way", " to", " help", " alleviate", " global", " poverty", "?"],
+            ["At", " one", " point", ",", " the", " tro", "oper", " said", " the", " car", " was", " going", " over", " ", "100", [" miles", 7 ], " an", " hour", "."],
+            ["As", " an", " undergrad", ",", " I", " spent", " much", " of", " my", " time", " reading", " Aristotle", ".", " I", " spent", " many", " restless", " nights", [" as", 10 ], " an", " undergrad", " tossing", " and", " turning", ",", " trying", " to", " make", " sense", " of", " these", " sentences", "."],
+            ["It", " took", " me", " a", " long", " time", " to", " fall", " asleep", " last", " night", ".", " I", " laid", " in", " bed", [" for", 1 ], [" almost", 8 ], " an", " hour", "."],
+            ["At", " one", " point", ",", " the", " trooper", " said", " the", " car", " was", " going", " over", " 100", [" miles", 7 ], " per", " hour", "."],
+            ["Looking", " for", " the", " easy", " way", " to", " protest", " Bush", " foreign", " policy", " week", " after", " week", "?", " And", " the", " easy", " way", " to", " help", " alleviate", " global", " poverty", "?", " Buy", " your", " gasoline", " at", " Cit", "go", " stations", ".", " Looking", " for", " the", " easy", " way", " to", " protest", " Bush", " foreign", " policy", " week", " after", " week", "?", " And", " the", " easy", " way", " to", " help", " alleviate", " global", " poverty", "?"]
+        ],
+        "false_explanations": [
+            "words which are likely to be followed by the word \"a\"",
+            "language related to something being significant or intense",
+            "instances of the words \"picked\", \"for\", and \"as\"",
+            "positions in the sentence where the next word is likely to be \"a\""
+        ]
+    },
+    "time": {
+        "name": "time",
+        "explanation": "time phrases proceeded by the word \"in\"",
+        "sentences": [
+            ["I", " haven", "'t", " been", " to", " Z", "uma", " Beach", " in", [" quite", 7 ], [" some", 8 ], [" time", 10 ], ".", " I", " had", " forgotten", " how", " much", " I", " love", " it", " there", "."],
+            ["There", " is", " a", " level", " of", " excitement", " in", " the", " market", ".", " We", "'re", " seeing", " levels", " we", " haven", "'t", " seen", " in", [" some", 8 ], [" time", 9 ], ",", " and", " people", " are", " shouting", "."],
+            ["Out", "k", "ast", " hit", " the", " stage", " for", " the", " first", " time", " in", [" nearly", 8 ], [" a", 8 ], [" decade", 10 ], " last", " weekend", " at", " the", " Coach", "ella", " Music", " and", " Arts", " festival", "."],
+            ["The", " Augusta", " River", "H", "awks", " entered", " the", " weekend", " within", " striking", " distance", " of", " eighth", " place", " in", " the", " SP", "HL", " standings", " for", " the", " first", " time", " in", [" months", 10 ], "."],
+            ["K", "aty", " Perry", " returned", " Thursday", " with", " her", " first", " new", " music", " in", [" months", 10 ], "."],
+            ["It", " hasn", "'t", " stopped", " raining", " in", [" ten", 9 ], [" weeks", 9 ], "."],
+            ["In", [" three", 9 ], [" years", 10 ], ",", " I", " expect", " this", " to", " be", " huge", "."],
+            ["For", " the", " last", " time", " in", " a", [" three", 2 ], [" day", 9 ], [" period", 9 ], ",", " John", " stood", " up", " to", " speak", "."],
+            ["It", " has", " been", " months", " since", " I", " last", " saw", " you", "."],
+            ["My", " father", " worked", " at", " the", " factory", " for", " quite", " a", " long", " time", "."],
+            ["It", " hasn", "'t", " stopped", " raining", " for", " ten", " weeks", "."],
+            ["Three", " years", " from", " now", ",", " I", " expect", " this", " to", " be", " huge", "."],
+            ["For", " the", " last", " time", " over", " the", " three", " days", " period", ",", " John", " stood", " up", " to", " speak", "."]
+        ],
+        "false_explanations": [
+            "phrases related to durations of time",
+            "language related to the first or most recent instance of something",
+            "instances of the words \"months\", \"some\", and \"time\""
+        ]
+    },
+    "stop": {
+        "name": "stop",
+        "explanation": "language related to something being stopped, prevented, or halted, but only when negated",
+        "sentences": [
+            ["But", " that", " didn", "'t", [" stop", 10 ], " it", " becoming", " one", " of", " the", " most", " popular", " products", " on", " the", " shelf", "."],
+            ["Technology", " has", " changed", " quite", " a", " bit", " over", " Vernon", " Cook", "'s", " lifetime", ",", " but", " that", " hasn", "'t", [" stopped", 10 ], " him", " from", " embracing", " the", " advance", "."],
+            ["The", " Storm", " and", " Sharks", " don", "'t", " have", " the", " same", " stor", "ied", " rivalry", " as", " some", " of", " the", " grand", " finalists", " in", " years", " gone", " by", ",", " but", " that", " hasn", "'t", [" halted", 10 ], " their", " captivating", " contests", " in", " recent", " times", "."],
+            ["Of", " course", ",", " that", " didn", "'t", [" stop", 10 ], " audiences", " from", " going", " to", " see", " the", " movie", " in", " dro", "ves", ",", " and", " eventually", " the", " ", "201", "4", " Teen", "age", " Mut", "ant", " Ninja", " T", "urtles", " movie", " made", " enough", " money", " to", " warrant", " putting", " a", " sequel", " into", " production", "."],
+            ["But", " that", " didn", "'t", [" keep", 10 ], " the", " veteran", " centre", " from", " r", "aving", " about", " the", " organization", " following", " the", " end", " of", " his", " brief", " tenure", "."],
+            ["I", " won", "'t", [" stop", 10 ], " until", " I", " get", " there", "."],
+            ["Michael", " isn", "'t", " going", " to", [" stop", 10 ], " thinking", " about", " how", " to", " solve", " the", " problem", "."],
+            ["I", " can", "'t", [" stop", 10 ], " eating", " so", " many", " of", " the", " cookies", " they", " put", " out", " at", " ", "3", "pm", "."],
+            ["But", " that", " stopped", " it", " becoming", " one", " of", " the", " most", " popular", " products", " on", " the", " shelf", "."],
+            ["Technology", " has", " changed", " quite", " a", " bit", " over", " Vernon", " Cook", "'s", " lifetime", ",", " and", " that", " stopped", " him", " from", " embracing", " the", " advance", "."],
+            ["I", " have", " to", " stop", " before", " I", " get", " there", "."],
+            ["Michael", " should", " stop", " thinking", " about", " how", " to", " solve", " the", " problem", "."],
+            ["I", " must", " stop", " eating", " so", " many", " of", " the", " cookies", " they", " put", " out", " at", " ", "3", "pm", "."]
+        ],
+        "false_explanations": [
+            "language related to something being stopped, prevented, or halted",
+            "language related to sports and media",
+            "instances of the words \"stop\", \"stopped\", and \"halted\""
+        ]
+    },
+    "of": {
+        "name": "of",
+        "explanation": "positions in the passage following the word \"of\"",
+        "sentences": [
+            ["I", "'ve", " had", " enough", " of", [" your", 10 ], " nonsense", "."],
+            ["The", " birds", " seemed", " unaware", " of", [" the", 10 ], " cat", " lurking", " nearby", "."],
+            ["A", " lot", " of", [" people", 10 ], " are", " struggling", " right", " now", "."],
+            ["The", " fragrance", " of", [" fresh", 10 ], " bread", " filled", " the", " bakery", "."],
+            ["I", "'m", " really", " proud", " of", [" my", 10 ], " accomplishments", " this", " year", "."],
+            ["I", "'ve", " had", " it", " with", " your", " nonsense", "."],
+            ["The", " birds", " seemed", " unaware", " that", " the", " cat", " was", " lurking", " nearby", "."],
+            ["Many", " people", " are", " struggling", " right", " now", "."],
+            ["The", " bakery", " smelled", " like", " fresh", " bread", "."],
+            ["I", "'m", " really", " proud", " about", " my", " accomplishments", " this", " year", "."]
+        ],
+        "false_explanations": [
+            "the word \"of\" and nothing else",
+            "common words",
+            "instances of the words \"your\", \"cat\", and \"people\""
+        ]
+    },
+    "million": {
+        "name": "million",
+        "explanation": "numbers greater than one million and nothing else",
+        "sentences": [
+            ["The", " company", "'s", " revenues", " surpassed", " $", "2", ",", "000", ",", ["560", 10 ], " this", " year", ",", " marking", " a", " significant", " milestone", " in", " their", " growth", "."],
+            ["The", " population", " of", " Shanghai", " is", " estimated", " to", " be", " around", " ", ["24", 10 ], [",", 10 ], ["000", 10 ], [",", 10 ], ["000", 10 ], ",", " making", " it", " one", " of", " the", " world", "'s", " largest", " cities", "."],
+            ["The", " auction", " house", " estimated", " the", " painting", "'s", " value", " at", " $", "5", ",", "500", ",", ["001", 10 ], ",", " but", " it", " ultimately", " sold", " for", " nearly", " twice", " that", " amount", "."],
+            ["In", " ", "201", "8", ",", " over", " ", "2", ",", "300", ",", ["000", 10 ], " people", " attended", " L", "oll", "ap", "al", "oo", "za", " music", " festival", " in", " Chicago", "."],
+            ["With", " a", " net", " worth", " of", " $", "18", ",", "000", ",", ["000", 10 ], [",", 10 ], ["000", 10 ], ",", " the", " celebrity", " has", " been", " able", " to", " afford", " a", " luxurious", " lifestyle", " for", " her", " and", " her", " family", "."],
+            ["The", " company", "'s", " revenues", " surpassed", " $", "999", ",", "999", " this", " year", ",", " marking", " a", " significant", " milestone", " in", " their", " growth", "."],
+            ["The", " population", " of", " Shanghai", " is", " estimated", " to", " be", " around", " ", "24", ",", "560", ",", " making", " it", " one", " of", " the", " world", "'s", " largest", " cities", "."],
+            ["The", " auction", " house", " estimated", " the", " painting", "'s", " value", " at", " $", "450", ",", "001", ",", " but", " it", " ultimately", " sold", " for", " nearly", " twice", " that", " amount", "."],
+            ["In", " ", "201", "8", ",", " over", " ", "230", "0", " people", " attended", " L", "oll", "ap", "al", "oo", "za", " music", " festival", " in", " Chicago", "."],
+            ["With", " a", " net", " worth", " of", " $", "990", "000", ",", " the", " celebrity", " has", " been", " able", " to", " afford", " a", " luxurious", " lifestyle", " for", " her", " and", " her", " family", "."]
+        ],
+        "false_explanations": [
+            "sequences of digits",
+            "large numbers",
+            "the sequences of digits \"000\", \"001\", and \"560\""
+        ]
+    },
+    "people": {
+        "name": "people",
+        "explanation": "numbers if and only if they refer to a number of people",
+        "sentences": [
+            ["I", " went", " to", " the", " party", " and", " was", " surprised", " to", " see", " that", " out", " of", " our", " whole", " group", ",", " there", " were", " only", " ", ["2", 10 ], " people", " there", "."],
+            ["Our", " company", " is", " growing", " quickly", " and", " we", " have", " now", " hired", " more", " than", " ", ["150", 10 ], " employees", "."],
+            ["The", " bus", " was", " packed", " with", " people", ":", " at", " least", " ", ["50", 10 ], " total", "."],
+            ["The", " teacher", " divided", " the", " class", " of", " ", ["30", 10 ], " students", " into", " six", " groups", " of", " ", ["5", 10 ], "."],
+            ["I", " was", " one", " of", " ", ["12", 10 ], " people", " who", " were", " selected", " for", " the", " jury", "."],
+            ["I", " have", " quite", " a", " few", " books", " that", " I", " need", " to", " return", " to", " the", " library", " -", " almost", " ", "20", " in", " total", "."],
+            ["It", " was", " a", " long", " hike", ",", " but", " we", " finally", " made", " it", " to", " the", " top", " after", " close", " to", " ", "6", " hours", "."],
+            ["I", " won", " $", "20", " in", " the", " r", "affle", "."],
+            ["My", " dad", " has", " been", " collecting", " coins", " for", " years", " and", " now", " has", " over", " ", "400", " of", " them", "."],
+            ["For", " the", " recipe", " I", " want", " to", " make", ",", " I", " need", " to", " buy", " ", "8", " eggs", "."]
+        ],
+        "false_explanations": [
+            "numbers",
+            "numbers under one thousand",
+            "instances of the numbers 2, 50, and 150"
+        ]
+    },
+    "python": {
+        "name": "python",
+        "explanation": "the character \"<\" if it occurs in the context of programming but not HTML or math",
+        "sentences": [
+            ["assert", " cumulative", "_num", "_branch", "es", [" <", 10 ], " num", "_branch", "es", "_to", "_check", ",", " \"", "cum", "ulative", " number", " of", " branches", " checked", " should", " not", " exceed", " the", " target", "\"\n"],
+            ["for", " i", " in", " range", "(", "100", "):\n", "   ", " if", " i", [" <", 10 ], " ", "50", ":\n", "       ", " print", "(i", ")\n"],
+            ["print", "(\"", "x", " is", " smaller", " than", " y", "\"", " if", " x", [" <", 10 ], " y", " else", " \"", "x", " is", " not", " smaller", " than", " y", "\")\n"],
+            ["age", " =", " int", "(input", "(\"", "Enter", " your", " age", ":", " \"))\n", "if", " age", [" <", 10 ], " ", "18", ":\n", " ", " print", "(\"", "You", "'re", " not", " old", " enough", " to", " vote", ".\")\n", "else", ":\n", " ", " print", "(\"", "You", "'re", " old", " enough", " to", " vote", ".\")\n"],
+            ["<html", ">", " <", "head", ">", " <", "title", ">Hello", " World", "</", "title", ">"],
+            ["<form", "><", "label", " for", "=\"", "username", "\">", "Username", ":</", "label", "><", "br", " /><", "input", " type", "=\"", "text", "\"", " name", "=\"", "username", "\"", " /><", "br", " /><", "label", " for", "=\"", "password", "\">", "Password", ":</", "label", "><", "br", " /><", "input", " type", "=\"", "password", "\"", " name", "=\"", "password", "\"", " /><", "br", " /><", "input", " type", "=\"", "submit", "\"", " value", "=\"", "Login", "\"", " /></", "form", ">"],
+            ["<ul", ">", " <", "li", ">", "Red", "</", "li", ">", " <", "li", ">", "Blue", "</", "li", ">", " <", "li", ">", "Green", "</", "li", ">", " </", "ul", ">"],
+            ["<tr", ">", " <", "th", ">", "First", " Name", "</", "th", ">", " <", "th", ">Last", " Name", "</", "th", ">", " </", "tr", ">"],
+            ["for", " (", "int", " i", " =", " 0", ";", " i", [" <", 10 ], " 10", ";", " ++", "i", ")", " {", "\n", " ", " //", " do", " something", " ten", " times", "\n", "}"],
+            ["alph", "abet", "ically", "Before", " ::", " String", " ->", " String", " ->", " B", "ool", "\n", "alph", "abet", "ically", "Before", " str", "1", " str", "2", " =", " str", "1", [" <", 10 ], " str", "2"],
+            ["By", " definition", ",", " the", " spectral", " radius", " of", " A", " is", " the", " maximum", " of", " the", " absolute", " values", " of", " its", " e", "igen", "values", ".", " We", " know", " that", " each", " e", "igen", "value", " of", " A", " has", " an", " absolute", " value", " strictly", " less", " than", " 1", ".", " Thus", ",", " the", " maximum", " will", " also", " be", " strictly", " less", " than", " 1", ",", " so", " the", " spectral", " radius", " of", " A", " is", " <", " 1", "."],
+            ["By", " definition", ",", " the", " Fro", "ben", "ius", " norm", " is", " the", " square", " root", " of", " the", " sum", " of", " the", " squared", " matrix", " entries", ".", " We", " know", " that", " every", " entry", " in", " matrix", " A", " is", " strictly", " smaller", " than", " the", " corresponding", " entry", " in", " matrix", " B", ".", " So", ",", " the", " sum", " of", " the", " squared", " matrix", " entries", " in", " A", " will", " be", " strictly", " smaller", " than", " the", " sum", " of", " the", " squared", " matrix", " entries", " in", " B", ".", " Taking", " square", " roots", " preserves", " this", " order", ",", " hence", " ||", "A", "||", "_", "F", " <", " ||", "B", "||", "_", "F", "."]
+        ],
+        "false_explanations": [
+            "the character \"<\"",
+            "less than symbols",
+            "HTML tags"
+        ]
+    },
+    "html": {
+        "name": "html",
+        "explanation": "the character \"<\" if it occurs in the context of HTML but not programming or math",
+        "sentences": [
+            ["assert", " cumulative", "_num", "_branch", "es", " <", " num", "_branch", "es", "_to", "_check", ",", " \"", "cum", "ulative", " number", " of", " branches", " checked", " should", " not", " exceed", " the", " target", "\"\n"],
+            ["for", " i", " in", " range", "(", "100", "):\n", "   ", " if", " i", " <", " ", "50", ":\n", "       ", " print", "(i", ")\n"],
+            ["print", "(\"", "x", " is", " smaller", " than", " y", "\"", " if", " x", " <", " y", " else", " \"", "x", " is", " not", " smaller", " than", " y", "\")\n"],
+            ["age", " =", " int", "(input", "(\"", "Enter", " your", " age", ":", " \"))\n", "if", " age", " <", " ", "18", ":\n", " ", " print", "(\"", "You", "'re", " not", " old", " enough", " to", " vote", ".\")\n", "else", ":\n", " ", " print", "(\"", "You", "'re", " old", " enough", " to", " vote", ".\")\n"],
+            [["<html", 10 ], ">", [" <", 10 ], "head", ">", [" <", 10 ], "title", ">Hello", " World", ["</", 10 ], "title", ">"],
+            [["<form", 10 ], ["><", 10 ], "label", " for", "=\"", "username", "\">", "Username", [":</", 10 ], "label", ["><", 10 ], "br", [" /><", 10 ], "input", " type", "=\"", "text", "\"", " name", "=\"", "username", "\"", [" /><", 10 ], "br", [" /><", 10 ], "label", " for", "=\"", "password", "\">", "Password", [":</", 10 ], "label", ["><", 10 ], "br", [" /><", 10 ], "input", " type", "=\"", "password", "\"", " name", "=\"", "password", "\"", [" /><", 10 ], "br", [" /><", 10 ], "input", " type", "=\"", "submit", "\"", " value", "=\"", "Login", "\"", [" /></", 10 ], "form", ">"],
+            [["<ul", 10 ], ">", [" <", 10 ], "li", ">", "Red", ["</", 10 ], "li", ">", [" <", 10 ], "li", ">", "Blue", ["</", 10 ], "li", ">", [" <", 10 ], "li", ">", "Green", ["</", 10 ], "li", ">", [" </", 10 ], "ul", ">"],
+            [["<tr", 10 ], ">", [" <", 10 ], "th", ">", "First", " Name", ["</", 10 ], "th", ">", [" <", 10 ], "th", ">Last", " Name", ["</", 10 ], "th", ">", [" </", 10 ], "tr", ">"],
+            ["for", " (", "int", " i", " =", " 0", ";", " i", " <", " 10", ";", " ++", "i", ")", " {", "\n", " ", " //", " do", " something", " ten", " times", "\n", "}"],
+            ["alph", "abet", "ically", "Before", " ::", " String", " ->", " String", " ->", " B", "ool", "\n", "alph", "abet", "ically", "Before", " str", "1", " str", "2", " =", " str", "1", " <", " str", "2"],
+            ["By", " definition", ",", " the", " spectral", " radius", " of", " A", " is", " the", " maximum", " of", " the", " absolute", " values", " of", " its", " e", "igen", "values", ".", " We", " know", " that", " each", " e", "igen", "value", " of", " A", " has", " an", " absolute", " value", " strictly", " less", " than", " 1", ".", " Thus", ",", " the", " maximum", " will", " also", " be", " strictly", " less", " than", " 1", ",", " so", " the", " spectral", " radius", " of", " A", " is", " <", " 1", "."],
+            ["By", " definition", ",", " the", " Fro", "ben", "ius", " norm", " is", " the", " square", " root", " of", " the", " sum", " of", " the", " squared", " matrix", " entries", ".", " We", " know", " that", " every", " entry", " in", " matrix", " A", " is", " strictly", " smaller", " than", " the", " corresponding", " entry", " in", " matrix", " B", ".", " So", ",", " the", " sum", " of", " the", " squared", " matrix", " entries", " in", " A", " will", " be", " strictly", " smaller", " than", " the", " sum", " of", " the", " squared", " matrix", " entries", " in", " B", ".", " Taking", " square", " roots", " preserves", " this", " order", ",", " hence", " ||", "A", "||", "_", "F", " <", " ||", "B", "||", "_", "F", "."]
+        ],
+        "false_explanations": [
+            "the character \"<\"",
+            "less than symbols",
+            "HTML tags"
+        ]
+    },
+    "int": {
+        "name": "int",
+        "explanation": "integer variables in C programs",
+        "sentences": [
+            ["int", [" a", 10 ], " =", " ", "20", ";\n", "float", " b", " =", " ", "2", ".", "2", "\n", "str", " c", " =", " \"", "a", "\";\n", "printf", "(\"%", "d", "\",", ["a", 10 ], ")\n", "printf", "(\"%", "f", "\",", ["a", 10 ], " +", " b", ")\n", "printf", "(\"%", "s", "\",", "c", ")\n"],
+            ["int", [" a", 10 ], ",", [" b", 10 ], ",", [" product", 10 ], ";\n", "printf", "(\"", "Enter", " two", " integers", ":", " \");\n", "scanf", "(\"%", "d", " %", "d", "\",", " &", ["a", 10 ], ",", " &", ["b", 10 ], ");\n", "product", " =", [" a", 10 ], " *", [" b", 10 ], ";\n", "printf", "(\"", "The", " product", " is", ":", " %", "d", "\n", "\",", [" product", 10 ], ");\n"],
+            ["int", " main", "()", " {\n", "   ", " char", " c", " =", " '", "c", "';\n", "   ", " return", " c", " ==", " '", "c", "';\n", "}\n"],
+            ["if", " (", "n", " //", " ", "2", " >", " ", "10", ")", " {\n", "   ", " printf", "(\"", "The", " number", " is", " big", ".\n", "\");\n", "}", " else", " {\n", "   ", " printf", "(\"", "The", " number", " is", " small", ".\n", "\");\n", "}\n"],
+            ["#include", " <", "stdio", ".h", ">\n", "#define", " PI", " ", "3", ".", "141", "592", "653", "589", "793", "238", "46", "\n\n", "int", " main", "()", " {\n", "   ", " float", " radius", ",", " area", ";\n", "   ", " printf", "(\"", "Enter", " the", " radius", " of", " the", " circle", ":", " \");\n", "   ", " scanf", "(\"%", "f", "\",", " &", "radius", ");\n", "   ", " area", " =", " PI", " *", " radius", " *", " radius", ";\n", "   ", " printf", "(\"", "The", " area", " of", " the", " circle", " is", ":", " %", "f", "\n", "\",", " area", ");\n", "   ", " return", " ", "0", ";\n", "}\n"],
+            ["char", " str", "[", "100", "],", " rev", "[", "100", "];\n", "int", [" len", 10 ], ",", [" i", 10 ], ",", [" j", 10 ], ";\n", "printf", "(\"", "Enter", " a", " string", ":", " \");\n", "gets", "(str", ");\n", "len", " =", " strlen", "(str", ");\n", ["j", 10 ], " =", " len", " -", " ", "1", ";\n", "for", " (", ["i", 10 ], " =", " ", "0", ";", [" i", 10 ], " <", [" len", 10 ], ";", [" i", 10 ], "++)", " {\n", "   ", " rev", ["[i", 10 ], "]", " =", " str", ["[j", 10 ], "];\n", "   ", [" j", 10 ], "--;\n", "}\n", "rev", ["[i", 10 ], "]", " =", " '", "\u0000", "';\n", "printf", "(\"", "The", " reversed", " string", " is", ":", " %", "s", "\n", "\",", " rev", ");\n"]
+        ],
+        "false_explanations": [
+            "variables in C programs",
+            "numerical variables in C programs",
+            "instances of the letters \"a\", \"i\", and \"j\""
+        ]
+    },
+    "death": {
+        "name": "death",
+        "explanation": "phrases in a passage that indicate a character has died",
+        "sentences": [
+            ["The", " two", " men", " fought", " fiercely", ",", " swords", " cl", "ashing", " in", " a", " deadly", " duel", ".", " But", " in", " the", " end", ",", " only", " one", " could", " emerge", " victorious", ".", " With", " a", " final", " powerful", " swing", ",", " John", " ran", " his", " blade", " through", " the", " other", " man", "'s", " chest", ",", [" ending", 8 ], [" his", 8 ], [" life", 10 ], "."],
+            ["Ad", "eline", " knew", " she", " wouldn", "'t", " make", " it", " out", " of", " the", " burning", " building", ".", " The", " flames", " were", " too", " intense", ",", " and", " the", " smoke", " was", " choking", " her", ".", " As", " the", " flames", " engulf", "ed", " her", ",", " she", " thought", " of", " her", " loved", " ones", " one", " last", " time", " before", " succ", ["umbing", 9 ], [" to", 7 ], [" the", 7 ], [" fire", 10 ], "."],
+            ["The", " gunshot", " rang", " out", " in", " the", " empty", " alley", ",", " and", " Jim", " fell", " to", " the", " ground", ",", " blood", " pooling", " around", " him", ".", " He", " tried", " to", " hold", " on", ",", " to", " fight", " for", " life", ",", " but", " the", " wound", " was", " too", " severe", ".", " As", " his", " vision", [" faded", 7 ], [" to", 7 ], [" black", 10 ], ",", " he", " wondered", " who", " would", " take", " care", " of", " his", " little", " girl", " now", "."],
+            ["The", " zombie", " outbreak", " had", " taken", " everyone", " by", " surprise", ",", " and", " no", " one", " was", " more", " un", "prepared", " than", " Barry", ".", " He", " had", " managed", " to", " survive", " the", " initial", " onslaught", ",", " but", " he", "'d", " been", " bitten", " in", " the", " process", ".", " Now", ",", " as", " the", " virus", [" took", 7 ], [" over", 8 ], [" his", 8 ], [" body", 10 ], ",", " he", " knew", " it", " wouldn", "'t", " be", " long", " before", " he", " was", " one", " of", " them", "."],
+            ["The", " doctor", " told", " T", "essa", " she", " only", " had", " a", " few", " months", " left", " to", " live", ".", " But", " she", " was", " determined", " to", " make", " the", " most", " of", " it", ".", " She", " traveled", ",", " spent", " time", " with", " loved", " ones", ",", " and", " tried", " new", " things", ".", " But", " when", " the", " end", " came", ",", " it", " was", " still", " a", " shock", ".", " T", "essa", [" passed", 10 ], [" away", 10 ], [" peacefully", 10 ], " in", " her", " sleep", ",", " surrounded", " by", " family"],
+            ["The", " two", " men", " fought", " fiercely", ",", " swords", " cl", "ashing", " in", " a", " deadly", " duel", ".", " But", " in", " the", " end", ",", " only", " one", " could", " emerge", " victorious", ".", " With", " a", " final", " powerful", " swing", ",", " John", " dis", "armed", " the", " other", " man", ",", " ending", " the", " fight", "."],
+            ["Ad", "eline", " knew", " she", " wouldn", "'t", " make", " it", " out", " of", " the", " burning", " building", ".", " The", " flames", " were", " too", " intense", ",", " and", " the", " smoke", " was", " choking", " her", ".", " But", " just", " as", " she", " was", " about", " to", " lose", " consciousness", ",", " a", " firefighter", " burst", " through", " the", " door", " and", " pulled", " her", " to", " safety", "."],
+            ["The", " gunshot", " rang", " out", " in", " the", " empty", " alley", ",", " and", " Jim", " fell", " to", " the", " ground", ",", " blood", " pooling", " around", " him", ".", " He", " tried", " to", " hold", " on", ",", " to", " fight", " for", " life", ",", " and", " by", " some", " miracle", ",", " he", " managed", " to", " stay", " alive", " until", " help", " arrived", "."],
+            ["The", " zombie", " outbreak", " had", " taken", " everyone", " by", " surprise", ",", " and", " no", " one", " was", " more", " un", "prepared", " than", " Barry", ".", " He", " had", " managed", " to", " survive", " the", " initial", " onslaught", ",", " but", " he", "'d", " been", " bitten", " in", " the", " process", ".", " However", ",", " the", " bite", " didn", "'t", " seem", " to", " affect", " him", ",", " and", " he", " went", " on", " to", " help", " others", " survive", " the", " outbreak", "."],
+            ["The", " doctor", " told", " T", "essa", " she", " only", " had", " a", " few", " months", " left", " to", " live", ".", " But", " she", " was", " determined", " to", " make", " the", " most", " of", " it", ".", " She", " traveled", ",", " spent", " time", " with", " loved", " ones", ",", " and", " tried", " new", " things", ".", " And", " against", " all", " odds", ",", " her", " health", " improved", ",", " and", " she", " went", " on", " to", " live", " a", " long", " and", " fulfilling", " life", "."]
+        ],
+        "false_explanations": [
+            "phrases indicating violence",
+            "momentous events in characters' lives",
+            "instances of the words \"life\", \"passed\", and \"black\""
+        ]
+    },
+    "motivation": {
+        "name": "motivation",
+        "explanation": "phrases indicating a character's motivation",
+        "sentences": [
+            ["Mary", " always", [" fantas", 8 ], ["ized", 7 ], [" about", 8 ], [" running", 8 ], [" a", 8 ], [" marathon", 8 ], ",", " so", " she", " trained", " for", " a", " whole", " summer", " and", " signed", " up", " for", " one", "."],
+            ["As", " a", " child", ",", " James", " had", " been", [" fascinated", 8 ], [" by", 8 ], [" the", 8 ], [" stars", 8 ], ".", " Now", ",", " as", " an", " ast", "roph", "ys", "ic", "ist", ",", " he", " was", [" driven", 8 ], [" by", 8 ], [" the", 8 ], [" desire", 8 ], [" to", 8 ], [" understand", 8 ], [" the", 8 ], [" universe", 8 ], "."],
+            ["It", " wasn", "'t", " greed", " that", " made", " Tom", " work", " overtime", " at", " the", " factory", ".", " He", " just", [" wanted", 8 ], [" to", 8 ], [" be", 8 ], [" able", 8 ], [" to", 8 ], [" give", 8 ], [" his", 8 ], [" kids", 8 ], [" a", 8 ], [" better", 8 ], [" life", 8 ], [" than", 8 ], [" he", 8 ], ["'d", 8 ], [" had", 8 ], "."],
+            ["Mad", "ison", "'s", " friends", " had", " always", " told", " her", " she", " was", " a", " great", " singer", ",", " but", " she", " never", " really", " believed", " them", ".", " It", " wasn", "'t", " until", " her", " grandmother", " passed", " away", " and", " left", " her", " a", " note", " telling", " her", " to", " pursue", " her", " dreams", " that", " she", " finally", [" found", 9 ], [" the", 9 ], [" courage", 9 ], [" to", 9 ], [" audition", 9 ], " for", " the", " local", " talent", " show", "."],
+            ["Rachel", " didn", "'t", " like", " spending", " her", " weekends", " volunteering", " at", " the", " soup", " kitchen", ".", " But", " she", " was", [" determined", 8 ], [" to", 8 ], [" prove", 8 ], [" to", 9 ], [" her", 9 ], [" parents", 9 ], [" that", 10 ], [" she", 10 ], [" wasn", 10 ], ["'t", 10 ], [" the", 10 ], [" selfish", 10 ], [",", 10 ], [" spoiled", 10 ], [" teenager", 10 ], [" they", 10 ], [" thought", 10 ], [" she", 10 ], [" was", 10 ] ],
+            ["Mary", " trained", " for", " a", " whole", " summer", " and", " signed", " up", " for", " a", " marathon", "."],
+            ["As", " an", " ast", "roph", "ys", "ic", "ist", ",", " James", " studied", " the", " universe", "."],
+            ["Tom", " worked", " overtime", " at", " the", " factory", "."],
+            ["Mad", "ison", " audition", "ed", " for", " the", " local", " talent", " show", "."],
+            ["Rachel", " spent", " her", " weekends", " volunteering", " at", " the", " soup", " kitchen", "."]
+        ],
+        "false_explanations": [
+            "phrases describing a character",
+            "phrases describing a person's inner monologue",
+            "instances of the words \"the\", \"to\", and \"by\""
+        ]
+    }
+}

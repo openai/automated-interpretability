@@ -1,0 +1,311 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+:root {
+  --secondary-color: #0d978b;
+  --accent-color: #ff4d00;
+}
+
+.full-width{
+  width: 100vw;
+  position: relative;
+  margin-left: -50vw;
+  left: 50%;
+ }
+
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App h1 {
+	font-size: 1.75rem;
+}
+
+.App-article {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+  /*  Structure
+  /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+  body {
+    margin: 0;
+    padding: 0 1em;
+    font-size: 12pt;
+}
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+/*  Typography
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+  
+h1 {
+  font-size: 24pt;
+  font-weight: 500;
+  padding: 1em 0 0;
+  display: block;
+  color: #000;
+}
+h3 { padding: 0 0; }
+h2 { padding: 1em 0 0.5em 0; }
+h4, h5 {
+    text-transform: uppercase;
+    margin: 1em 0;
+    justify-tracks: space-between;
+    font-family: var(--sans-serif);
+    font-size: 12pt;
+    font-weight: 600;
+}
+h2, h3 { font-weight: 500; font-style: italic; }
+subtitle {
+    color: #555;
+    font-size: 18pt;
+    font-style: italic;
+    padding: 0;
+    display: block;
+    margin-bottom: 1em
+}
+
+a {
+    transition: all .05s ease-in-out;
+    color: #5c60c3 !important;
+    font-style: normal;
+}
+a:hover { color: var(--accent-color)!important; }
+code, pre { color: var(--inline-code-color);
+background-color: #eee; border-radius: 3px; }
+pre {  padding: 1em; margin: 2em 0; }
+code { padding: 0.3em; }
+.text-secondary, h3, h5 { color: var(--secondary-color); }
+.text-primary, h2,h4 { color: var(--primary-color); }
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+/*  Images
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+  
+img#logo {
+    width: 50%;
+    margin: 3em 0 0
+}
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+/*  Alerts                                */
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+  
+.alert {
+    font-weight: 600;
+    font-style: italic;
+    display: block;
+    background-color: #fff7f7;
+    padding: 1em;
+    margin: 0;
+    border-radius: 5px;
+    color: #f25555
+}
+.alert.cool {
+  background-color: #f3f0fc;
+  color: #7155cf;
+}
+.flash-alert {
+  display: inline-block;
+  transition: ease-in-out 1s;
+  font-size: 14pt;
+  margin: 1em 0;
+  padding-top: 0.5em;
+}
+.flash-alert.success {
+  color: #000;
+}
+.flash-alert.failure {
+  color: red;
+}
+.flash-alert.hidden {
+  display: none;
+}
+
+  
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+/*  Sidenotes & Superscripts              */
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+body { counter-reset: count; }
+p { whitespace: nowrap; }
+sup { 
+  font-weight: 300;
+  padding-right: .2em;
+  counter-increment: count;
+}
+sidenote::before, 
+sup::before {
+    content: counter(count, lower-roman);
+    display: inline-block;
+    font-size: 10pt;
+    font-weight: bold;
+    color: var(--accent-color);
+}
+sidenote::before {
+    margin-right: .5em;
+    font-weight: 700
+}
+
+/* Different behavior if the screen is too 
+   narrow to show a sidenote on the side. */
+
+@media (min-width:860px) {
+    sidenote {
+        clear: right;
+        font-size: 10pt;
+        position: fixed;
+        float: right;
+        white-space: normal;
+        right: 20px;
+        width: 200px;
+        display: block;
+        max-width: 30%
+    }
+}
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+/*  Sidenotes & Superscripts              */
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+  
+@media print {
+    a.btn, button {
+        display: none!important
+    }
+}
+
+@media (max-width:860px) {
+    sidenote {
+        display: block;
+        font-size: 11pt;
+        margin: 2em 3em 2em 2em
+    }
+}
+  
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+/*  Buttons                               */
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+  
+@media screen {
+    button:hover { box-shadow: 0.5em 0.5em var(--accent-color); }
+    a.btn, button {
+        border-radius: 3px;
+        color: #000 !important;
+        text-decoration: none !important;
+        font-size: 11pt;
+        border: 1px solid #000;
+        padding: 0.5em 1em;
+        font-family: -apple-system, 
+          BlinkMacSystemFont, 
+          "avenir next", 
+          avenir,
+          helvetica, 
+          "helvetica neue", 
+          ubuntu, 
+          roboto, 
+          noto, 
+          "segoe ui", 
+          arial,
+          sans-serif !important;
+        background: #fff;
+        margin: 1.5em 0;
+        font-weight: 500;
+        transition: all .05s ease-in-out,box-shadow-color .025s ease-in-out;
+        box-shadow: 0.5em 0.5em #eee;
+        display: inline-block;
+}
+
+    a.btn:hover, button:hover {
+        cursor: pointer
+        box-shadow: 0.5em 0.5em var(--accent-color);
+    }
+    a.btn:active, button.active, button:active {
+        border: 1px solid;
+        margin: 2em 0 1em 1em;
+        box-shadow: 0 0 #000 !important
+    }
+    a.btn.small,button.small {
+        box-shadow: .5em .5em 0 #eee;
+        border: 1px solid #000;
+        padding: .6em 1em;
+        font-weight: 500
+    }
+    a.btn.small:hover,button.small:hover {
+        box-shadow: 0.5em 0.5em var(--accent-color);
+    }
+    a.btn.small:active,button.small:active {
+        margin: 2em 0 1em 1em;
+        box-shadow: 0 0 #000
+    }
+}
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+/*  Blockquotes & Epigraphs
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+blockquote {
+  margin: 1em;
+}
+div>blockquote>p {
+    font-size: 13pt;
+    color: #555;
+    font-style: normal!important;
+    margin: 0;
+    padding: 1em 0 1.5em
+}
+blockquote > blockquote {
+  padding: 0.5em 2em 1em 1.5em !important;
+}
+
+blockquote > blockquote,
+blockquote > blockquote > p {
+  font-size: 14pt;
+  padding: 0;
+  margin: 0;
+  text-align: center;
+  font-style: italic;
+  color: var(--epigraph-color);
+}
+blockquote footer {
+  font-size: 12pt;
+  text-align: inherit;
+  display: block;
+  font-style: normal;
+  margin: 1em;
+  color: #aaa;
+}

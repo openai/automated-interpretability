@@ -1,0 +1,46 @@
+{
+  "name": "neuron-viewer",
+  "version": "0.1.67",
+  "homepage": "https://openaipublic.blob.core.windows.net/neuron-explainer/neuron-viewer",
+  "dependencies": {
+    "@headlessui/react": "^1.7.8",
+    "@headlessui/tailwindcss": "^0.1.2",
+    "@types/d3-scale": "^4.0.3",
+    "@types/lodash": "^4.14.194",
+    "@types/react": "^18.0.37",
+    "@types/react-dom": "^18.0.11",
+    "d3-scale": "^4.0.2",
+    "lodash": "^4.17.21",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.10.0",
+    "web-vitals": "^3.0.3"
+  },
+  "scripts": {
+    "startpy": "nodemon python/server.py",
+    "start": "parcel src/index.html",
+    "build": "parcel build src/index.html",
+    "serve": "parcel serve src/index.html",
+    "typecheck": "tsc -p ."
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app"
+    ]
+  },
+  "alias": {
+    "preact/jsx-dev-runtime": "preact/jsx-runtime"
+  },
+  "devDependencies": {
+    "@observablehq/plot": "^0.6.5",
+    "@parcel/transformer-typescript-tsc": "^2.8.3",
+    "@parcel/validator-typescript": "^2.8.3",
+    "nodemon": "^2.0.22",
+    "parcel": "^2.8.3",
+    "preact": "^10.13.2",
+    "process": "^0.11.10",
+    "react-refresh": "0.10.0",
+    "tailwindcss": "^3.2.4",
+    "typescript": "^5.0.4"
+  }
+}
