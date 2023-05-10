@@ -4,7 +4,6 @@ import logging
 from flask import Flask, request
 from flask_cors import CORS
 
-import blobfile as bf
 import json
 
 import urllib.request
