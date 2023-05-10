@@ -10,12 +10,8 @@ import json
 import urllib.request
 
 def load_az_json(url):
-    try:
-        with urllib.request.urlopen(url) as f:
-            return json.load(f)
-    except:
-        print(f"Error occurred while loading JSON file from URL: {url}")
-        return {}
+    with urllib.request.urlopen(url) as f:
+        return json.load(f)
 
 def start(
     dev: bool = False,
