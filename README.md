@@ -44,7 +44,7 @@ Here's an overview of those datasets.
     as well as the associated weight (see below for definition). 
     - Each file contains a JSON-formatted [`WeightBasedSummaryOfNeuron`](neuron-explainer/neuron_explainer/activations/token_connections.py#L17)
     dataclass.
-
+    
 ### Definition of connection weights
 
 Refer to [GPT-2 model code](https://github.com/openai/gpt-2/blob/master/src/model.py) for
@@ -57,3 +57,10 @@ understanding of model weight conventions.
 `wte[t, :] @ diag(h{l}.ln_2.g) @ h{l}.mlp.c_fc.w[:, :, n]`
 and the output weight is computed as
 `h{l}.mlp.c_proj.w[:, n, :] @ diag(ln_f.g) @ wte[t, :]`.
+
+### Misc Lists of Interesting Neurons
+Lists of neurons we thought were interesting according to different criteria, with some preliminary descriptions.
+* [Interesting Neurons (external)](https://docs.google.com/spreadsheets/d/1p7fYs31NU8sJoeKyUx4Mn2laGx8xXfHg_KcIvYiKPpg/edit#gid=0)
+* [Neurons that score high on random, possibly monosemantic? (external)](https://docs.google.com/spreadsheets/d/1TqKFcz-84jyIHLU7VRoTc8BoFBMpbgac-iNBnxVurQ8/edit?usp=sharing)
+* [Clusters of neurons well explained by activation explanation but not by tokens](https://docs.google.com/document/d/1lWhKowpKDdwTMALD_K541cdwgGoQx8DFUSuEe1U2AGE/edit?usp=sharing)
+* [Neurons sensitive to truncation](https://docs.google.com/document/d/1x89TWBvuHcyC2t01EDbJZJ5LQYHozlcS-VUmr5shf_A/edit?usp=sharing)
