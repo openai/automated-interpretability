@@ -7,10 +7,15 @@ from flask_cors import CORS
 import blobfile as bf
 import json
 
-def load_az_json(path):
-    with bf.BlobFile(path) as f:
-        return json.load(f)
+import urllib.request
 
+def load_az_json(url):
+    try:
+        with urllib.request.urlopen(url) as f:
+            return json.load(f)
+    except:
+        print(f"Error occurred while loading JSON file from URL: {url}")
+        return {}
 
 def start(
     dev: bool = False,
