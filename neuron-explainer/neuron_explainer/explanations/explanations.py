@@ -51,8 +51,8 @@ class SequenceSimulation(FastDataclass):
     May be transformed to another unit by calibration. When we simulate a neuron, we produce a
     discrete distribution with values in the arbitrary discretized space of the neuron, e.g. 10%
     chance of 0, 70% chance of 1, 20% chance of 2. Which we store as distribution_values =
-    [0, 1, 2], distribution_probabilities = [0.1, 0.7, 0.2]. When we tranform the distribution to
-    the real activation units, we can correspondingly tranform the values of this distribution
+    [0, 1, 2], distribution_probabilities = [0.1, 0.7, 0.2]. When we transform the distribution to
+    the real activation units, we can correspondingly transform the values of this distribution
     to get a distribution in the units of the neuron. e.g. if the mapping from the discretized space
     to the real activation unit of the neuron is f(x) = x/2, then the distribution becomes 10%
     chance of 0, 70% chance of 0.5, 20% chance of 1. Which we store as distribution_values =
