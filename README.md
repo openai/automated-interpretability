@@ -44,7 +44,12 @@ Here's an overview of those datasets.
     as well as the associated weight (see below for definition). 
     - Each file contains a JSON-formatted [`WeightBasedSummaryOfNeuron`](neuron-explainer/neuron_explainer/activations/token_connections.py#L17)
     dataclass.
-    
+
+Update (July 5, 2023)
+We also released a set of explanations for GPT-2 Small. The methodology is slightly different from the methodology used for GPT-2 XL so the results aren't directly comparable.
+* Neuron activations: `az://openaipublic/neuron-explainer/gpt2_small_data/collated-activations/{layer_index}/{neuron_index}.json`
+* Neuron explanations: `az://openaipublic/neuron-explainer/gpt2_small_data/explanations/{layer_index}/{neuron_index}.jsonl`
+
 ### Definition of connection weights
 
 Refer to [GPT-2 model code](https://github.com/openai/gpt-2/blob/master/src/model.py) for
