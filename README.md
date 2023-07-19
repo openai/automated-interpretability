@@ -9,6 +9,8 @@ language models](https://openaipublic.blob.core.windows.net/neuron-explainer/pap
 the methodology described in the paper. See the
 [neuron-explainer README](neuron-explainer/README.md) for more information.
 
+Note: if you run into errors of the form "Error: Could not find any credentials that grant access to storage account: 'openaipublic' and container: 'neuron-explainer'"." you might be able to fix this by signing up for an azure account and specifying the credentials as described in the error message. 
+
 * A tool for viewing neuron activations and explanations, accessible
 [here](https://openaipublic.blob.core.windows.net/neuron-explainer/neuron-viewer/index.html). See
 the [neuron-viewer README](neuron-viewer/README.md) for more information.
