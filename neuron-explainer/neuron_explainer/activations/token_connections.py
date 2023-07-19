@@ -3,6 +3,8 @@ from typing import List, Union
 
 import blobfile as bf
 from neuron_explainer.fast_dataclasses import FastDataclass, loads, register_dataclass
+from neuron_explainer.azure import standardize_azure_url
+import urllib.request
 
 
 @register_dataclass
@@ -22,12 +24,14 @@ class WeightBasedSummaryOfNeuron(FastDataclass):
 
 
 def load_token_weight_connections_of_neuron(
-    layer_index: Union[str, int], neuron_index: Union[str, int],
-    dataset_path: str = "az://openaipublic/neuron-explainer/data/related-tokens/weight-based",
+    layer_index: Union[str, int],
+    neuron_index: Union[str, int],
+    dataset_path: str = "https://openaipublic.blob.core.windows.net/neuron-explainer/data/related-tokens/weight-based",
 ) -> WeightBasedSummaryOfNeuron:
     """Load the TokenLookupTableSummaryOfNeuron for the specified neuron."""
-    file = bf.join(dataset_path, f"{layer_index}/{neuron_index}.json")
-    with bf.BlobFile(file, "r") as f:
+    url = "/".join([dataset_path, str(layer_index), f"{neuron_index}.json"])
+    url = standardize_azure_url(url)
+    with urllib.request.urlopen(url) as f:
         return loads(f.read(), backwards_compatible=False)
 
 
@@ -44,11 +48,12 @@ class TokenLookupTableSummaryOfNeuron(FastDataclass):
 
 
 def load_token_lookup_table_connections_of_neuron(
-    layer_index: Union[str, int], neuron_index: Union[str, int],
-    dataset_path: str = "az://openaipublic/neuron-explainer/data/related-tokens/activation-based",
+    layer_index: Union[str, int],
+    neuron_index: Union[str, int],
+    dataset_path: str = "https://openaipublic.blob.core.windows.net/neuron-explainer/data/related-tokens/activation-based",
 ) -> TokenLookupTableSummaryOfNeuron:
     """Load the TokenLookupTableSummaryOfNeuron for the specified neuron."""
-    file = bf.join(dataset_path, f"{layer_index}/{neuron_index}.json")
-    with bf.BlobFile(file, "r") as f:
+    url = "/".join([dataset_path, str(layer_index), f"{neuron_index}.json"])
+    url = standardize_azure_url(url)
+    with urllib.request.urlopen(url) as f:
         return loads(f.read(), backwards_compatible=False)
-

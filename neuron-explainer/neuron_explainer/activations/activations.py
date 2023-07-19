@@ -5,9 +5,11 @@ import math
 from dataclasses import dataclass, field
 from typing import List, Optional, Union
 
+import urllib.request
 import blobfile as bf
 import boostedblob as bbb
 from neuron_explainer.fast_dataclasses import FastDataclass, loads, register_dataclass
+from neuron_explainer.azure import standardize_azure_url
 
 
 @register_dataclass
@@ -219,12 +221,14 @@ def neuron_exists(
 
 
 def load_neuron(
-    layer_index: Union[str, int], neuron_index: Union[str, int],
-    dataset_path: str = "az://openaipublic/neuron-explainer/data/collated-activations",
+    layer_index: Union[str, int],
+    neuron_index: Union[str, int],
+    dataset_path: str = "https://openaipublic.blob.core.windows.net/neuron-explainer/data/collated-activations",
 ) -> NeuronRecord:
     """Load the NeuronRecord for the specified neuron."""
-    file = bf.join(dataset_path, str(layer_index), f"{neuron_index}.json")
-    with bf.BlobFile(file, "r") as f:
+    url = "/".join([dataset_path, str(layer_index), f"{neuron_index}.json"])
+    url = standardize_azure_url(url)
+    with urllib.request.urlopen(url) as f:
         neuron_record = loads(f.read())
         if not isinstance(neuron_record, NeuronRecord):
             raise ValueError(
@@ -235,7 +239,8 @@ def load_neuron(
 
 @bbb.ensure_session
 async def load_neuron_async(
-    layer_index: Union[str, int], neuron_index: Union[str, int],
+    layer_index: Union[str, int],
+    neuron_index: Union[str, int],
     dataset_path: str = "az://openaipublic/neuron-explainer/data/collated-activations",
 ) -> NeuronRecord:
     """Async version of load_neuron."""
