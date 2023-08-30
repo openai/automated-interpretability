@@ -47,10 +47,17 @@ Here's an overview of those datasets.
     - Each file contains a JSON-formatted [`WeightBasedSummaryOfNeuron`](neuron-explainer/neuron_explainer/activations/token_connections.py#L17)
     dataclass.
 
-Update (July 5, 2023)
+Update (July 5, 2023):
 We also released a set of explanations for GPT-2 Small. The methodology is slightly different from the methodology used for GPT-2 XL so the results aren't directly comparable.
 * Neuron activations: `az://openaipublic/neuron-explainer/gpt2_small_data/collated-activations/{layer_index}/{neuron_index}.json`
 * Neuron explanations: `az://openaipublic/neuron-explainer/gpt2_small_data/explanations/{layer_index}/{neuron_index}.jsonl`
+
+Update (August 30, 2023): We recently discovered a bug in how we performed inference on the GPT-2 series models used for the paper and for these datasets. Specifically, we used an optimized GELU implementation rather than the original GELU implementation associated with GPT-2. While the model’s behavior is very similar across these two configurations, the post-MLP activation values we used to generate and simulate explanations differ from the correct values by the following amounts for GPT-2 small:
+
+- Median: 0.0090
+- 90th percentile: 0.0252
+- 99th percentile: 0.0839
+- 99.9th percentile: 0.1736
 
 ### Definition of connection weights
 
