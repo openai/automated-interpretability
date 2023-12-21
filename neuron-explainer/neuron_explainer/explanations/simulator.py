@@ -585,12 +585,20 @@ def _postprocess_harmony_v4_text_with_tags_completions(text: str) -> str:
     return text.split(STOP_TOKEN)[0]
 
 
-def _format_record_for_logprob_free_simulation(activation_record: ActivationRecord, include_activations: bool = False, max_activation: Optional[float] = None) -> str:
+def _format_record_for_logprob_free_simulation(
+    activation_record: ActivationRecord,
+    include_activations: bool = False,
+    max_activation: Optional[float] = None,
+) -> str:
     response = ""
     if include_activations:
         assert max_activation is not None
-        assert len(activation_record.tokens) == len(activation_record.activations), f"{len(activation_record.tokens)=}, {len(activation_record.activations)=}"
-        normalized_activations = normalize_activations(activation_record.activations, max_activation=max_activation)
+        assert len(activation_record.tokens) == len(
+            activation_record.activations
+        ), f"{len(activation_record.tokens)=}, {len(activation_record.activations)=}"
+        normalized_activations = normalize_activations(
+            activation_record.activations, max_activation=max_activation
+        )
     for i, token in enumerate(activation_record.tokens):
         # We use a weird unicode character here to make it easier to parse the response (can split on "༗\n").
         if include_activations:
@@ -747,7 +755,6 @@ class LogprobFreeExplanationTokenSimulator(NeuronSimulator):
         logger.debug("result in score_explanation_by_activations is %s", result)
         return result
 
-
     def _make_simulation_prompt(
         self,
         tokens: Sequence[str],
@@ -776,7 +783,10 @@ For each sequence, you will see the tokens in the sequence where the activations
                 f"Sequence 1 Tokens without Activations:\n{_format_record_for_logprob_free_simulation(example.activation_records[0], include_activations=False)}\n\n"
                 f"Sequence 1 Tokens with Activations:\n",
             )
-            prompt_builder.add_message(Role.ASSISTANT, f"{_format_record_for_logprob_free_simulation(example.activation_records[0], include_activations=True, max_activation=few_shot_example_max_activation)}\n\n")
+            prompt_builder.add_message(
+                Role.ASSISTANT,
+                f"{_format_record_for_logprob_free_simulation(example.activation_records[0], include_activations=True, max_activation=few_shot_example_max_activation)}\n\n",
+            )
 
             for record_index, record in enumerate(example.activation_records[1:]):
                 prompt_builder.add_message(
@@ -784,7 +794,10 @@ For each sequence, you will see the tokens in the sequence where the activations
                     f"Sequence {record_index + 2} Tokens without Activations:\n{_format_record_for_logprob_free_simulation(record, include_activations=False)}\n\n"
                     f"Sequence {record_index + 2} Tokens with Activations:\n",
                 )
-                prompt_builder.add_message(Role.ASSISTANT, f"{_format_record_for_logprob_free_simulation(record, include_activations=True, max_activation=few_shot_example_max_activation)}\n\n")
+                prompt_builder.add_message(
+                    Role.ASSISTANT,
+                    f"{_format_record_for_logprob_free_simulation(record, include_activations=True, max_activation=few_shot_example_max_activation)}\n\n",
+                )
 
         neuron_index = len(few_shot_examples) + 1
         prompt_builder.add_message(
