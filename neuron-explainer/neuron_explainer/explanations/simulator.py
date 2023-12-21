@@ -23,9 +23,11 @@ from neuron_explainer.explanations.explanations import ActivationScale, Sequence
 from neuron_explainer.explanations.few_shot_examples import FewShotExampleSet
 from neuron_explainer.explanations.prompt_builder import (
     HarmonyMessage,
+    IM_SEP,
     PromptBuilder,
     PromptFormat,
     Role,
+    STOP_TOKEN,
 )
 
 logger = logging.getLogger(__name__)
@@ -573,3 +575,236 @@ The activation format is token<tab>activation, and activations range from 0 to 1
             end_of_prompt=True,
         )
         return prompt_builder.build(self.prompt_format, allow_extra_system_messages=True)
+
+
+def _postprocess_harmony_v4_text_with_tags_completions(text: str) -> str:
+    """Postprocess a completion from the /completions endpoint."""
+    # Remove the initial <|im_sep|> token.
+    text = text[len(IM_SEP) :]
+    # Remove everything after the first stop token
+    return text.split(STOP_TOKEN)[0]
+
+
+def _format_record_for_logprob_free_simulation(
+    activation_record: ActivationRecord,
+    include_activations: bool = False,
+    max_activation: Optional[float] = None,
+) -> str:
+    response = ""
+    if include_activations:
+        assert max_activation is not None
+        assert len(activation_record.tokens) == len(
+            activation_record.activations
+        ), f"{len(activation_record.tokens)=}, {len(activation_record.activations)=}"
+        normalized_activations = normalize_activations(
+            activation_record.activations, max_activation=max_activation
+        )
+    for i, token in enumerate(activation_record.tokens):
+        # We use a weird unicode character here to make it easier to parse the response (can split on "༗\n").
+        if include_activations:
+            response += f"{token}\t{normalized_activations[i]}༗\n"
+        else:
+            response += f"{token}\t༗\n"
+    return response
+
+
+def _parse_no_logprobs_completion(
+    completion: str,
+    tokens: Sequence[str],
+) -> Sequence[int]:
+    """
+    Parse a completion into a list of simulated activations. If the model did not faithfully
+    reproduce the token sequence, return a list of 0s. If the model's activation for a token
+    is not an integer betwee 0 and 10, substitute 0.
+
+    Args:
+        completion: completion from the API
+        tokens: list of tokens as strings in the sequence where the neuron is being simulated
+    """
+    zero_prediction = [0] * len(tokens)
+    token_lines = completion.strip("\n").split("༗\n")
+    start_line_index = None
+    for i, token_line in enumerate(token_lines):
+        if token_line.startswith(f"{tokens[0]}\t"):
+            start_line_index = i
+            break
+
+    # If we didn't find the first token, or if the number of lines in the completion doesn't match
+    # the number of tokens, return a list of 0s.
+    if start_line_index is None or len(token_lines) - start_line_index != len(tokens):
+        return zero_prediction
+    predicted_activations = []
+    for i, token_line in enumerate(token_lines[start_line_index:]):
+        if not token_line.startswith(f"{tokens[i]}\t"):
+            return zero_prediction
+        predicted_activation = token_line.split("\t")[1]
+        if predicted_activation not in VALID_ACTIVATION_TOKENS:
+            predicted_activations.append(0)
+        else:
+            predicted_activations.append(int(predicted_activation))
+    return predicted_activations
+
+
+class LogprobFreeExplanationTokenSimulator(NeuronSimulator):
+    """
+    Simulate neuron behavior based on an explanation.
+
+    Unlike ExplanationNeuronSimulator and ExplanationTokenByTokenSimulator, this class does not rely on
+    logprobs to calculate expected activations. Instead, it uses a few-shot prompt that displays all of the
+    tokens at once, and request that the model repeat the tokens with the activations appended. Sampling
+    is with temperature = 0. Thus, the activations are deterministic. Also, each activation for a token
+    is a function of all the activations that came previously and all of the tokens in the sequence, not
+    just the current and previous tokens. In the case where the model does not faithfully reproduce the
+    token sequence, the simulator will return a response where every predicted activation is 0. Example prompt as follows:
+
+    Explanation: Explanation 1
+
+    Sequence 1 Tokens Without Activations:
+
+    A\t_
+    B\t_
+    C\t_
+
+    Sequence 1 Tokens With Activations:
+
+    A\t4_
+    B\t10_
+    C\t0_
+
+    Sequence 2 Tokens Without Activations:
+
+    D\t_
+    E\t_
+    F\t_
+
+    Sequence 2 Tokens With Activations:
+
+    D\t3_
+    E\t6_
+    F\t9_
+
+    Explanation: Explanation 2
+
+    Sequence 1 Tokens Without Activations:
+
+    G\t_
+    H\t_
+    I\t_
+
+    Sequence 1 Tokens With Activations:
+    <start sampling here>
+
+    G\t2_
+    H\t0_
+    I\t3_
+
+    """
+
+    def __init__(
+        self,
+        model_name: str,
+        explanation: str,
+        max_concurrent: Optional[int] = 10,
+        few_shot_example_set: FewShotExampleSet = FewShotExampleSet.NEWER,
+        prompt_format: PromptFormat = PromptFormat.HARMONY_V4,
+        cache: bool = False,
+    ):
+        assert (
+            few_shot_example_set != FewShotExampleSet.ORIGINAL
+        ), "This simulator doesn't support the ORIGINAL few-shot example set."
+        self.api_client = ApiClient(
+            model_name=model_name, max_concurrent=max_concurrent, cache=cache
+        )
+        self.explanation = explanation
+        self.few_shot_example_set = few_shot_example_set
+        self.prompt_format = prompt_format
+
+    async def simulate(
+        self,
+        tokens: Sequence[str],
+    ) -> SequenceSimulation:
+        prompt = self._make_simulation_prompt(
+            tokens,
+            self.explanation,
+        )
+        response = await self.api_client.make_request(
+            prompt=prompt, echo=False, max_tokens=1000
+        )
+        assert len(response["choices"]) == 1
+
+        choice = response["choices"][0]
+        if self.prompt_format == PromptFormat.HARMONY_V4:
+            completion = choice["message"]["content"]
+        elif self.prompt_format == PromptFormat.HARMONY_V4_TEXT_WITH_TAGS:
+            completion = _postprocess_harmony_v4_text_with_tags_completions(choice["text"])
+        elif self.prompt_format in [PromptFormat.NONE, PromptFormat.INSTRUCTION_FOLLOWING]:
+            completion = choice["text"]
+        else:
+            raise ValueError(f"Unhandled prompt format {self.prompt_format}")
+
+        predicted_activations = _parse_no_logprobs_completion(completion, tokens)
+
+        result = SequenceSimulation(
+            activation_scale=ActivationScale.SIMULATED_NORMALIZED_ACTIVATIONS,
+            expected_activations=predicted_activations,
+            # Since the predicted activation is just a sampled token, we don't have a distribution.
+            distribution_values=None,
+            distribution_probabilities=None,
+            tokens=list(tokens),  # SequenceSimulation expects List type
+        )
+        logger.debug("result in score_explanation_by_activations is %s", result)
+        return result
+
+    def _make_simulation_prompt(
+        self,
+        tokens: Sequence[str],
+        explanation: str,
+    ) -> Union[str, list[HarmonyMessage]]:
+        """Make a few-shot prompt for predicting the neuron's activations on a sequence."""
+        assert explanation != ""
+        prompt_builder = PromptBuilder(allow_extra_system_messages=True)
+        prompt_builder.add_message(
+            Role.SYSTEM,
+            """We're studying neurons in a neural network. Each neuron looks for some particular thing in a short document. Look at  an explanation of what the neuron does, and try to predict its activations on a particular token.
+
+The activation format is token<tab>activation, and activations range from 0 to 10. Most activations will be 0.
+For each sequence, you will see the tokens in the sequence where the activations are left blank. You will print the exact same tokens verbatim, but with the activations filled in according to the explanation.
+""",
+        )
+
+        few_shot_examples = self.few_shot_example_set.get_examples()
+        for i, example in enumerate(few_shot_examples):
+            few_shot_example_max_activation = calculate_max_activation(example.activation_records)
+
+            prompt_builder.add_message(
+                Role.USER,
+                f"Neuron {i + 1}\nExplanation of neuron {i + 1} behavior: {EXPLANATION_PREFIX} "
+                f"{example.explanation}\n\n"
+                f"Sequence 1 Tokens without Activations:\n{_format_record_for_logprob_free_simulation(example.activation_records[0], include_activations=False)}\n\n"
+                f"Sequence 1 Tokens with Activations:\n",
+            )
+            prompt_builder.add_message(
+                Role.ASSISTANT,
+                f"{_format_record_for_logprob_free_simulation(example.activation_records[0], include_activations=True, max_activation=few_shot_example_max_activation)}\n\n",
+            )
+
+            for record_index, record in enumerate(example.activation_records[1:]):
+                prompt_builder.add_message(
+                    Role.USER,
+                    f"Sequence {record_index + 2} Tokens without Activations:\n{_format_record_for_logprob_free_simulation(record, include_activations=False)}\n\n"
+                    f"Sequence {record_index + 2} Tokens with Activations:\n",
+                )
+                prompt_builder.add_message(
+                    Role.ASSISTANT,
+                    f"{_format_record_for_logprob_free_simulation(record, include_activations=True, max_activation=few_shot_example_max_activation)}\n\n",
+                )
+
+        neuron_index = len(few_shot_examples) + 1
+        prompt_builder.add_message(
+            Role.USER,
+            f"Neuron {neuron_index}\nExplanation of neuron {neuron_index} behavior: {EXPLANATION_PREFIX} "
+            f"{explanation}\n\n"
+            f"Sequence 1 Tokens without Activations:\n{_format_record_for_logprob_free_simulation(ActivationRecord(tokens=tokens, activations=[]), include_activations=False)}\n\n"
+            f"Sequence 1 Tokens with Activations:\n",
+        )
+        return prompt_builder.build(self.prompt_format)
