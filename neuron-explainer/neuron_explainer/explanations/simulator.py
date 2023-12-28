@@ -23,11 +23,9 @@ from neuron_explainer.explanations.explanations import ActivationScale, Sequence
 from neuron_explainer.explanations.few_shot_examples import FewShotExampleSet
 from neuron_explainer.explanations.prompt_builder import (
     HarmonyMessage,
-    IM_SEP,
     PromptBuilder,
     PromptFormat,
     Role,
-    STOP_TOKEN,
 )
 
 logger = logging.getLogger(__name__)
