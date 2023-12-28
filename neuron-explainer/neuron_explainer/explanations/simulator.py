@@ -577,14 +577,6 @@ The activation format is token<tab>activation, and activations range from 0 to 1
         return prompt_builder.build(self.prompt_format, allow_extra_system_messages=True)
 
 
-def _postprocess_harmony_v4_text_with_tags_completions(text: str) -> str:
-    """Postprocess a completion from the /completions endpoint."""
-    # Remove the initial <|im_sep|> token.
-    text = text[len(IM_SEP) :]
-    # Remove everything after the first stop token
-    return text.split(STOP_TOKEN)[0]
-
-
 def _format_record_for_logprob_free_simulation(
     activation_record: ActivationRecord,
     include_activations: bool = False,
@@ -735,8 +727,6 @@ class LogprobFreeExplanationTokenSimulator(NeuronSimulator):
         choice = response["choices"][0]
         if self.prompt_format == PromptFormat.HARMONY_V4:
             completion = choice["message"]["content"]
-        elif self.prompt_format == PromptFormat.HARMONY_V4_TEXT_WITH_TAGS:
-            completion = _postprocess_harmony_v4_text_with_tags_completions(choice["text"])
         elif self.prompt_format in [PromptFormat.NONE, PromptFormat.INSTRUCTION_FOLLOWING]:
             completion = choice["text"]
         else:
