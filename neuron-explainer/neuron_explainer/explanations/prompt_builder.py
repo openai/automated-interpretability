@@ -56,7 +56,6 @@ class PromptBuilder:
 
         self._messages: list[HarmonyMessage] = []
         self._allow_extra_system_messages = allow_extra_system_messages
-        self.renderer = get_renderer("harmony_v4.0_no_system_message_content_type")
 
     def add_message(self, role: Role, message: str) -> None:
         self._messages.append(HarmonyMessage(role=role, content=message))
