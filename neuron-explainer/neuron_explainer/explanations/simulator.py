@@ -750,7 +750,7 @@ class LogprobFreeExplanationTokenSimulator(NeuronSimulator):
     ) -> Union[str, list[HarmonyMessage]]:
         """Make a few-shot prompt for predicting the neuron's activations on a sequence."""
         assert explanation != ""
-        prompt_builder = PromptBuilder(allow_extra_system_messages=True)
+        prompt_builder = PromptBuilder()
         prompt_builder.add_message(
             Role.SYSTEM,
             """We're studying neurons in a neural network. Each neuron looks for some particular thing in a short document. Look at  an explanation of what the neuron does, and try to predict its activations on a particular token.
@@ -795,4 +795,4 @@ For each sequence, you will see the tokens in the sequence where the activations
             f"Sequence 1 Tokens without Activations:\n{_format_record_for_logprob_free_simulation(ActivationRecord(tokens=tokens, activations=[]), include_activations=False)}\n\n"
             f"Sequence 1 Tokens with Activations:\n",
         )
-        return prompt_builder.build(self.prompt_format)
+        return prompt_builder.build(self.prompt_format, allow_extra_system_messages=True)
