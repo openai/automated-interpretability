@@ -718,7 +718,7 @@ class LogprobFreeExplanationTokenSimulator(NeuronSimulator):
             self.explanation,
         )
         response = await self.api_client.make_request(
-            prompt=prompt, echo=False, max_tokens=1000
+            messages=prompt
         )
         assert len(response["choices"]) == 1
 
