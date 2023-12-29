@@ -36,6 +36,9 @@ MAX_NORMALIZED_ACTIVATION = 10
 VALID_ACTIVATION_TOKENS_ORDERED = list(str(i) for i in range(MAX_NORMALIZED_ACTIVATION + 1))
 VALID_ACTIVATION_TOKENS = set(VALID_ACTIVATION_TOKENS_ORDERED)
 
+# Edge Case #3: The chat-based simulator is confused by end token. Replace it with a "not end token"
+END_OF_TEXT_TOKEN = "<|endoftext|>"
+END_OF_TEXT_TOKEN_REPLACEMENT = "<|not_endoftext|>"
 
 class SimulationType(str, Enum):
     """How to simulate neuron activations. Values correspond to subclasses of NeuronSimulator."""
@@ -590,6 +593,9 @@ def _format_record_for_logprob_free_simulation(
             activation_record.activations, max_activation=max_activation
         )
     for i, token in enumerate(activation_record.tokens):
+        # Edge Case #3: End tokens confuse the chat-based simulator. Replace end token with "not end token".
+        if token.strip() == END_OF_TEXT_TOKEN:
+            token = END_OF_TEXT_TOKEN_REPLACEMENT
         # We use a weird unicode character here to make it easier to parse the response (can split on "༗\n").
         if include_activations:
             response += f"{token}\t{normalized_activations[i]}༗\n"
@@ -613,9 +619,18 @@ def _parse_no_logprobs_completion(
     """
     zero_prediction = [0] * len(tokens)
     token_lines = completion.strip("\n").split("༗\n")
+    # Edge Case #2: Sometimes GPT doesn't use the special character when it answers, it only uses the \n"
+    # The fix is to try splitting by \n if we detect that the response isn't the right format
+    # TODO: If there are also line breaks in the text, this will probably break
+    if (len(token_lines)) == 1:
+        token_lines = completion.strip("\n").split("\n")
     start_line_index = None
     for i, token_line in enumerate(token_lines):
-        if token_line.startswith(f"{tokens[0]}\t"):
+        if (token_line.startswith(f"{tokens[0]}\t")
+            # Edge Case #1: GPT often omits the space before the first token.
+            # Allow the returned token line to be either " token" or "token".
+            or f" {token_line}".startswith(f"{tokens[0]}\t")
+        ):
             start_line_index = i
             break
 
@@ -625,7 +640,13 @@ def _parse_no_logprobs_completion(
         return zero_prediction
     predicted_activations = []
     for i, token_line in enumerate(token_lines[start_line_index:]):
-        if not token_line.startswith(f"{tokens[i]}\t"):
+        if (not token_line.startswith(f"{tokens[i]}\t")
+            # Edge Case #1: GPT often omits the space before the first token.
+            # Allow the returned token line to be either " token" or "token".
+            and not f" {token_line}".startswith(f"{tokens[0]}\t")
+            # Edge Case #3: Allow our "not end token" replacement
+            and not token_line.startswith(END_OF_TEXT_TOKEN_REPLACEMENT)
+        ):
             return zero_prediction
         predicted_activation = token_line.split("\t")[1]
         if predicted_activation not in VALID_ACTIVATION_TOKENS:
