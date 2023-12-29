@@ -607,11 +607,11 @@ def _format_record_for_logprob_free_simulation(
 def _parse_no_logprobs_completion(
     completion: str,
     tokens: Sequence[str],
-) -> Sequence[int]:
+) -> Sequence[float]:
     """
     Parse a completion into a list of simulated activations. If the model did not faithfully
     reproduce the token sequence, return a list of 0s. If the model's activation for a token
-    is not an integer betwee 0 and 10, substitute 0.
+    is not a number between 0 and 10 (inclusive), substitute 0.
 
     Args:
         completion: completion from the API
@@ -649,10 +649,12 @@ def _parse_no_logprobs_completion(
         ):
             return zero_prediction
         predicted_activation = token_line.split("\t")[1]
-        if predicted_activation not in VALID_ACTIVATION_TOKENS:
-            predicted_activations.append(0)
+        # Sometimes GPT the activation value is not a float (GPT likes to append an extra ༗).
+        # In all cases if the activation is not numerically parseable, set it to 0
+        if predicted_activation.replace(".", "").isnumeric():
+            predicted_activations.append(float(predicted_activation))
         else:
-            predicted_activations.append(int(predicted_activation))
+            predicted_activations.append(0)
     return predicted_activations
 
 
@@ -774,7 +776,7 @@ class LogprobFreeExplanationTokenSimulator(NeuronSimulator):
         prompt_builder = PromptBuilder(allow_extra_system_messages=True)
         prompt_builder.add_message(
             Role.SYSTEM,
-            """We're studying neurons in a neural network. Each neuron looks for some particular thing in a short document. Look at  an explanation of what the neuron does, and try to predict its activations on a particular token.
+            """We're studying neurons in a neural network. Each neuron looks for some particular thing in a short document. Look at an explanation of what the neuron does, and try to predict its activations on a particular token.
 
 The activation format is token<tab>activation, and activations range from 0 to 10. Most activations will be 0.
 For each sequence, you will see the tokens in the sequence where the activations are left blank. You will print the exact same tokens verbatim, but with the activations filled in according to the explanation.
