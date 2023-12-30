@@ -618,12 +618,13 @@ def _parse_no_logprobs_completion(
         tokens: list of tokens as strings in the sequence where the neuron is being simulated
     """
     zero_prediction = [0] * len(tokens)
-    token_lines = completion.strip("\n").split("༗\n")
+    # FIX: Strip the last ༗\n, otherwise all last activations are invalid
+    token_lines = completion.strip("\n").strip("༗\n").split("༗\n")
     # Edge Case #2: Sometimes GPT doesn't use the special character when it answers, it only uses the \n"
     # The fix is to try splitting by \n if we detect that the response isn't the right format
     # TODO: If there are also line breaks in the text, this will probably break
     if (len(token_lines)) == 1:
-        token_lines = completion.strip("\n").split("\n")
+        token_lines = completion.strip("\n").strip("༗\n").split("\n")
     start_line_index = None
     for i, token_line in enumerate(token_lines):
         if (token_line.startswith(f"{tokens[0]}\t")
