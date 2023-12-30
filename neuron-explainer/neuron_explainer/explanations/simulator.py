@@ -617,6 +617,10 @@ def _parse_no_logprobs_completion(
         completion: completion from the API
         tokens: list of tokens as strings in the sequence where the neuron is being simulated
     """
+
+    logger.debug("for tokens:\n%s", tokens)
+    logger.debug("received completion:\n%s", completion)
+
     zero_prediction = [0] * len(tokens)
     # FIX: Strip the last ༗\n, otherwise all last activations are invalid
     token_lines = completion.strip("\n").strip("༗\n").split("༗\n")
@@ -625,6 +629,8 @@ def _parse_no_logprobs_completion(
     # TODO: If there are also line breaks in the text, this will probably break
     if (len(token_lines)) == 1:
         token_lines = completion.strip("\n").strip("༗\n").split("\n")
+    logger.debug("parsed completion into token_lines as:\n%s", token_lines)
+
     start_line_index = None
     for i, token_line in enumerate(token_lines):
         if (token_line.startswith(f"{tokens[0]}\t")
@@ -634,13 +640,17 @@ def _parse_no_logprobs_completion(
             # Edge Case #3: Allow our "not end token" replacement
             or (token_line.startswith(END_OF_TEXT_TOKEN_REPLACEMENT) and tokens[0].strip() == END_OF_TEXT_TOKEN)
         ):
+            logger.debug("start_line_index is: %s", start_line_index)
+            logger.debug("matched token %s with token_line %s", tokens[0], token_line)
             start_line_index = i
             break
 
     # If we didn't find the first token, or if the number of lines in the completion doesn't match
     # the number of tokens, return a list of 0s.
     if start_line_index is None or len(token_lines) - start_line_index != len(tokens):
+        logger.debug("didn't find first token or number of lines didn't match, returning all zeroes")
         return zero_prediction
+    
     predicted_activations = []
     for i, token_line in enumerate(token_lines[start_line_index:]):
         if (not token_line.startswith(f"{tokens[i]}\t")
@@ -650,6 +660,7 @@ def _parse_no_logprobs_completion(
             # Edge Case #3: Allow our "not end token" replacement
             and not token_line.startswith(END_OF_TEXT_TOKEN_REPLACEMENT)
         ):
+            logger.debug("failed to match token %s with token_line %s, returning all zeroes", tokens[i], token_line)
             return zero_prediction
         predicted_activation = token_line.split("\t")[1]
         # Sometimes GPT the activation value is not a float (GPT likes to append an extra ༗).
@@ -657,11 +668,14 @@ def _parse_no_logprobs_completion(
         if predicted_activation.replace(".", "").isnumeric():
             predicted_activation_float = float(predicted_activation)
             if predicted_activation_float < 0 or predicted_activation_float > MAX_NORMALIZED_ACTIVATION:
+                logger.debug("activation value out of range: %s", predicted_activation_float)
                 predicted_activations.append(0)
             else:
                 predicted_activations.append(predicted_activation_float)
         else:
+            logger.debug("activation value not numeric: %s", predicted_activation)
             predicted_activations.append(0)
+    logger.debug("predicted activations: %s", predicted_activations)
     return predicted_activations
 
 
