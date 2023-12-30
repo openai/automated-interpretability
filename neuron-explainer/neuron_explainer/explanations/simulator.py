@@ -641,9 +641,9 @@ def _parse_no_logprobs_completion(
     predicted_activations = []
     for i, token_line in enumerate(token_lines[start_line_index:]):
         if (not token_line.startswith(f"{tokens[i]}\t")
-            # Edge Case #1: GPT often omits the space before the first token.
+            # Edge Case #1: GPT often omits the space before the token.
             # Allow the returned token line to be either " token" or "token".
-            and not f" {token_line}".startswith(f"{tokens[0]}\t")
+            and not f" {token_line}".startswith(f"{tokens[i]}\t")
             # Edge Case #3: Allow our "not end token" replacement
             and not token_line.startswith(END_OF_TEXT_TOKEN_REPLACEMENT)
         ):
