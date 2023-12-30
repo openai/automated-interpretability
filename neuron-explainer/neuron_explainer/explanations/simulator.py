@@ -631,6 +631,8 @@ def _parse_no_logprobs_completion(
             # Edge Case #1: GPT often omits the space before the first token.
             # Allow the returned token line to be either " token" or "token".
             or f" {token_line}".startswith(f"{tokens[0]}\t")
+            # Edge Case #3: Allow our "not end token" replacement
+            or (token_line.startswith(END_OF_TEXT_TOKEN_REPLACEMENT) and tokens[0].strip() == END_OF_TEXT_TOKEN)
         ):
             start_line_index = i
             break
@@ -655,7 +657,7 @@ def _parse_no_logprobs_completion(
         if predicted_activation.replace(".", "").isnumeric():
             predicted_activation_float = float(predicted_activation)
             if predicted_activation_float < 0 or predicted_activation_float > MAX_NORMALIZED_ACTIVATION:
-                predicted_activation.append(0)
+                predicted_activations.append(0)
             else:
                 predicted_activations.append(predicted_activation_float)
         else:
