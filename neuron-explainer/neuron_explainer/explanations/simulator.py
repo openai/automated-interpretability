@@ -665,14 +665,14 @@ def _parse_no_logprobs_completion(
         predicted_activation = token_line.split("\t")[1]
         # Sometimes GPT the activation value is not a float (GPT likes to append an extra ༗).
         # In all cases if the activation is not numerically parseable, set it to 0
-        if predicted_activation.replace(".", "").isnumeric():
+        try:
             predicted_activation_float = float(predicted_activation)
             if predicted_activation_float < 0 or predicted_activation_float > MAX_NORMALIZED_ACTIVATION:
                 logger.debug("activation value out of range: %s", predicted_activation_float)
                 predicted_activations.append(0)
             else:
                 predicted_activations.append(predicted_activation_float)
-        else:
+        except ValueError:
             logger.debug("activation value not numeric: %s", predicted_activation)
             predicted_activations.append(0)
     logger.debug("predicted activations: %s", predicted_activations)
