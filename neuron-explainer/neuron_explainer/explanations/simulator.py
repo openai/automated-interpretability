@@ -662,7 +662,13 @@ def _parse_no_logprobs_completion(
         ):
             logger.debug("failed to match token %s with token_line %s, returning all zeroes", tokens[i], token_line)
             return zero_prediction
-        predicted_activation = token_line.split("\t")[1]
+        predicted_activation_split = token_line.split("\t")
+        # Ensure token line has correct size after splitting. If not then assume it's a zero.
+        if len(predicted_activation_split) != 2:
+            logger.debug("tokenline split invalid size: %s", token_line)
+            predicted_activations.append(0)
+            continue
+        predicted_activation = predicted_activation_split[1]
         # Sometimes GPT the activation value is not a float (GPT likes to append an extra ༗).
         # In all cases if the activation is not numerically parseable, set it to 0
         try:
