@@ -114,7 +114,7 @@ class ApiClient:
 
     @exponential_backoff(retry_on=is_api_error)
     async def make_request(
-        self, timeout_seconds: Optional[int] = None, **kwargs: Any
+        self, timeout_seconds: Optional[int] = None, json_mode: Optional[bool] = False, **kwargs: Any
     ) -> dict[str, Any]:
         if self._cache is not None:
             key = orjson.dumps(kwargs)
@@ -130,6 +130,8 @@ class ApiClient:
             # endpoint. Otherwise, it should be sent to the /completions endpoint.
             url = BASE_API_URL + ("/chat/completions" if "messages" in kwargs else "/completions")
             kwargs["model"] = self.model_name
+            if json_mode:
+                kwargs["response_format"] = {"type": "json_object"}
             response = await http_client.post(url, headers=API_HTTP_HEADERS, json=kwargs)
         # The response json has useful information but the exception doesn't include it, so print it
         # out then reraise.

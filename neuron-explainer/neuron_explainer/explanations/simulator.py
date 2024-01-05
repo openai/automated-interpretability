@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import json
 from abc import ABC, abstractmethod
 from collections import OrderedDict
 from enum import Enum
@@ -603,6 +604,91 @@ def _format_record_for_logprob_free_simulation(
             response += f"{token}\t༗\n"
     return response
 
+def _format_record_for_logprob_free_simulation_json(
+    neuron: int,
+    explanation: str,
+    activation_record: ActivationRecord,
+    include_activations: bool = False,
+    max_activation: Optional[float] = None,
+) -> str:
+    if include_activations:
+        assert max_activation is not None
+        assert len(activation_record.tokens) == len(
+            activation_record.activations
+        ), f"{len(activation_record.tokens)=}, {len(activation_record.activations)=}"
+        normalized_activations = normalize_activations(
+            activation_record.activations, max_activation=max_activation
+        )
+        
+    return json.dumps({
+        "neuron": neuron,
+        "explanation": explanation,
+        "activations": [
+            {
+                "token": END_OF_TEXT_TOKEN_REPLACEMENT if token.strip() == END_OF_TEXT_TOKEN else token,
+                "activation": normalized_activations[i] if include_activations else None
+            } for i, token in enumerate(activation_record.tokens)
+        ]
+    })
+
+def _parse_no_logprobs_completion_json(
+    completion: str,
+    tokens: Sequence[str],
+) -> Sequence[float]:
+    """
+    Parse a completion into a list of simulated activations. If the model did not faithfully
+    reproduce the token sequence, return a list of 0s. If the model's activation for a token
+    is not a number between 0 and 10 (inclusive), substitute 0.
+
+    Args:
+        completion: completion from the API
+        tokens: list of tokens as strings in the sequence where the neuron is being simulated
+    """
+
+    logger.debug("for tokens:\n%s", tokens)
+    logger.debug("received completion:\n%s", completion)
+
+    zero_prediction = [0] * len(tokens)
+
+    try:
+        completion = json.loads(completion)
+        if "activations" not in completion:
+            logger.error("The key 'activations' is not in the completion.")
+            return zero_prediction
+        activations = completion["activations"]
+        if len(activations) != len(tokens):
+            logger.error("Tokens and activations length did not match")
+            return zero_prediction
+        predicted_activations = []
+        # check that there is a token and activation value
+        # no need to double check the token matches exactly
+        for i, activation in enumerate(activations):
+            if "token" not in activation:
+                logger.error("The key 'token' is not in activation.")
+                predicted_activations.append(0)
+                continue
+            if "activation" not in activation:
+                logger.error("The key 'activation' is not in activation.")
+                predicted_activations.append(0)
+                continue
+            # Ensure activation value is between 0-10 inclusive
+            try:
+                predicted_activation_float = float(activation["activation"])
+                if predicted_activation_float < 0 or predicted_activation_float > MAX_NORMALIZED_ACTIVATION:
+                    logger.error("activation value out of range: %s", predicted_activation_float)
+                    predicted_activations.append(0)
+                else:
+                    predicted_activations.append(predicted_activation_float)
+            except ValueError:
+                logger.error("activation value not numeric: %s", activation["activation"])
+                predicted_activations.append(0)
+
+        logger.debug("predicted activations: %s", predicted_activations)
+        return predicted_activations
+    
+    except json.JSONDecodeError:
+        logger.error("Failed to parse completion JSON.")
+        return zero_prediction
 
 def _parse_no_logprobs_completion(
     completion: str,
@@ -684,7 +770,6 @@ def _parse_no_logprobs_completion(
     logger.debug("predicted activations: %s", predicted_activations)
     return predicted_activations
 
-
 class LogprobFreeExplanationTokenSimulator(NeuronSimulator):
     """
     Simulate neuron behavior based on an explanation.
@@ -745,6 +830,7 @@ class LogprobFreeExplanationTokenSimulator(NeuronSimulator):
         model_name: str,
         explanation: str,
         max_concurrent: Optional[int] = 10,
+        json_mode: Optional[bool] = True,
         few_shot_example_set: FewShotExampleSet = FewShotExampleSet.NEWER,
         prompt_format: PromptFormat = PromptFormat.HARMONY_V4,
         cache: bool = False,
@@ -755,6 +841,7 @@ class LogprobFreeExplanationTokenSimulator(NeuronSimulator):
         self.api_client = ApiClient(
             model_name=model_name, max_concurrent=max_concurrent, cache=cache
         )
+        self.json_mode = json_mode
         self.explanation = explanation
         self.few_shot_example_set = few_shot_example_set
         self.prompt_format = prompt_format
@@ -763,24 +850,30 @@ class LogprobFreeExplanationTokenSimulator(NeuronSimulator):
         self,
         tokens: Sequence[str],
     ) -> SequenceSimulation:
-        prompt = self._make_simulation_prompt(
-            tokens,
-            self.explanation,
-        )
-        response = await self.api_client.make_request(
-            prompt=prompt, echo=False, max_tokens=1000
-        )
-        assert len(response["choices"]) == 1
-
-        choice = response["choices"][0]
-        if self.prompt_format == PromptFormat.HARMONY_V4:
+        if self.json_mode:
+            prompt = self._make_simulation_prompt_json(
+                tokens,
+                self.explanation,
+            )
+            response = await self.api_client.make_request(
+                messages=prompt, max_tokens=1000, temperature=0, json_mode=True
+            )
+            assert len(response["choices"]) == 1
+            choice = response["choices"][0]
             completion = choice["message"]["content"]
-        elif self.prompt_format in [PromptFormat.NONE, PromptFormat.INSTRUCTION_FOLLOWING]:
-            completion = choice["text"]
+            predicted_activations = _parse_no_logprobs_completion_json(completion, tokens)
         else:
-            raise ValueError(f"Unhandled prompt format {self.prompt_format}")
-
-        predicted_activations = _parse_no_logprobs_completion(completion, tokens)
+            prompt = self._make_simulation_prompt(
+                tokens,
+                self.explanation,
+            )
+            response = await self.api_client.make_request(
+                messages=prompt, max_tokens=1000, temperature=0
+            )
+            assert len(response["choices"]) == 1
+            choice = response["choices"][0]
+            completion = choice["message"]["content"]
+            predicted_activations = _parse_no_logprobs_completion(completion, tokens)
 
         result = SequenceSimulation(
             activation_scale=ActivationScale.SIMULATED_NORMALIZED_ACTIVATIONS,
@@ -792,6 +885,80 @@ class LogprobFreeExplanationTokenSimulator(NeuronSimulator):
         )
         logger.debug("result in score_explanation_by_activations is %s", result)
         return result
+
+    def _make_simulation_prompt_json(
+        self,
+        tokens: Sequence[str],
+        explanation: str,
+    ) -> Union[str, list[HarmonyMessage]]:
+        """Make a few-shot prompt for predicting the neuron's activations on a sequence."""
+        """NOTE: The JSON version does not give GPT multiple sequence examples per neuron."""
+        assert explanation != ""
+        prompt_builder = PromptBuilder()
+        prompt_builder.add_message(
+            Role.SYSTEM,
+            """We're studying neurons in a neural network. Each neuron looks for some particular thing in a short document. Look at an explanation of what the neuron does, and try to predict its activations on a particular token.
+
+For each sequence, you will see the tokens in the sequence where the activations are left blank. You will print, in valid json, the exact same tokens verbatim, but with the activation values filled in according to the explanation.
+Fill out the activation values from 0 to 10. Most activations will be 0.
+""",
+        )
+
+        few_shot_examples = self.few_shot_example_set.get_examples()
+        for i, example in enumerate(few_shot_examples):
+            few_shot_example_max_activation = calculate_max_activation(example.activation_records)
+            """
+            {
+                "neuron": 1,
+                // The explanation for the neuron behavior
+                "explanation": "hello"
+                // Fill out the activation with a value from 0 to 10. Most activations will be 0.
+                "activations": [
+                    {
+                        "token": "The",
+                        "activation": null
+                    }
+                ]
+            }
+            """
+            prompt_builder.add_message(
+                Role.USER,
+                _format_record_for_logprob_free_simulation_json(i + 1, explanation=example.explanation, activation_record=example.activation_records[0], include_activations=False)
+            )
+            """
+            {
+            "neuron": 1,
+            "explanation": "hello"
+            "activations": [
+                {
+                    "token": "The",
+                    "activation": 3
+                }
+            ]
+            }
+            """
+            prompt_builder.add_message(
+                Role.ASSISTANT,
+                _format_record_for_logprob_free_simulation_json(i + 1, explanation=example.explanation, activation_record=example.activation_records[0], include_activations=True, max_activation=few_shot_example_max_activation)
+            )
+        neuron_index = len(few_shot_examples) + 1
+        """
+        {
+            "neuron": 3,
+            "explanation": "hello"
+            "activations": [
+                {
+                    "token": "The",
+                    "activation": null
+                }
+            ]
+        }
+        """
+        prompt_builder.add_message(
+            Role.USER,
+            _format_record_for_logprob_free_simulation_json(neuron_index, explanation=explanation, activation_record=ActivationRecord(tokens=tokens, activations=[]), include_activations=False)
+        )
+        return prompt_builder.build(self.prompt_format, allow_extra_system_messages=True)
 
     def _make_simulation_prompt(
         self,
