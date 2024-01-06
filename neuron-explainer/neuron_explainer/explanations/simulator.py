@@ -680,9 +680,11 @@ def _parse_no_logprobs_completion_json(
                 else:
                     predicted_activations.append(predicted_activation_float)
             except ValueError:
-                logger.error("activation value not numeric: %s", activation["activation"])
+                logger.error("activation value invalid: %s", activation["activation"])
                 predicted_activations.append(0)
-
+            except TypeError:
+                logger.error("activation value incorrect type: %s", activation["activation"])
+                predicted_activations.append(0)
         logger.debug("predicted activations: %s", predicted_activations)
         return predicted_activations
     
