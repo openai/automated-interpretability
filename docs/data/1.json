@@ -1,0 +1,548 @@
+{
+    "100": {
+        "file_id": 10,
+        "content": "from dataclasses import dataclass\nfrom typing import List, Union\nimport blobfile as bf\nfrom neuron_explainer.fast_dataclasses import FastDataclass, loads, register_dataclass\nfrom neuron_explainer.azure import standardize_azure_url\nimport urllib.request\n@register_dataclass\n@dataclass\nclass TokensAndWeights(FastDataclass):\n    tokens: List[str]\n    strengths: List[float]\n@register_dataclass\n@dataclass\nclass WeightBasedSummaryOfNeuron(FastDataclass):\n    input_positive: TokensAndWeights\n    input_negative: TokensAndWeights\n    output_positive: TokensAndWeights\n    output_negative: TokensAndWeights\ndef load_token_weight_connections_of_neuron(\n    layer_index: Union[str, int],\n    neuron_index: Union[str, int],\n    dataset_path: str = \"https://openaipublic.blob.core.windows.net/neuron-explainer/data/related-tokens/weight-based\",\n) -> WeightBasedSummaryOfNeuron:\n    \"\"\"Load the TokenLookupTableSummaryOfNeuron for the specified neuron.\"\"\"\n    url = \"/\".join([dataset_path, str(layer_index), f\"{neuron_index}.json\"])\n    url = standardize_azure_url(url)",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/activations/token_connections.py:1-33"
+    },
+    "101": {
+        "file_id": 10,
+        "content": "Loading token-weight connections of a neuron from an Azure dataset. The function retrieves and returns the TokenLookupTableSummaryOfNeuron for the specified layer index and neuron index. It uses standardized Azure URLs for accessing the data.",
+        "type": "comment"
+    },
+    "102": {
+        "file_id": 10,
+        "content": "    with urllib.request.urlopen(url) as f:\n        return loads(f.read(), backwards_compatible=False)\n@register_dataclass\n@dataclass\nclass TokenLookupTableSummaryOfNeuron(FastDataclass):\n    \"\"\"List of tokens and the average activations of a given neuron in response to each\n    respective token. These are selected from among the tokens in the vocabulary with the\n    highest average activations across an internet text dataset, with the highest activations\n    first.\"\"\"\n    tokens: List[str]\n    average_activations: List[float]\ndef load_token_lookup_table_connections_of_neuron(\n    layer_index: Union[str, int],\n    neuron_index: Union[str, int],\n    dataset_path: str = \"https://openaipublic.blob.core.windows.net/neuron-explainer/data/related-tokens/activation-based\",\n) -> TokenLookupTableSummaryOfNeuron:\n    \"\"\"Load the TokenLookupTableSummaryOfNeuron for the specified neuron.\"\"\"\n    url = \"/\".join([dataset_path, str(layer_index), f\"{neuron_index}.json\"])\n    url = standardize_azure_url(url)\n    with urllib.request.urlopen(url) as f:",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/activations/token_connections.py:34-58"
+    },
+    "103": {
+        "file_id": 10,
+        "content": "This code loads a lookup table containing tokens and their average activations for a given neuron. The table is generated from the highest average activations across an internet text dataset, and the data is retrieved from an Azure URL.",
+        "type": "comment"
+    },
+    "104": {
+        "file_id": 10,
+        "content": "        return loads(f.read(), backwards_compatible=False)",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/activations/token_connections.py:59-59"
+    },
+    "105": {
+        "file_id": 10,
+        "content": "This function reads the file and returns its contents in a readable format.",
+        "type": "comment"
+    },
+    "106": {
+        "file_id": 11,
+        "content": "/neuron-explainer/neuron_explainer/explanations/calibrated_simulator.py",
+        "type": "filepath"
+    },
+    "107": {
+        "file_id": 11,
+        "content": "The CalibratedNeuronSimulator improves NeuronSimulator with calibration methods, while the LinearCalibratedNeuronSimulator uses flattened activations and true activations for calibration, and PercentileMatchingCalibratedNeuronSimulator ensures distribution matching on the calibration set.",
+        "type": "summary"
+    },
+    "108": {
+        "file_id": 11,
+        "content": "\"\"\"\nCode for calibrating simulations of neuron behavior. Calibration refers to a process of mapping from\na space of predicted activation values (e.g. [0, 10]) to the real activation distribution for a\nneuron.\nSee http://go/neuron_explanation_methodology for description of calibration step. Necessary for\nsimulating neurons in the context of ablate-to-simulation, but can be skipped when using correlation\nscoring. (Calibration may still improve quality for scoring, at least for non-linear calibration\nmethods.)\n\"\"\"\nfrom __future__ import annotations\nimport asyncio\nfrom abc import abstractmethod\nfrom typing import Optional, Sequence\nimport numpy as np\nfrom neuron_explainer.activations.activations import ActivationRecord\nfrom neuron_explainer.explanations.explanations import ActivationScale\nfrom neuron_explainer.explanations.simulator import NeuronSimulator, SequenceSimulation\nfrom sklearn import linear_model\nclass CalibratedNeuronSimulator(NeuronSimulator):\n    \"\"\"\n    Wrap a NeuronSimulator and calibrate it to map from the predicted activation space to the",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/calibrated_simulator.py:1-27"
+    },
+    "109": {
+        "file_id": 11,
+        "content": "CalibratedNeuronSimulator class inherits from NeuronSimulator and provides calibration for mapping predicted activation values to real neuron activations.",
+        "type": "comment"
+    },
+    "110": {
+        "file_id": 11,
+        "content": "    actual neuron activation space.\n    \"\"\"\n    def __init__(self, uncalibrated_simulator: NeuronSimulator):\n        self.uncalibrated_simulator = uncalibrated_simulator\n    @classmethod\n    async def create(\n        cls,\n        uncalibrated_simulator: NeuronSimulator,\n        calibration_activation_records: Sequence[ActivationRecord],\n    ) -> CalibratedNeuronSimulator:\n        \"\"\"\n        Create and calibrate a calibrated simulator (so initialization and calibration can be done\n        in one call).\n        \"\"\"\n        calibrated_simulator = cls(uncalibrated_simulator)\n        await calibrated_simulator.calibrate(calibration_activation_records)\n        return calibrated_simulator\n    async def calibrate(self, calibration_activation_records: Sequence[ActivationRecord]) -> None:\n        \"\"\"\n        Determine parameters to map from the predicted activation space to the real neuron\n        activation space, based on a calibration set.\n        Use when simulated sequences haven't already been produced on the calibration set.",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/calibrated_simulator.py:28-53"
+    },
+    "111": {
+        "file_id": 11,
+        "content": "This code defines a class method `create()` and a method `calibrate()` for the `CalibratedNeuronSimulator` class. The `create()` method creates and calibrates a simulator in one call, while the `calibrate()` method determines parameters to map from predicted activation space to real neuron activation space based on a calibration set.",
+        "type": "comment"
+    },
+    "112": {
+        "file_id": 11,
+        "content": "        \"\"\"\n        simulations = await asyncio.gather(\n            *[\n                self.uncalibrated_simulator.simulate(activations.tokens)\n                for activations in calibration_activation_records\n            ]\n        )\n        self.calibrate_from_simulations(calibration_activation_records, simulations)\n    def calibrate_from_simulations(\n        self,\n        calibration_activation_records: Sequence[ActivationRecord],\n        simulations: Sequence[SequenceSimulation],\n    ) -> None:\n        \"\"\"\n        Determine parameters to map from the predicted activation space to the real neuron\n        activation space, based on a calibration set.\n        Use when simulated sequences have already been produced on the calibration set.\n        \"\"\"\n        flattened_activations = []\n        flattened_simulated_activations: list[float] = []\n        for activations, simulation in zip(calibration_activation_records, simulations):\n            flattened_activations.extend(activations.activations)\n            flattened_simulated_activations.extend(simulation.expected_activations)",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/calibrated_simulator.py:54-78"
+    },
+    "113": {
+        "file_id": 11,
+        "content": "Calibrating simulator by generating flattened activation sequences for both calibration_activation_records and simulations.",
+        "type": "comment"
+    },
+    "114": {
+        "file_id": 11,
+        "content": "        self._calibrate_from_flattened_activations(\n            np.array(flattened_activations), np.array(flattened_simulated_activations)\n        )\n    @abstractmethod\n    def _calibrate_from_flattened_activations(\n        self,\n        true_activations: np.ndarray,\n        uncalibrated_activations: np.ndarray,\n    ) -> None:\n        \"\"\"\n        Determine parameters to map from the predicted activation space to the real neuron\n        activation space, based on a calibration set.\n        Take numpy arrays of all true activations and all uncalibrated activations on the\n        calibration set over all sequences.\n        \"\"\"\n    @abstractmethod\n    def apply_calibration(self, values: Sequence[float]) -> list[float]:\n        \"\"\"Apply the learned calibration to a sequence of values.\"\"\"\n    async def simulate(self, tokens: Sequence[str]) -> SequenceSimulation:\n        uncalibrated_seq_simulation = await self.uncalibrated_simulator.simulate(tokens)\n        calibrated_activations = self.apply_calibration(\n            uncalibrated_seq_simulation.expected_activations",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/calibrated_simulator.py:79-104"
+    },
+    "115": {
+        "file_id": 11,
+        "content": "This code defines a calibrated simulator that can be used to map the predicted activation space of a model to the actual neuron activation space. It contains methods for calibration and applying calibration to sequences of values. The simulate method is also defined, which uses an uncalibrated simulator to obtain expected activations and applies the calibration to obtain the final calibrated activations.",
+        "type": "comment"
+    },
+    "116": {
+        "file_id": 11,
+        "content": "        )\n        calibrated_distribution_values = [\n            self.apply_calibration(dv) for dv in uncalibrated_seq_simulation.distribution_values\n        ]\n        return SequenceSimulation(\n            tokens=uncalibrated_seq_simulation.tokens,\n            expected_activations=calibrated_activations,\n            activation_scale=ActivationScale.NEURON_ACTIVATIONS,\n            distribution_values=calibrated_distribution_values,\n            distribution_probabilities=uncalibrated_seq_simulation.distribution_probabilities,\n            uncalibrated_simulation=uncalibrated_seq_simulation,\n        )\nclass UncalibratedNeuronSimulator(CalibratedNeuronSimulator):\n    \"\"\"Pass through the activations without trying to calibrate.\"\"\"\n    def __init__(self, uncalibrated_simulator: NeuronSimulator):\n        super().__init__(uncalibrated_simulator)\n    async def calibrate(self, calibration_activation_records: Sequence[ActivationRecord]) -> None:\n        pass\n    def _calibrate_from_flattened_activations(\n        self,",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/calibrated_simulator.py:105-129"
+    },
+    "117": {
+        "file_id": 11,
+        "content": "CalibratedNeuronSimulator applies calibration to uncalibrated sequence simulation. UncalibratedNeuronSimulator passes through activations without calibration.",
+        "type": "comment"
+    },
+    "118": {
+        "file_id": 11,
+        "content": "        true_activations: np.ndarray,\n        uncalibrated_activations: np.ndarray,\n    ) -> None:\n        pass\n    def apply_calibration(self, values: Sequence[float]) -> list[float]:\n        return values if isinstance(values, list) else list(values)\nclass LinearCalibratedNeuronSimulator(CalibratedNeuronSimulator):\n    \"\"\"Find a linear mapping from uncalibrated activations to true activations.\n    Should not change ev_correlation_score because it is invariant to linear transformations.\n    \"\"\"\n    def __init__(self, uncalibrated_simulator: NeuronSimulator):\n        super().__init__(uncalibrated_simulator)\n        self._regression: Optional[linear_model.LinearRegression] = None\n    def _calibrate_from_flattened_activations(\n        self,\n        true_activations: np.ndarray,\n        uncalibrated_activations: np.ndarray,\n    ) -> None:\n        self._regression = linear_model.LinearRegression()\n        self._regression.fit(uncalibrated_activations.reshape(-1, 1), true_activations)\n    def apply_calibration(self, values: Sequence[float]) -> list[float]:",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/calibrated_simulator.py:130-157"
+    },
+    "119": {
+        "file_id": 11,
+        "content": "This code defines a class `LinearCalibratedNeuronSimulator` that inherits from `CalibratedNeuratorSimulator`. It initializes an optional linear regression model and provides two methods. The method `_calibrate_from_flattened_activations` fits the linear regression model with flattened uncalibrated activations and true activations, and the method `apply_calibration` applies the calibration to a given sequence of values if they are a list.",
+        "type": "comment"
+    },
+    "120": {
+        "file_id": 11,
+        "content": "        if self._regression is None:\n            raise ValueError(\"Must call calibrate() before apply_calibration\")\n        if len(values) == 0:\n            return []\n        return self._regression.predict(np.reshape(np.array(values), (-1, 1))).tolist()\nclass PercentileMatchingCalibratedNeuronSimulator(CalibratedNeuronSimulator):\n    \"\"\"\n    Map the nth percentile of the uncalibrated activations to the nth percentile of the true\n    activations for all n.\n    This will match the distribution of true activations on the calibration set, but will be\n    overconfident outside of the calibration set.\n    \"\"\"\n    def __init__(self, uncalibrated_simulator: NeuronSimulator):\n        super().__init__(uncalibrated_simulator)\n        self._uncalibrated_activations: Optional[np.ndarray] = None\n        self._true_activations: Optional[np.ndarray] = None\n    def _calibrate_from_flattened_activations(\n        self,\n        true_activations: np.ndarray,\n        uncalibrated_activations: np.ndarray,\n    ) -> None:\n        self._uncalibrated_activations = np.sort(uncalibrated_activations)",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/calibrated_simulator.py:158-184"
+    },
+    "121": {
+        "file_id": 11,
+        "content": "This code defines a `PercentileMatchingCalibratedNeuronSimulator` class that calibrates a neuron simulator by mapping the nth percentile of uncalibrated activations to the nth percentile of true activations for all n. This will match the distribution of true activations on the calibration set but will be overconfident outside of it. The `__init__` method initializes an instance with an optional `uncalibrated_simulator`, and the `_calibrate_from_flattened_activations` method performs the actual calibration using true activations and uncalibrated activations as inputs.",
+        "type": "comment"
+    },
+    "122": {
+        "file_id": 11,
+        "content": "        self._true_activations = np.sort(true_activations)\n    def apply_calibration(self, values: Sequence[float]) -> list[float]:\n        if self._true_activations is None or self._uncalibrated_activations is None:\n            raise ValueError(\"Must call calibrate() before apply_calibration\")\n        if len(values) == 0:\n            return []\n        return np.interp(\n            np.array(values), self._uncalibrated_activations, self._true_activations\n        ).tolist()",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/calibrated_simulator.py:185-194"
+    },
+    "123": {
+        "file_id": 11,
+        "content": "Sorting true_activations for calibration and raising ValueError if calibrate() not called before apply_calibration.",
+        "type": "comment"
+    },
+    "124": {
+        "file_id": 12,
+        "content": "/neuron-explainer/neuron_explainer/explanations/explainer.py",
+        "type": "filepath"
+    },
+    "125": {
+        "file_id": 12,
+        "content": "The code includes an AI model for generating explanations using API calls and prompts, along with helper functions, constants, and a base class NeuronExplainer. It also handles long prompts and extracts explanations from completion lists while removing extra spaces.",
+        "type": "summary"
+    },
+    "126": {
+        "file_id": 12,
+        "content": "\"\"\"Uses API calls to generate explanations of neuron behavior.\"\"\"\nfrom __future__ import annotations\nimport logging\nimport re\nfrom abc import ABC, abstractmethod\nfrom enum import Enum\nfrom typing import Any, Optional, Sequence, Union\nfrom neuron_explainer.activations.activation_records import (\n    calculate_max_activation,\n    format_activation_records,\n    non_zero_activation_proportion,\n)\nfrom neuron_explainer.activations.activations import ActivationRecord\nfrom neuron_explainer.api_client import ApiClient\nfrom neuron_explainer.explanations.few_shot_examples import FewShotExampleSet\nfrom neuron_explainer.explanations.prompt_builder import (\n    HarmonyMessage,\n    PromptBuilder,\n    PromptFormat,\n    Role,\n)\nfrom neuron_explainer.explanations.token_space_few_shot_examples import (\n    TokenSpaceFewShotExampleSet,\n)\nlogger = logging.getLogger(__name__)\n# TODO(williamrs): This prefix may not work well for some things, like predicting the next token.\n# Try other options like \"this neuron activates for\".\nEXPLANATION_PREFIX = \"the main thing this neuron does is find\"",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/explainer.py:1-34"
+    },
+    "127": {
+        "file_id": 12,
+        "content": "This code imports necessary modules and defines a few classes for generating explanations of neuron behavior using API calls. It also sets a prefix to be used when generating explanations.",
+        "type": "comment"
+    },
+    "128": {
+        "file_id": 12,
+        "content": "def _split_numbered_list(text: str) -> list[str]:\n    \"\"\"Split a numbered list into a list of strings.\"\"\"\n    lines = re.split(r\"\\n\\d+\\.\", text)\n    # Strip the leading whitespace from each line.\n    return [line.lstrip() for line in lines]\ndef _remove_final_period(text: str) -> str:\n    \"\"\"Strip a final period or period-space from a string.\"\"\"\n    if text.endswith(\".\"):\n        return text[:-1]\n    elif text.endswith(\". \"):\n        return text[:-2]\n    return text\nclass ContextSize(int, Enum):\n    TWO_K = 2049\n    FOUR_K = 4097\n    @classmethod\n    def from_int(cls, i: int) -> ContextSize:\n        for context_size in cls:\n            if context_size.value == i:\n                return context_size\n        raise ValueError(f\"{i} is not a valid ContextSize\")\nHARMONY_V4_MODELS = [\"gpt-3.5-turbo\", \"gpt-4\"]\nclass NeuronExplainer(ABC):\n    \"\"\"\n    Abstract base class for Explainer classes that generate explanations from subclass-specific\n    input data.\n    \"\"\"\n    def __init__(\n        self,\n        model_name: str,\n        prompt_format: PromptFormat = PromptFormat.HARMONY_V4,",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/explainer.py:37-77"
+    },
+    "129": {
+        "file_id": 12,
+        "content": "This code defines a class called NeuronExplainer, which is an abstract base class for generating explanations from subclass-specific input data. It also includes helper functions for splitting numbered lists and removing final periods or period-spaces from strings. The code also defines two constants: HARMONY_V4_MODELS (a list of supported model names) and ContextSize (an enumeration representing different context sizes).",
+        "type": "comment"
+    },
+    "130": {
+        "file_id": 12,
+        "content": "        # This parameter lets us adjust the length of the prompt when we're generating explanations\n        # using older models with shorter context windows. In the future we can use it to experiment\n        # with longer context windows.\n        context_size: ContextSize = ContextSize.FOUR_K,\n        max_concurrent: Optional[int] = 10,\n        cache: bool = False,\n    ):\n        if prompt_format == PromptFormat.HARMONY_V4:\n            assert model_name in HARMONY_V4_MODELS\n        elif prompt_format in [PromptFormat.NONE, PromptFormat.INSTRUCTION_FOLLOWING]:\n            assert model_name not in HARMONY_V4_MODELS\n        else:\n            raise ValueError(f\"Unhandled prompt format {prompt_format}\")\n        self.model_name = model_name\n        self.prompt_format = prompt_format\n        self.context_size = context_size\n        self.client = ApiClient(model_name=model_name, max_concurrent=max_concurrent, cache=cache)\n    async def generate_explanations(\n        self,\n        *,\n        num_samples: int = 5,\n        max_tokens: int = 60,",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/explainer.py:78-101"
+    },
+    "131": {
+        "file_id": 12,
+        "content": "This code is defining a class with an initializer and a method for generating explanations. It takes in parameters such as model name, prompt format, context size, max concurrent requests, and cache settings. It also asserts that the model name is appropriate for the prompt format provided, preventing incorrect usage.",
+        "type": "comment"
+    },
+    "132": {
+        "file_id": 12,
+        "content": "        temperature: float = 1.0,\n        top_p: float = 1.0,\n        **prompt_kwargs: Any,\n    ) -> list[Any]:\n        \"\"\"Generate explanations based on subclass-specific input data.\"\"\"\n        prompt = self.make_explanation_prompt(max_tokens_for_completion=max_tokens, **prompt_kwargs)\n        generate_kwargs: dict[str, Any] = {\n            \"n\": num_samples,\n            \"max_tokens\": max_tokens,\n            \"temperature\": temperature,\n            \"top_p\": top_p,\n        }\n        if self.prompt_format == PromptFormat.HARMONY_V4:\n            assert isinstance(prompt, list)\n            assert isinstance(prompt[0], dict)  # Really a HarmonyMessage\n            generate_kwargs[\"messages\"] = prompt\n        else:\n            assert isinstance(prompt, str)\n            generate_kwargs[\"prompt\"] = prompt\n        response = await self.client.make_request(**generate_kwargs)\n        logger.debug(\"response in generate_explanations is %s\", response)\n        if self.prompt_format == PromptFormat.HARMONY_V4:\n            explanations = [x[\"message\"][\"content\"] for x in response[\"choices\"]]",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/explainer.py:102-128"
+    },
+    "133": {
+        "file_id": 12,
+        "content": "The code is generating explanations based on subclass-specific input data. It first creates a prompt and then passes the prompt along with other parameters to a language model for completion. If the format is HarmonyV4, it expects a list of dictionaries (HarmonyMessage), otherwise a string prompt is passed. The response from the language model is then processed to extract explanations.",
+        "type": "comment"
+    },
+    "134": {
+        "file_id": 12,
+        "content": "        elif self.prompt_format in [PromptFormat.NONE, PromptFormat.INSTRUCTION_FOLLOWING]:\n            explanations = [x[\"text\"] for x in response[\"choices\"]]\n        else:\n            raise ValueError(f\"Unhandled prompt format {self.prompt_format}\")\n        return self.postprocess_explanations(explanations, prompt_kwargs)\n    @abstractmethod\n    def make_explanation_prompt(self, **kwargs: Any) -> Union[str, list[HarmonyMessage]]:\n        \"\"\"\n        Create a prompt to send to the API to generate one or more explanations.\n        A prompt can be a simple string, or a list of HarmonyMessages, depending on the PromptFormat\n        used by this instance.\n        \"\"\"\n        ...\n    def postprocess_explanations(\n        self, completions: list[str], prompt_kwargs: dict[str, Any]\n    ) -> list[Any]:\n        \"\"\"Postprocess the completions returned by the API into a list of explanations.\"\"\"\n        return completions  # no-op by default\n    def _prompt_is_too_long(\n        self, prompt_builder: PromptBuilder, max_tokens_for_completion: int",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/explainer.py:129-153"
+    },
+    "135": {
+        "file_id": 12,
+        "content": "This code defines a class for generating explanations using a prompt and an API. The `make_explanation_prompt` method is used to create a prompt to send to the API, which can be a string or a list of HarmonyMessages depending on the PromptFormat. The `postprocess_explanations` method post-processes the completions returned by the API into a list of explanations (by default it returns the completions as is). If the prompt format is unhandled, a ValueError is raised.",
+        "type": "comment"
+    },
+    "136": {
+        "file_id": 12,
+        "content": "    ) -> bool:\n        # We'll get a context size error if the prompt itself plus the maximum number of tokens for\n        # the completion is longer than the context size.\n        prompt_length = prompt_builder.prompt_length_in_tokens(self.prompt_format)\n        if prompt_length + max_tokens_for_completion > self.context_size.value:\n            print(\n                f\"Prompt is too long: {prompt_length} + {max_tokens_for_completion} > \"\n                f\"{self.context_size.value}\"\n            )\n            return True\n        return False\nclass TokenActivationPairExplainer(NeuronExplainer):\n    \"\"\"\n    Generate explanations of neuron behavior using a prompt with lists of token/activation pairs.\n    \"\"\"\n    def __init__(\n        self,\n        model_name: str,\n        prompt_format: PromptFormat = PromptFormat.HARMONY_V4,\n        # This parameter lets us adjust the length of the prompt when we're generating explanations\n        # using older models with shorter context windows. In the future we can use it to experiment",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/explainer.py:154-177"
+    },
+    "137": {
+        "file_id": 12,
+        "content": "This code checks if the prompt length combined with the maximum tokens for completion exceeds the context size. If so, it prints an error and returns True; otherwise, it returns False. The class TokenActivationPairExplainer generates explanations using token/activation pairs and prompts.",
+        "type": "comment"
+    },
+    "138": {
+        "file_id": 12,
+        "content": "        # with 8k+ context windows.\n        context_size: ContextSize = ContextSize.FOUR_K,\n        few_shot_example_set: FewShotExampleSet = FewShotExampleSet.ORIGINAL,\n        repeat_non_zero_activations: bool = True,\n        max_concurrent: Optional[int] = 10,\n        cache: bool = False,\n    ):\n        super().__init__(\n            model_name=model_name,\n            prompt_format=prompt_format,\n            max_concurrent=max_concurrent,\n            cache=cache,\n        )\n        self.context_size = context_size\n        self.few_shot_example_set = few_shot_example_set\n        self.repeat_non_zero_activations = repeat_non_zero_activations\n    def make_explanation_prompt(self, **kwargs: Any) -> Union[str, list[HarmonyMessage]]:\n        original_kwargs = kwargs.copy()\n        all_activation_records: Sequence[ActivationRecord] = kwargs.pop(\"all_activation_records\")\n        max_activation: float = kwargs.pop(\"max_activation\")\n        kwargs.setdefault(\"numbered_list_of_n_explanations\", None)\n        numbered_list_of_n_explanations: Optional[int] = kwargs.pop(",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/explainer.py:178-200"
+    },
+    "139": {
+        "file_id": 12,
+        "content": "Creates an instance of the class with specified parameters like model name, prompt format, context size, few-shot example set, repeating non-zero activations, maximum concurrent processes, and cache settings. Overrides superclass initializer to set these parameters. Defines a method make_explanation_prompt which takes all_activation_records, max_activation, numbered_list_of_n_explanations as input and returns explanation prompt as output.",
+        "type": "comment"
+    },
+    "140": {
+        "file_id": 12,
+        "content": "            \"numbered_list_of_n_explanations\"\n        )\n        if numbered_list_of_n_explanations is not None:\n            assert numbered_list_of_n_explanations > 0, numbered_list_of_n_explanations\n        # This parameter lets us dynamically shrink the prompt if our initial attempt to create it\n        # results in something that's too long. It's only implemented for the 4k context size.\n        kwargs.setdefault(\"omit_n_activation_records\", 0)\n        omit_n_activation_records: int = kwargs.pop(\"omit_n_activation_records\")\n        max_tokens_for_completion: int = kwargs.pop(\"max_tokens_for_completion\")\n        assert not kwargs, f\"Unexpected kwargs: {kwargs}\"\n        prompt_builder = PromptBuilder()\n        prompt_builder.add_message(\n            Role.SYSTEM,\n            \"We're studying neurons in a neural network. Each neuron looks for some particular \"\n            \"thing in a short document. Look at the parts of the document the neuron activates for \"\n            \"and summarize in a single sentence what the neuron is looking for. Don't list \"",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/explainer.py:201-217"
+    },
+    "141": {
+        "file_id": 12,
+        "content": "This code is setting up parameters for the prompt builder, such as number of explanations and optional omit activation records. It ensures no unexpected kwargs are present and adds a message to the prompt builder explaining the neuron's function in analyzing short documents.",
+        "type": "comment"
+    },
+    "142": {
+        "file_id": 12,
+        "content": "            \"examples of words.\\n\\nThe activation format is token<tab>activation. Activation \"\n            \"values range from 0 to 10. A neuron finding what it's looking for is represented by a \"\n            \"non-zero activation value. The higher the activation value, the stronger the match.\",\n        )\n        few_shot_examples = self.few_shot_example_set.get_examples()\n        num_omitted_activation_records = 0\n        for i, few_shot_example in enumerate(few_shot_examples):\n            few_shot_activation_records = few_shot_example.activation_records\n            if self.context_size == ContextSize.TWO_K:\n                # If we're using a 2k context window, we only have room for one activation record\n                # per few-shot example. (Two few-shot examples with one activation record each seems\n                # to work better than one few-shot example with two activation records, in local\n                # testing.)\n                few_shot_activation_records = few_shot_activation_records[:1]",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/explainer.py:218-231"
+    },
+    "143": {
+        "file_id": 12,
+        "content": "Explains the activation format and its meaning, then selects one activation record from each few-shot example when using a 2k context window.",
+        "type": "comment"
+    },
+    "144": {
+        "file_id": 12,
+        "content": "            elif (\n                self.context_size == ContextSize.FOUR_K\n                and num_omitted_activation_records < omit_n_activation_records\n            ):\n                # Drop the last activation record for this few-shot example to save tokens, assuming\n                # there are at least two activation records.\n                if len(few_shot_activation_records) > 1:\n                    print(f\"Warning: omitting activation record from few-shot example {i}\")\n                    few_shot_activation_records = few_shot_activation_records[:-1]\n                    num_omitted_activation_records += 1\n            self._add_per_neuron_explanation_prompt(\n                prompt_builder,\n                few_shot_activation_records,\n                i,\n                calculate_max_activation(few_shot_example.activation_records),\n                numbered_list_of_n_explanations=numbered_list_of_n_explanations,\n                explanation=few_shot_example.explanation,\n            )\n        self._add_per_neuron_explanation_prompt(",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/explainer.py:232-250"
+    },
+    "145": {
+        "file_id": 12,
+        "content": "If context size is 4K and there are fewer activation records omitted than needed, drop the last one for the few-shot example if there are more than one activation record, then add the per-neuron explanation prompt.",
+        "type": "comment"
+    },
+    "146": {
+        "file_id": 12,
+        "content": "            prompt_builder,\n            # If we're using a 2k context window, we only have room for two of the activation\n            # records.\n            all_activation_records[:2]\n            if self.context_size == ContextSize.TWO_K\n            else all_activation_records,\n            len(few_shot_examples),\n            max_activation,\n            numbered_list_of_n_explanations=numbered_list_of_n_explanations,\n            explanation=None,\n        )\n        # If the prompt is too long *and* we omitted the specified number of activation records, try\n        # again, omitting one more. (If we didn't make the specified number of omissions, we're out\n        # of opportunities to omit records, so we just return the prompt as-is.)\n        if (\n            self._prompt_is_too_long(prompt_builder, max_tokens_for_completion)\n            and num_omitted_activation_records == omit_n_activation_records\n        ):\n            original_kwargs[\"omit_n_activation_records\"] = omit_n_activation_records + 1\n            return self.make_explanation_prompt(**original_kwargs)",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/explainer.py:251-270"
+    },
+    "147": {
+        "file_id": 12,
+        "content": "Code snippet is part of a function that generates an explanation prompt for a model. It includes the activation records, context size, number of few-shot examples, maximum activation value, and a boolean to indicate if an explanation is provided or not. If the prompt exceeds the specified token limit due to the inclusion of activation records, it tries again by omitting one more record until the desired number of omit activation records is reached or the prompt is too long with no opportunity for further omissions.",
+        "type": "comment"
+    },
+    "148": {
+        "file_id": 12,
+        "content": "        return prompt_builder.build(self.prompt_format)\n    def _add_per_neuron_explanation_prompt(\n        self,\n        prompt_builder: PromptBuilder,\n        activation_records: Sequence[ActivationRecord],\n        index: int,\n        max_activation: float,\n        # When set, this indicates that the prompt should solicit a numbered list of the given\n        # number of explanations, rather than a single explanation.\n        numbered_list_of_n_explanations: Optional[int],\n        explanation: Optional[str],  # None means this is the end of the full prompt.\n    ) -> None:\n        max_activation = calculate_max_activation(activation_records)\n        user_message = f\"\"\"\nNeuron {index + 1}\nActivations:{format_activation_records(activation_records, max_activation, omit_zeros=False)}\"\"\"\n        # We repeat the non-zero activations only if it was requested and if the proportion of\n        # non-zero activations isn't too high.\n        if (\n            self.repeat_non_zero_activations\n            and non_zero_activation_proportion(activation_records, max_activation) < 0.2",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/explainer.py:271-293"
+    },
+    "149": {
+        "file_id": 12,
+        "content": "Function that adds per-neuron explanations to the prompt based on activation records and optional parameters.",
+        "type": "comment"
+    },
+    "150": {
+        "file_id": 12,
+        "content": "        ):\n            user_message += (\n                f\"\\nSame activations, but with all zeros filtered out:\"\n                f\"{format_activation_records(activation_records, max_activation, omit_zeros=True)}\"\n            )\n        if numbered_list_of_n_explanations is None:\n            user_message += f\"\\nExplanation of neuron {index + 1} behavior:\"\n            assistant_message = \"\"\n            # For the IF format, we want <|endofprompt|> to come before the explanation prefix.\n            if self.prompt_format == PromptFormat.INSTRUCTION_FOLLOWING:\n                assistant_message += f\" {EXPLANATION_PREFIX}\"\n            else:\n                user_message += f\" {EXPLANATION_PREFIX}\"\n            prompt_builder.add_message(Role.USER, user_message)\n            if explanation is not None:\n                assistant_message += f\" {explanation}.\"\n            if assistant_message:\n                prompt_builder.add_message(Role.ASSISTANT, assistant_message)\n        else:\n            if explanation is None:\n                # For the final neuron, we solicit a numbered list of explanations.",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/explainer.py:294-316"
+    },
+    "151": {
+        "file_id": 12,
+        "content": "This code seems to be a part of an explainable AI model. It generates user and assistant messages based on neuron activations, and either provides the explanation for a specific neuron or solicits a numbered list of explanations for all neurons.",
+        "type": "comment"
+    },
+    "152": {
+        "file_id": 12,
+        "content": "                prompt_builder.add_message(\n                    Role.USER,\n                    f\"\"\"\\nHere are {numbered_list_of_n_explanations} possible explanations for neuron {index + 1} behavior, each beginning with \"{EXPLANATION_PREFIX}\":\\n1. {EXPLANATION_PREFIX}\"\"\",\n                )\n            else:\n                # For the few-shot examples, we only present one explanation, but we present it as a\n                # numbered list.\n                prompt_builder.add_message(\n                    Role.USER,\n                    f\"\"\"\\nHere is 1 possible explanation for neuron {index + 1} behavior, beginning with \"{EXPLANATION_PREFIX}\":\\n1. {EXPLANATION_PREFIX}\"\"\",\n                )\n                prompt_builder.add_message(Role.ASSISTANT, f\" {explanation}.\")\n    def postprocess_explanations(\n        self, completions: list[str], prompt_kwargs: dict[str, Any]\n    ) -> list[Any]:\n        \"\"\"Postprocess the explanations returned by the API\"\"\"\n        numbered_list_of_n_explanations = prompt_kwargs.get(\"numbered_list_of_n_explanations\")",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/explainer.py:317-334"
+    },
+    "153": {
+        "file_id": 12,
+        "content": "Code snippet adds messages to the prompt_builder depending on the number of explanations. If there are more than one, it creates a numbered list of explanations starting with \"EXPLANATION_PREFIX\". Otherwise, it presents only one explanation as part of a numbered list and then adds the explanation itself. The postprocess_explanations function processes explanations returned by the API.",
+        "type": "comment"
+    },
+    "154": {
+        "file_id": 12,
+        "content": "        if numbered_list_of_n_explanations is None:\n            return completions\n        else:\n            all_explanations = []\n            for completion in completions:\n                for explanation in _split_numbered_list(completion):\n                    if explanation.startswith(EXPLANATION_PREFIX):\n                        explanation = explanation[len(EXPLANATION_PREFIX) :]\n                    all_explanations.append(explanation.strip())\n            return all_explanations\nclass TokenSpaceRepresentationExplainer(NeuronExplainer):\n    \"\"\"\n    Generate explanations of arbitrary lists of tokens which disproportionately activate a\n    particular neuron. These lists of tokens can be generated in various ways. As an example, in one\n    set of experiments, we compute the average activation for each neuron conditional on each token\n    that appears in an internet text corpus. We then sort the tokens by their average activation,\n    and show 50 of the top 100 tokens. Other techniques that could be used include taking the top",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/explainer.py:335-353"
+    },
+    "155": {
+        "file_id": 12,
+        "content": "Code block checks if the \"numbered_list_of_n_explanations\" is None and returns the \"completions\". If it's not None, it iterates through each completion and explanation in a nested loop. For each explanation that starts with EXPLANATION_PREFIX, it removes the prefix and appends the trimmed explanation to all_explanations list. Finally, it returns the list of all explanations.",
+        "type": "comment"
+    },
+    "156": {
+        "file_id": 12,
+        "content": "    tokens in the logit lens or tuned lens representations of a neuron.\n    \"\"\"\n    def __init__(\n        self,\n        model_name: str,\n        prompt_format: PromptFormat = PromptFormat.HARMONY_V4,\n        context_size: ContextSize = ContextSize.FOUR_K,\n        few_shot_example_set: TokenSpaceFewShotExampleSet = TokenSpaceFewShotExampleSet.ORIGINAL,\n        use_few_shot: bool = False,\n        output_numbered_list: bool = False,\n        max_concurrent: Optional[int] = 10,\n        cache: bool = False,\n    ):\n        super().__init__(\n            model_name=model_name,\n            prompt_format=prompt_format,\n            context_size=context_size,\n            max_concurrent=max_concurrent,\n            cache=cache,\n        )\n        self.use_few_shot = use_few_shot\n        self.output_numbered_list = output_numbered_list\n        if self.use_few_shot:\n            assert few_shot_example_set is not None\n            self.few_shot_examples: Optional[TokenSpaceFewShotExampleSet] = few_shot_example_set\n        else:\n            self.few_shot_examples = None",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/explainer.py:354-381"
+    },
+    "157": {
+        "file_id": 12,
+        "content": "This function initializes a new instance of the Explainer class. It takes in parameters like model name, prompt format, context size, few-shot example set, use_few_shot flag, output_numbered_list flag, max_concurrent, and cache. If use_few_shot is True, it asserts that few_shot_example_set is not None and sets self.few_shot_examples accordingly.",
+        "type": "comment"
+    },
+    "158": {
+        "file_id": 12,
+        "content": "        self.prompt_prefix = (\n            \"We're studying neurons in a neural network. Each neuron looks for some particular \"\n            \"kind of token (which can be a word, or part of a word). Look at the tokens the neuron \"\n            \"activates for (listed below) and summarize in a single sentence what the neuron is \"\n            \"looking for. Don't list examples of words.\"\n        )\n    def make_explanation_prompt(self, **kwargs: Any) -> Union[str, list[HarmonyMessage]]:\n        tokens: list[str] = kwargs.pop(\"tokens\")\n        max_tokens_for_completion = kwargs.pop(\"max_tokens_for_completion\")\n        assert not kwargs, f\"Unexpected kwargs: {kwargs}\"\n        # Note that this does not preserve the precise tokens, as e.g.\n        # f\" {token_with_no_leading_space}\" may be tokenized as \"f{token_with_leading_space}\".\n        # TODO(dan): Try out other variants, including \"\\n\".join(...) and \",\".join(...)\n        stringified_tokens = \", \".join([f\"'{t}'\" for t in tokens])\n        prompt_builder = PromptBuilder()",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/explainer.py:382-398"
+    },
+    "159": {
+        "file_id": 12,
+        "content": "Code snippet:\n```python\ndef make_explanation_prompt(self, **kwargs: Any) -> Union[str, list[HarmonyMessage]]:\n    tokens: list[str] = kwargs.pop(\"tokens\")\n    max_tokens_for_completion = kwargs.pop(\"max_tokens_for_completion\")\n    assert not kwargs, f\"Unexpected kwargs: {kwargs}\"\n    stringified_tokens = \", \".join([f\"'{t}'\" for t in tokens])\n    prompt_builder = PromptBuilder()\n```\nComment: This function constructs a prompt to ask about the neuron's activation tokens. It takes the \"tokens\" and \"max_tokens_for_completion\" as input arguments, and uses PromptBuilder to build the final prompt.",
+        "type": "comment"
+    },
+    "160": {
+        "file_id": 12,
+        "content": "        prompt_builder.add_message(Role.SYSTEM, self.prompt_prefix)\n        if self.use_few_shot:\n            self._add_few_shot_examples(prompt_builder)\n        self._add_neuron_specific_prompt(prompt_builder, stringified_tokens, explanation=None)\n        if self._prompt_is_too_long(prompt_builder, max_tokens_for_completion):\n            raise ValueError(f\"Prompt too long: {prompt_builder.build(self.prompt_format)}\")\n        else:\n            return prompt_builder.build(self.prompt_format)\n    def _add_few_shot_examples(self, prompt_builder: PromptBuilder) -> None:\n        \"\"\"\n        Append few-shot examples to the prompt. Each one consists of a comma-delimited list of\n        tokens and corresponding explanations, as saved in\n        alignment/neuron_explainer/weight_explainer/token_space_few_shot_examples.py.\n        \"\"\"\n        assert self.few_shot_examples is not None\n        few_shot_example_list = self.few_shot_examples.get_examples()\n        if self.output_numbered_list:\n            raise NotImplementedError(\"Numbered list output not supported for few-shot examples\")",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/explainer.py:399-418"
+    },
+    "161": {
+        "file_id": 12,
+        "content": "This code adds a prompt to the prompt builder. It starts with a system message, then adds few-shot examples if specified and prompts related to neurons. If the prompt is too long, it raises a ValueError. The code also includes an unimplemented feature for numbered lists in few-shot examples.",
+        "type": "comment"
+    },
+    "162": {
+        "file_id": 12,
+        "content": "        else:\n            for few_shot_example in few_shot_example_list:\n                self._add_neuron_specific_prompt(\n                    prompt_builder,\n                    \", \".join([f\"'{t}'\" for t in few_shot_example.tokens]),\n                    explanation=few_shot_example.explanation,\n                )\n    def _add_neuron_specific_prompt(\n        self,\n        prompt_builder: PromptBuilder,\n        stringified_tokens: str,\n        explanation: Optional[str],\n    ) -> None:\n        \"\"\"\n        Append a neuron-specific prompt to the prompt builder. The prompt consists of a list of\n        tokens followed by either an explanation (if one is passed, for few shot examples) or by\n        the beginning of a completion, to be completed by the model with an explanation.\n        \"\"\"\n        user_message = f\"\\n\\n\\n\\nTokens:\\n{stringified_tokens}\\n\\nExplanation:\\n\"\n        assistant_message = \"\"\n        looking_for = \"This neuron is looking for\"\n        if self.prompt_format == PromptFormat.INSTRUCTION_FOLLOWING:",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/explainer.py:419-441"
+    },
+    "163": {
+        "file_id": 12,
+        "content": "This code adds a neuron-specific prompt to the prompt builder. If the example is not a few shot example, it adds a list of tokens and either an explanation or a starting point for the model to complete with an explanation. The prompt format can be instruction following.",
+        "type": "comment"
+    },
+    "164": {
+        "file_id": 12,
+        "content": "            # We want <|endofprompt|> to come before \"This neuron is looking for\" in the IF format.\n            assistant_message += looking_for\n        else:\n            user_message += looking_for\n        if self.output_numbered_list:\n            start_of_list = \"\\n1.\"\n            if self.prompt_format == PromptFormat.INSTRUCTION_FOLLOWING:\n                assistant_message += start_of_list\n            else:\n                user_message += start_of_list\n        if explanation is not None:\n            assistant_message += f\"{explanation}.\"\n        prompt_builder.add_message(Role.USER, user_message)\n        if assistant_message:\n            prompt_builder.add_message(Role.ASSISTANT, assistant_message)\n    def postprocess_explanations(\n        self, completions: list[str], prompt_kwargs: dict[str, Any]\n    ) -> list[str]:\n        if self.output_numbered_list:\n            # Each list in the top-level list will have multiple explanations (multiple strings).\n            all_explanations = []\n            for completion in completions:",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/explainer.py:442-464"
+    },
+    "165": {
+        "file_id": 12,
+        "content": "This code adds user and assistant messages to a prompt builder based on the prompt format, output numbered list preference, and explanation presence. The postprocess_explanations function then handles multiple explanations in a list format for completions.",
+        "type": "comment"
+    },
+    "166": {
+        "file_id": 12,
+        "content": "                for explanation in _split_numbered_list(completion):\n                    if explanation.startswith(EXPLANATION_PREFIX):\n                        explanation = explanation[len(EXPLANATION_PREFIX) :]\n                    all_explanations.append(explanation.strip())\n            return all_explanations\n        else:\n            # Each element in the top-level list will be an explanation as a string.\n            return [_remove_final_period(explanation) for explanation in completions]",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/explainer.py:465-472"
+    },
+    "167": {
+        "file_id": 12,
+        "content": "This code is parsing a completion list, extracting explanations and removing extra spaces.",
+        "type": "comment"
+    },
+    "168": {
+        "file_id": 13,
+        "content": "/neuron-explainer/neuron_explainer/explanations/explanations.py",
+        "type": "filepath"
+    },
+    "169": {
+        "file_id": 13,
+        "content": "The code includes classes for neuron explanations, scores, and simulation results with asynchronous loading from JSON file reading. The function retrieves sorted neuron indices by joining the explanation path with the layer number, listing files, filtering numeric filenames, converting to integers, and sorting the list.",
+        "type": "summary"
+    },
+    "170": {
+        "file_id": 13,
+        "content": "# Dataclasses and enums for storing neuron explanations, their scores, and related data. Also,\n# related helper functions.\nfrom __future__ import annotations\nimport json\nfrom dataclasses import dataclass\nfrom enum import Enum\nfrom typing import List, Optional, Union\nimport blobfile as bf\nimport boostedblob as bbb\nfrom neuron_explainer.activations.activations import NeuronId\nfrom neuron_explainer.fast_dataclasses import FastDataclass, loads, register_dataclass\nclass ActivationScale(str, Enum):\n    \"\"\"Which \"units\" are stored in the expected_activations/distribution_values fields of a\n    SequenceSimulation.\n    This enum identifies whether the values represent real activations of the neuron or something\n    else. Different scales are not necessarily related by a linear transformation.\n    \"\"\"\n    NEURON_ACTIVATIONS = \"neuron_activations\"\n    \"\"\"Values represent real activations of the neuron.\"\"\"\n    SIMULATED_NORMALIZED_ACTIVATIONS = \"simulated_normalized_activations\"\n    \"\"\"\n    Values represent simulated activations of the neuron, normalized to the range [0, 10]. This",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/explanations.py:1-29"
+    },
+    "171": {
+        "file_id": 13,
+        "content": "This code defines dataclasses and enums for storing neuron explanations, scores, and related data. It also includes helper functions and handles different activation scales for neurons.",
+        "type": "comment"
+    },
+    "172": {
+        "file_id": 13,
+        "content": "    scale is arbitrary and should not be interpreted as a neuron activation.\n    \"\"\"\n@register_dataclass\n@dataclass\nclass SequenceSimulation(FastDataclass):\n    \"\"\"The result of a simulation of neuron activations on one text sequence.\"\"\"\n    tokens: list[str]\n    \"\"\"The sequence of tokens that was simulated.\"\"\"\n    expected_activations: list[float]\n    \"\"\"Expected value of the possibly-normalized activation for each token in the sequence.\"\"\"\n    activation_scale: ActivationScale\n    \"\"\"What scale is used for values in the expected_activations field.\"\"\"\n    distribution_values: list[list[float]]\n    \"\"\"\n    For each token in the sequence, a list of values from the discrete distribution of activations\n    produced from simulation. Tokens will be included here if and only if they are in the top K=15\n    tokens predicted by the simulator, and excluded otherwise.\n    May be transformed to another unit by calibration. When we simulate a neuron, we produce a\n    discrete distribution with values in the arbitrary discretized space of the neuron, e.g. 10%",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/explanations.py:30-52"
+    },
+    "173": {
+        "file_id": 13,
+        "content": "This code defines a dataclass for storing the results of simulating neuron activations on a text sequence. It includes the sequence of tokens, expected activation values, scale, and distribution values from the simulation, excluding non-significant tokens.",
+        "type": "comment"
+    },
+    "174": {
+        "file_id": 13,
+        "content": "    chance of 0, 70% chance of 1, 20% chance of 2. Which we store as distribution_values =\n    [0, 1, 2], distribution_probabilities = [0.1, 0.7, 0.2]. When we transform the distribution to\n    the real activation units, we can correspondingly transform the values of this distribution\n    to get a distribution in the units of the neuron. e.g. if the mapping from the discretized space\n    to the real activation unit of the neuron is f(x) = x/2, then the distribution becomes 10%\n    chance of 0, 70% chance of 0.5, 20% chance of 1. Which we store as distribution_values =\n    [0, 0.5, 1], distribution_probabilities = [0.1, 0.7, 0.2].\n    \"\"\"\n    distribution_probabilities: list[list[float]]\n    \"\"\"\n    For each token in the sequence, the probability of the corresponding value in\n    distribution_values.\n    \"\"\"\n    uncalibrated_simulation: Optional[\"SequenceSimulation\"] = None\n    \"\"\"The result of the simulation before calibration.\"\"\"\n@register_dataclass\n@dataclass\nclass ScoredSequenceSimulation(FastDataclass):",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/explanations.py:53-73"
+    },
+    "175": {
+        "file_id": 13,
+        "content": "This code describes a class called ScoredSequenceSimulation, which stores a distribution of values and their probabilities for each token in a sequence. It also has an optional uncalibrated_simulation attribute representing the simulation before calibration.",
+        "type": "comment"
+    },
+    "176": {
+        "file_id": 13,
+        "content": "    \"\"\"\n    SequenceSimulation result with a score (for that sequence only) and ground truth activations.\n    \"\"\"\n    simulation: SequenceSimulation\n    \"\"\"The result of a simulation of neuron activations.\"\"\"\n    true_activations: List[float]\n    \"\"\"Ground truth activations on the sequence (not normalized)\"\"\"\n    ev_correlation_score: float\n    \"\"\"\n    Correlation coefficient between the expected values of the normalized activations from the\n    simulation and the unnormalized true activations of the neuron on the text sequence.\n    \"\"\"\n    rsquared_score: Optional[float] = None\n    \"\"\"R^2 of the simulated activations.\"\"\"\n    absolute_dev_explained_score: Optional[float] = None\n    \"\"\"\n    Score based on absolute difference between real and simulated activations.\n    absolute_dev_explained_score = 1 - mean(abs(real-predicted))/ mean(abs(real))\n    \"\"\"\n@register_dataclass\n@dataclass\nclass ScoredSimulation(FastDataclass):\n    \"\"\"Result of scoring a neuron simulation on multiple sequences.\"\"\"\n    scored_sequence_simulations: List[ScoredSequenceSimulation]",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/explanations.py:74-101"
+    },
+    "177": {
+        "file_id": 13,
+        "content": "This code defines a ScoredSimulation class that represents the result of scoring a neuron simulation on multiple sequences. It includes properties like simulation, true_activations, ev_correlation_score, and optional rsquared_score and absolute_dev_explained_score for evaluating the simulation's performance.",
+        "type": "comment"
+    },
+    "178": {
+        "file_id": 13,
+        "content": "    \"\"\"ScoredSequenceSimulation for each sequence\"\"\"\n    ev_correlation_score: Optional[float] = None\n    \"\"\"\n    Correlation coefficient between the expected values of the normalized activations from the\n    simulation and the unnormalized true activations on a dataset created from all score_results.\n    (Note that this is not equivalent to averaging across sequences.)\n    \"\"\"\n    rsquared_score: Optional[float] = None\n    \"\"\"R^2 of the simulated activations.\"\"\"\n    absolute_dev_explained_score: Optional[float] = None\n    \"\"\"\n    Score based on absolute difference between real and simulated activations.\n    absolute_dev_explained_score = 1 - mean(abs(real-predicted))/ mean(abs(real)).\n    \"\"\"\n    def get_preferred_score(self) -> Optional[float]:\n        \"\"\"\n        This method may return None in cases where the score is undefined, for example if the\n        normalized activations were all zero, yielding a correlation coefficient of NaN.\n        \"\"\"\n        return self.ev_correlation_score\n@register_dataclass",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/explanations.py:102-125"
+    },
+    "179": {
+        "file_id": 13,
+        "content": "This code defines a class with three score metrics (ev_correlation_score, rsquared_score, absolute_dev_explained_score) for evaluated sequences and provides a get_preferred_score method to return the preferred score.",
+        "type": "comment"
+    },
+    "180": {
+        "file_id": 13,
+        "content": "@dataclass\nclass ScoredExplanation(FastDataclass):\n    \"\"\"Simulator parameters and the results of scoring it on multiple sequences\"\"\"\n    explanation: str\n    \"\"\"The explanation used for simulation.\"\"\"\n    scored_simulation: ScoredSimulation\n    \"\"\"Result of scoring the neuron simulator on multiple sequences.\"\"\"\n    def get_preferred_score(self) -> Optional[float]:\n        \"\"\"\n        This method may return None in cases where the score is undefined, for example if the\n        normalized activations were all zero, yielding a correlation coefficient of NaN.\n        \"\"\"\n        return self.scored_simulation.get_preferred_score()\n@register_dataclass\n@dataclass\nclass NeuronSimulationResults(FastDataclass):\n    \"\"\"Simulation results and scores for a neuron.\"\"\"\n    neuron_id: NeuronId\n    scored_explanations: list[ScoredExplanation]\ndef load_neuron_explanations(\n    explanations_path: str, layer_index: Union[str, int], neuron_index: Union[str, int]\n) -> Optional[NeuronSimulationResults]:\n    \"\"\"Load scored explanations for the specified neuron.\"\"\"",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/explanations.py:126-156"
+    },
+    "181": {
+        "file_id": 13,
+        "content": "Class representing simulator parameters and scoring results for multiple sequences.\nFunction returns preferred score or None if undefined (e.g., normalized activations all zero).\nClass represents simulation results and scores for a specific neuron.\nFunction loads scored explanations for the specified neuron from given path.",
+        "type": "comment"
+    },
+    "182": {
+        "file_id": 13,
+        "content": "    file = bf.join(explanations_path, str(layer_index), f\"{neuron_index}.jsonl\")\n    if not bf.exists(file):\n        return None\n    with bf.BlobFile(file) as f:\n        for line in f:\n            return loads(line)\n    return None\n@bbb.ensure_session\nasync def load_neuron_explanations_async(\n    explanations_path: str, layer_index: Union[str, int], neuron_index: Union[str, int]\n) -> Optional[NeuronSimulationResults]:\n    \"\"\"Load scored explanations for the specified neuron, asynchronously.\"\"\"\n    return await read_explanation_file(\n        bf.join(explanations_path, str(layer_index), f\"{neuron_index}.jsonl\")\n    )\n@bbb.ensure_session\nasync def read_file(filename: str) -> Optional[str]:\n    \"\"\"Read the contents of the given file as a string, asynchronously.\"\"\"\n    try:\n        raw_contents = await bbb.read.read_single(filename)\n    except FileNotFoundError:\n        print(f\"Could not read {filename}\")\n        return None\n    lines = []\n    for line in raw_contents.decode(\"utf-8\").split(\"\\n\"):\n        if len(line) > 0:",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/explanations.py:157-186"
+    },
+    "183": {
+        "file_id": 13,
+        "content": "1. Loads scored explanations for the specified neuron asynchronously.\n2. Read the contents of the given file as a string, asynchronously.\n3. Splits the content into lines and returns non-empty lines.",
+        "type": "comment"
+    },
+    "184": {
+        "file_id": 13,
+        "content": "            lines.append(line)\n    assert len(lines) == 1, filename\n    return lines[0]\n@bbb.ensure_session\nasync def read_explanation_file(explanation_filename: str) -> Optional[NeuronSimulationResults]:\n    \"\"\"Load scored explanations from the given filename, asynchronously.\"\"\"\n    line = await read_file(explanation_filename)\n    return loads(line) if line is not None else None\n@bbb.ensure_session\nasync def read_json_file(filename: str) -> Optional[dict]:\n    \"\"\"Read the contents of the given file as a JSON object, asynchronously.\"\"\"\n    line = await read_file(filename)\n    return json.loads(line) if line is not None else None\ndef get_numerical_subdirs(dataset_path: str) -> list[str]:\n    \"\"\"Return the names of all numbered subdirectories in the specified directory.\n    Used to get all layer directories in an explanation directory.\n    \"\"\"\n    return [\n        str(x)\n        for x in sorted(\n            [\n                int(x)\n                for x in bf.listdir(dataset_path)\n                if bf.isdir(bf.join(dataset_path, x)) and x.isnumeric()",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/explanations.py:187-217"
+    },
+    "185": {
+        "file_id": 13,
+        "content": "- reads explanation file from filename\n- loads scored explanations asynchronously\n- reads the contents of a file as JSON object asynchronously\n- returns names of numbered subdirectories in specified directory",
+        "type": "comment"
+    },
+    "186": {
+        "file_id": 13,
+        "content": "            ]\n        )\n    ]\ndef get_sorted_neuron_indices_from_explanations(\n    explanations_path: str, layer: Union[str, int]\n) -> list[int]:\n    \"\"\"Return the indices of all neurons in this layer, in ascending order.\"\"\"\n    layer_dir = bf.join(explanations_path, str(layer))\n    return sorted(\n        [int(f.split(\".\")[0]) for f in bf.listdir(layer_dir) if f.split(\".\")[0].isnumeric()]\n    )",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/explanations.py:218-230"
+    },
+    "187": {
+        "file_id": 13,
+        "content": "This function retrieves the sorted neuron indices from explanations for a given layer. It does this by joining the explanation path with the layer number, listing all files in that directory, filtering numeric filenames, converting them to integers, and finally sorting the resulting list.",
+        "type": "comment"
+    },
+    "188": {
+        "file_id": 14,
+        "content": "/neuron-explainer/neuron_explainer/explanations/prompt_builder.py",
+        "type": "filepath"
+    },
+    "189": {
+        "file_id": 14,
+        "content": "This code includes a `PromptFormat` class for formatting methods, a `HarmonyMessage` dictionary for roles and content, and a `PromptBuilder` class to create prompts with token counting using GPT-4 encoding. It checks roles, creates deep copies of messages, and handles system messages. The code also checks the last user message and appends \"<|endofprompt|>\" before returning either a list of messages' contents or concatenating them into a single string, while raising a ValueError for unknown prompt formats.",
+        "type": "summary"
+    },
+    "190": {
+        "file_id": 14,
+        "content": "from __future__ import annotations\nfrom enum import Enum\nfrom typing import TypedDict, Union\nimport tiktoken\nHarmonyMessage = TypedDict(\n    \"HarmonyMessage\",\n    {\n        \"role\": str,\n        \"content\": str,\n    },\n)\nclass PromptFormat(str, Enum):\n    \"\"\"\n    Different ways of formatting the components of a prompt into the format accepted by the relevant\n    API server endpoint.\n    \"\"\"\n    NONE = \"none\"\n    \"\"\"Suitable for use with models that don't use special tokens for instructions.\"\"\"\n    INSTRUCTION_FOLLOWING = \"instruction_following\"\n    \"\"\"Suitable for IF models that use <|endofprompt|>.\"\"\"\n    HARMONY_V4 = \"harmony_v4\"\n    \"\"\"\n    Suitable for Harmony models that use a structured turn-taking role+content format. Generates a\n    list of HarmonyMessage dicts that can be sent to the /chat/completions endpoint.\n    \"\"\"\n    @classmethod\n    def from_string(cls, s: str) -> PromptFormat:\n        for prompt_format in cls:\n            if prompt_format.value == s:\n                return prompt_format\n        raise ValueError(f\"{s} is not a valid PromptFormat\")",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/prompt_builder.py:1-38"
+    },
+    "191": {
+        "file_id": 14,
+        "content": "The code defines a class `PromptFormat` which is an enumeration of different prompt formatting methods. The `HarmonyMessage` is a typed dictionary defining the role and content of each message in the prompt. There's also a method `from_string` that returns the corresponding `PromptFormat` from a string input.",
+        "type": "comment"
+    },
+    "192": {
+        "file_id": 14,
+        "content": "class Role(str, Enum):\n    \"\"\"See https://platform.openai.com/docs/guides/chat\"\"\"\n    SYSTEM = \"system\"\n    USER = \"user\"\n    ASSISTANT = \"assistant\"\nclass PromptBuilder:\n    \"\"\"Class for accumulating components of a prompt and then formatting them into an output.\"\"\"\n    def __init__(self) -> None:\n        self._messages: list[HarmonyMessage] = []\n    def add_message(self, role: Role, message: str) -> None:\n        self._messages.append(HarmonyMessage(role=role, content=message))\n    def prompt_length_in_tokens(self, prompt_format: PromptFormat) -> int:\n        # TODO(sbills): Make the model/encoding configurable. This implementation assumes GPT-4.\n        encoding = tiktoken.get_encoding(\"cl100k_base\")\n        if prompt_format == PromptFormat.HARMONY_V4:\n            # Approximately-correct implementation adapted from this documentation:\n            # https://platform.openai.com/docs/guides/chat/introduction\n            num_tokens = 0\n            for message in self._messages:\n                num_tokens += (",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/prompt_builder.py:41-66"
+    },
+    "193": {
+        "file_id": 14,
+        "content": "This code defines a PromptBuilder class for creating prompts. It initializes an empty list of HarmonyMessages and has methods to add messages and calculate the prompt's length in tokens using GPT-4 encoding.",
+        "type": "comment"
+    },
+    "194": {
+        "file_id": 14,
+        "content": "                    4  # every message follows <|im_start|>{role/name}\\n{content}<|im_end|>\\n\n                )\n                num_tokens += len(encoding.encode(message[\"content\"], allowed_special=\"all\"))\n            num_tokens += 2  # every reply is primed with <|im_start|>assistant\n            return num_tokens\n        else:\n            prompt_str = self.build(prompt_format)\n            assert isinstance(prompt_str, str)\n            return len(encoding.encode(prompt_str, allowed_special=\"all\"))\n    def build(\n        self, prompt_format: PromptFormat, *, allow_extra_system_messages: bool = False\n    ) -> Union[str, list[HarmonyMessage]]:\n        \"\"\"\n        Validates the messages added so far (reasonable alternation of assistant vs. user, etc.)\n        and returns either a regular string (maybe with <|endofprompt|> tokens) or a list of\n        HarmonyMessages suitable for use with the /chat/completions endpoint.\n        The `allow_extra_system_messages` parameter allows the caller to specify that the prompt",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/prompt_builder.py:67-85"
+    },
+    "195": {
+        "file_id": 14,
+        "content": "This code calculates the number of tokens in a given message by encoding it and adding the length to a running total. If no specific format is provided, it builds a prompt according to a specified format and encodes it for token counting. The build function also validates the alternation of assistant and user messages.",
+        "type": "comment"
+    },
+    "196": {
+        "file_id": 14,
+        "content": "        should be allowed to contain system messages after the very first one.\n        \"\"\"\n        # Create a deep copy of the messages so we can modify it and so that the caller can't\n        # modify the internal state of this object.\n        messages = [message.copy() for message in self._messages]\n        expected_next_role = Role.SYSTEM\n        for message in messages:\n            role = message[\"role\"]\n            assert role == expected_next_role or (\n                allow_extra_system_messages and role == Role.SYSTEM\n            ), f\"Expected message from {expected_next_role} but got message from {role}\"\n            if role == Role.SYSTEM:\n                expected_next_role = Role.USER\n            elif role == Role.USER:\n                expected_next_role = Role.ASSISTANT\n            elif role == Role.ASSISTANT:\n                expected_next_role = Role.USER\n        if prompt_format == PromptFormat.INSTRUCTION_FOLLOWING:\n            last_user_message = None\n            for message in messages:\n                if message[\"role\"] == Role.USER:",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/prompt_builder.py:86-108"
+    },
+    "197": {
+        "file_id": 14,
+        "content": "The code creates a deep copy of the messages to prevent any external modification. It then checks if the next message is from the expected role and allows extra system messages if specified. Finally, it prepares for prompt formatting if necessary.",
+        "type": "comment"
+    },
+    "198": {
+        "file_id": 14,
+        "content": "                    last_user_message = message\n            assert last_user_message is not None\n            last_user_message[\"content\"] += \"<|endofprompt|>\"\n        if prompt_format == PromptFormat.HARMONY_V4:\n            return messages\n        elif prompt_format in [PromptFormat.NONE, PromptFormat.INSTRUCTION_FOLLOWING]:\n            return \"\".join(message[\"content\"] for message in messages)\n        else:\n            raise ValueError(f\"Unknown prompt format: {prompt_format}\")",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/prompt_builder.py:109-118"
+    },
+    "199": {
+        "file_id": 14,
+        "content": "This code checks the last user message and appends \"<|endofprompt|>\" to its content. Depending on the prompt format, it either returns a list of messages' contents or concatenates them into a single string. If an unknown prompt format is encountered, it raises a ValueError.",
+        "type": "comment"
+    }
+}

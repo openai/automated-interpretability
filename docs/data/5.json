@@ -1,0 +1,13 @@
+{
+    "500": {
+        "file_id": 42,
+        "content": "             className=\"inline-flex m-1 items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 text-red-800\"\n                >\n                  {token}\n                </span>\n              )\n            })}\n          </div>\n          }\n        </>\n      )}\n    </div>\n  )\n}\nexport default TokenDisplay",
+        "type": "code",
+        "location": "/neuron-viewer/src/panes/topTokens.jsx:111-124"
+    },
+    "501": {
+        "file_id": 42,
+        "content": "This code is rendering a div containing tokens in an array. The tokens are displayed within rounded-full text boxes with red text color.",
+        "type": "comment"
+    }
+}

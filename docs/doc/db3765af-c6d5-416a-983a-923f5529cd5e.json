@@ -1,0 +1,20 @@
+{
+    "summary": "The code creates a Puzzle class for ground truth and false explanations, tokenizes sentences and JSON representations, preprocesses input data, and assigns puzzles to the name in PUZZLES_BY_NAME dictionary using convert_puzzle_dict_to_puzzle function.",
+    "details": [
+        {
+            "comment": "The code defines a Puzzle class representing ground truth explanations and false explanations. It also includes functions to convert a puzzle to a list of tokenized sentences and to create a Puzzle object from a JSON dictionary representation.",
+            "location": "\"/media/root/Toshiba XG3/works/automated-interpretability/docs/src/neuron-explainer/neuron_explainer/explanations/puzzles.py\":0-27",
+            "content": "import json\nimport os\nfrom dataclasses import dataclass\nfrom neuron_explainer.activations.activations import ActivationRecord\n@dataclass(frozen=True)\nclass Puzzle:\n    \"\"\"A puzzle is a ground truth explanation, a collection of sentences (stored as ActivationRecords) with activations\n    according to that explanation, and a collection of false explanations\"\"\"\n    name: str\n    explanation: str\n    activation_records: list[ActivationRecord]\n    false_explanations: list[str]\ndef convert_puzzle_to_tokenized_sentences(puzzle: Puzzle) -> list[list[str]]:\n    \"\"\"Converts a puzzle to a list of tokenized sentences.\"\"\"\n    return [record.tokens for record in puzzle.activation_records]\ndef convert_puzzle_dict_to_puzzle(puzzle_dict: dict) -> Puzzle:\n    \"\"\"Converts a json dictionary representation of a puzzle to the Puzzle class.\"\"\"\n    puzzle_activation_records = []\n    for sentence in puzzle_dict[\"sentences\"]:\n        # Token-activation pairs are listed as either a string or a list of a string and a float. If it is a list, the float is the activation."
+        },
+        {
+            "comment": "The code preprocesses input data for puzzle explanations. It checks if all tokens are strings and all activations are floats, then creates a Puzzle object with name, explanation, activation records, and false explanations. The code reads puzzle data from \"puzzles.json\" file in the same directory.",
+            "location": "\"/media/root/Toshiba XG3/works/automated-interpretability/docs/src/neuron-explainer/neuron_explainer/explanations/puzzles.py\":28-48",
+            "content": "        # If it is only a string, the activation is assumed to be 0. This is useful for readability and reducing redundancy in the data.\n        tokens = [t[0] if type(t) is list else t for t in sentence]\n        assert all([type(t) is str for t in tokens]), \"All tokens must be strings\"\n        activations = [float(t[1]) if type(t) is list else 0.0 for t in sentence]\n        assert all([type(t) is float for t in activations]), \"All activations must be floats\"\n        puzzle_activation_records.append(ActivationRecord(tokens=tokens, activations=activations))\n    return Puzzle(\n        name=puzzle_dict[\"name\"],\n        explanation=puzzle_dict[\"explanation\"],\n        activation_records=puzzle_activation_records,\n        false_explanations=puzzle_dict[\"false_explanations\"],\n    )\nPUZZLES_BY_NAME: dict[str, Puzzle] = dict()\nscript_dir = os.path.dirname(os.path.abspath(__file__))\nwith open(os.path.join(script_dir, \"puzzles.json\"), \"r\") as f:\n    puzzle_dicts = json.loads(f.read())\n    for name in puzzle_dicts.keys():"
+        },
+        {
+            "comment": "Assigning puzzle to the name in PUZZLES_BY_NAME dictionary using convert_puzzle_dict_to_puzzle function.",
+            "location": "\"/media/root/Toshiba XG3/works/automated-interpretability/docs/src/neuron-explainer/neuron_explainer/explanations/puzzles.py\":49-49",
+            "content": "        PUZZLES_BY_NAME[name] = convert_puzzle_dict_to_puzzle(puzzle_dicts[name])"
+        }
+    ]
+}

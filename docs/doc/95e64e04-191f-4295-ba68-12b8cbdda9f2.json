@@ -1,0 +1,20 @@
+{
+    "summary": "The code loads neuron data, generates an explanation using an explainer model, and sets up a simulator to evaluate the impact of explanations on neuron output, then performs simulations with given activation records and prints preferred scores.",
+    "details": [
+        {
+            "comment": "This code sets the OpenAI API key, imports necessary modules, defines constants for explainer and simulator models, and loads a neuron record.",
+            "location": "\"/media/root/Toshiba XG3/works/automated-interpretability/docs/src/neuron-explainer/demos/generate_and_score_explanation.py\":0-32",
+            "content": "#!/usr/bin/env python\n# coding: utf-8\n# In[ ]:\nget_ipython().run_line_magic('load_ext', 'autoreload')\nget_ipython().run_line_magic('autoreload', '2')\n# In[ ]:\nimport os\nos.environ[\"OPENAI_API_KEY\"] = \"put-key-here\"\nfrom neuron_explainer.activations.activation_records import calculate_max_activation\nfrom neuron_explainer.activations.activations import ActivationRecordSliceParams, load_neuron\nfrom neuron_explainer.explanations.calibrated_simulator import UncalibratedNeuronSimulator\nfrom neuron_explainer.explanations.explainer import TokenActivationPairExplainer\nfrom neuron_explainer.explanations.prompt_builder import PromptFormat\nfrom neuron_explainer.explanations.scoring import simulate_and_score\nfrom neuron_explainer.explanations.simulator import ExplanationNeuronSimulator\nEXPLAINER_MODEL_NAME = \"gpt-4\"\nSIMULATOR_MODEL_NAME = \"text-davinci-003\"\n# test_response = await client.make_request(prompt=\"test 123<|endofprompt|>\", max_tokens=2)\n# print(\"Response:\", test_response[\"choices\"][0][\"text\"])\n# Load a neuron record."
+        },
+        {
+            "comment": "Loading neuron data for layer 9, split 6236.\nCreating activation records slices and loading the train and validation activation records.\nGenerating an explanation for the selected neuron using a specified explainer model.\nRetrieving the generated explanation and storing it in the variable \"explanation\".\nSetting up a simulator to evaluate the provided explanation's impact on the neuron's output.",
+            "location": "\"/media/root/Toshiba XG3/works/automated-interpretability/docs/src/neuron-explainer/demos/generate_and_score_explanation.py\":33-64",
+            "content": "neuron_record = load_neuron(9, 6236)\n# Grab the activation records we'll need.\nslice_params = ActivationRecordSliceParams(n_examples_per_split=5)\ntrain_activation_records = neuron_record.train_activation_records(\n    activation_record_slice_params=slice_params\n)\nvalid_activation_records = neuron_record.valid_activation_records(\n    activation_record_slice_params=slice_params\n)\n# Generate an explanation for the neuron.\nexplainer = TokenActivationPairExplainer(\n    model_name=EXPLAINER_MODEL_NAME,\n    prompt_format=PromptFormat.HARMONY_V4,\n    max_concurrent=1,\n)\nexplanations = await explainer.generate_explanations(\n    all_activation_records=train_activation_records,\n    max_activation=calculate_max_activation(train_activation_records),\n    num_samples=1,\n)\nassert len(explanations) == 1\nexplanation = explanations[0]\nprint(f\"{explanation=}\")\n# Simulate and score the explanation.\nsimulator = UncalibratedNeuronSimulator(\n    ExplanationNeuronSimulator(\n        SIMULATOR_MODEL_NAME,\n        explanation,\n        max_concurrent=1,"
+        },
+        {
+            "comment": "Performs simulation with given activation records and prints preferred score.",
+            "location": "\"/media/root/Toshiba XG3/works/automated-interpretability/docs/src/neuron-explainer/demos/generate_and_score_explanation.py\":65-69",
+            "content": "        prompt_format=PromptFormat.INSTRUCTION_FOLLOWING,\n    )\n)\nscored_simulation = await simulate_and_score(simulator, valid_activation_records)\nprint(f\"score={scored_simulation.get_preferred_score():.2f}\")"
+        }
+    ]
+}

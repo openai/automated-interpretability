@@ -1,0 +1,10 @@
+{
+    "summary": "This code imports necessary modules and sets up the root element for a React application, which then renders the App component within a strict mode. It also configures performance measurement if desired.",
+    "details": [
+        {
+            "comment": "This code imports necessary modules and sets up the root element for a React application, which then renders the App component within a strict mode. It also configures performance measurement if desired.",
+            "location": "\"/media/root/Toshiba XG3/works/automated-interpretability/docs/src/neuron-viewer/src/index.jsx\":0-16",
+            "content": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport './index.css';\nimport App from './App';\nimport reportWebVitals from './reportWebVitals';\nconst root = ReactDOM.createRoot(document.getElementById('root'));\nroot.render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n// If you want to start measuring performance in your app, pass a function\n// to log results (for example: reportWebVitals(console.log))\n// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals\nreportWebVitals();"
+        }
+    ]
+}

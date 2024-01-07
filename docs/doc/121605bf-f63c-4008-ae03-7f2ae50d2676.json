@@ -1,0 +1,10 @@
+{
+    "summary": "1. memoizeAsync: Memoizes asynchronous functions by storing their results in localStorage and returning them if they have already been computed.\n2. getQueryParams: Retrieves URL query parameters from the current window location and returns them as an object.",
+    "details": [
+        {
+            "comment": "1. memoizeAsync: Memoizes asynchronous functions by storing their results in localStorage and returning them if they have already been computed.\n2. getQueryParams: Retrieves URL query parameters from the current window location and returns them as an object.",
+            "location": "\"/media/root/Toshiba XG3/works/automated-interpretability/docs/src/neuron-viewer/src/utils.ts\":0-24",
+            "content": "export const memoizeAsync = (fnname: string, fn: any) => {\n  return async (...args: any) => {\n    const key = `memoized:${fnname}:${args.map((x: any) => JSON.stringify(x)).join(\"-\")}`\n    const val = localStorage.getItem(key);\n    if (val === null) {\n      const value = await fn(...args)\n      localStorage.setItem(key, JSON.stringify(value))\n      console.log(`memoized ${fnname}(${args.map((x: any) => JSON.stringify(x)).join(\", \")})`, value)\n      return value\n    } else {\n      // console.log(`parsing`, val)\n      return JSON.parse(val)\n    }\n  }\n}\nexport const getQueryParams = () => {\n  const urlParams = new URLSearchParams(window.location.search)\n  const params: {[key: string]: any} = {}\n  for (const [key, value] of urlParams.entries()) {\n    params[key] = value\n  }\n  return params\n}"
+        }
+    ]
+}

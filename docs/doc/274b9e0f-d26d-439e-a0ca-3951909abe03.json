@@ -1,0 +1,10 @@
+{
+    "summary": "Imports FastDataclass and related functions from the fast_dataclasses module, and sets __all__ to include them.",
+    "details": [
+        {
+            "comment": "Imports FastDataclass and related functions from the fast_dataclasses module, and sets __all__ to include them.",
+            "location": "\"/media/root/Toshiba XG3/works/automated-interpretability/docs/src/neuron-explainer/neuron_explainer/fast_dataclasses/__init__.py\":0-2",
+            "content": "from .fast_dataclasses import FastDataclass, dumps, loads, register_dataclass\n__all__ = [\"FastDataclass\", \"dumps\", \"loads\", \"register_dataclass\"]"
+        }
+    ]
+}

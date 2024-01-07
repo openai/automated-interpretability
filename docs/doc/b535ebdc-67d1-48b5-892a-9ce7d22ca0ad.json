@@ -1,0 +1,10 @@
+{
+    "summary": "Configuring Tailwind CSS with content from \"./src/**/*.{html,js,jsx}\" and empty extend and plugins.",
+    "details": [
+        {
+            "comment": "Configuring Tailwind CSS with content from \"./src/**/*.{html,js,jsx}\" and empty extend and plugins.",
+            "location": "\"/media/root/Toshiba XG3/works/automated-interpretability/docs/src/neuron-viewer/tailwind.config.js\":0-7",
+            "content": "/** @type {import('tailwindcss').Config} */\nmodule.exports = {\n  content: [\"./src/**/*.{html,js,jsx}\"],\n  theme: {\n    extend: {},\n  },\n  plugins: [],\n}"
+        }
+    ]
+}

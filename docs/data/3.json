@@ -1,0 +1,538 @@
+{
+    "300": {
+        "file_id": 18,
+        "content": "ind of token (which can be a word, or part of a word). Look at the tokens the neuron activates for (listed below) and summarize in a single sentence what the neuron is looking for. Don't list examples of words.\",\n        ),\n        HarmonyMessage(\n            role=Role.USER,\n            content=\"\"\"\nTokens:\n'these', ' are', ' tokens'\nExplanation:\nThis neuron is looking for\"\"\",\n        ),\n        HarmonyMessage(\n            role=Role.ASSISTANT,\n            content=\" this is a test explanation.\",\n        ),\n        HarmonyMessage(\n            role=Role.USER,\n            content=\"\"\"\nTokens:\n'foo', 'bar', 'baz'\nExplanation:\nThis neuron is looking for\"\"\",\n        ),\n    ]\n    explainer = TokenSpaceRepresentationExplainer(\n        model_name=\"gpt-4\",\n        prompt_format=PromptFormat.HARMONY_V4,\n        use_few_shot=True,\n        few_shot_example_set=TokenSpaceFewShotExampleSet.TEST,\n    )\n    prompt = explainer.make_explanation_prompt(\n        tokens=[\"foo\", \"bar\", \"baz\"],\n        max_tokens_for_completion=20,\n    )\n    assert isinstance(prompt, list)",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/test_explainer.py:179-222"
+    },
+    "301": {
+        "file_id": 18,
+        "content": "The code initializes a TokenSpaceRepresentationExplainer with GPT-4 model and Harmony V4 prompt format. It also uses few-shot learning with the test example set and generates an explanation prompt for the tokens 'foo', 'bar', and 'baz'. The explanation prompt will be in list format, and its length should not exceed 20 tokens.",
+        "type": "comment"
+    },
+    "302": {
+        "file_id": 18,
+        "content": "    assert isinstance(prompt[0], dict)  # Really a HarmonyMessage\n    for actual_message, expected_message in zip(prompt, expected_prompt):\n        assert actual_message[\"role\"] == expected_message[\"role\"]\n        assert actual_message[\"content\"] == expected_message[\"content\"]\n    assert prompt == expected_prompt",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/test_explainer.py:223-227"
+    },
+    "303": {
+        "file_id": 18,
+        "content": "Checking if the prompt is a list of HarmonyMessages and if each message's role and content match the expected values.",
+        "type": "comment"
+    },
+    "304": {
+        "file_id": 19,
+        "content": "/neuron-explainer/neuron_explainer/explanations/test_simulator.py",
+        "type": "filepath"
+    },
+    "305": {
+        "file_id": 19,
+        "content": "The comments describe testing a function that checks the accuracy of neuron behavior prompts in neural networks, ensuring they align with expectations for text-davinci-003 model.",
+        "type": "summary"
+    },
+    "306": {
+        "file_id": 19,
+        "content": "from neuron_explainer.explanations.few_shot_examples import FewShotExampleSet\nfrom neuron_explainer.explanations.prompt_builder import HarmonyMessage, PromptFormat, Role\nfrom neuron_explainer.explanations.simulator import (\n    ExplanationNeuronSimulator,\n    ExplanationTokenByTokenSimulator,\n)\ndef test_make_explanation_simulation_prompt_if_format() -> None:\n    expected_prompt = \"\"\"We're studying neurons in a neural network.\nEach neuron looks for some particular thing in a short document.\nLook at summary of what the neuron does, and try to predict how it will fire on each token.\nThe activation format is token<tab>activation, activations go from 0 to 10, \"unknown\" indicates an unknown activation. Most activations will be 0.\nNeuron 1\nExplanation of neuron 1 behavior: the main thing this neuron does is find vowels\nActivations: \n<start>\na\t10\nb\t0\nc\t0\n<end>\n<start>\nd\tunknown\ne\t10\nf\t0\n<end>\nNeuron 2\nExplanation of neuron 2 behavior: the main thing this neuron does is find EXPLANATION<|endofprompt|>\nActivations: \n<start>",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/test_simulator.py:1-36"
+    },
+    "307": {
+        "file_id": 19,
+        "content": "Code snippet defines a test function to check the generation of explanation simulation prompt with a specific format.\nThe expected prompt format includes neuron behavior summaries, activation values for each token, and an \"unknown\" indication when necessary.",
+        "type": "comment"
+    },
+    "308": {
+        "file_id": 19,
+        "content": "0\tunknown\n1\tunknown\n2\tunknown\n<end>\n\"\"\"\n    prompt = ExplanationNeuronSimulator(\n        model_name=\"text-davinci-003\",\n        explanation=\"EXPLANATION\",\n        few_shot_example_set=FewShotExampleSet.TEST,\n        prompt_format=PromptFormat.INSTRUCTION_FOLLOWING,\n    ).make_simulation_prompt(\n        tokens=[str(x) for x in range(3)],\n    )\n    assert prompt == expected_prompt\ndef test_make_explanation_simulation_prompt_harmony_format() -> None:\n    expected_prompt = [\n        HarmonyMessage(\n            role=Role.SYSTEM,\n            content=\"\"\"We're studying neurons in a neural network.\nEach neuron looks for some particular thing in a short document.\nLook at summary of what the neuron does, and try to predict how it will fire on each token.\nThe activation format is token<tab>activation, activations go from 0 to 10, \"unknown\" indicates an unknown activation. Most activations will be 0.\n\"\"\",\n        ),\n        HarmonyMessage(\n            role=Role.USER,\n            content=\"\"\"\nNeuron 1\nExplanation of neuron 1 behavior: the main thing this neuron does is find vowels\"\"\",",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/test_simulator.py:37-69"
+    },
+    "309": {
+        "file_id": 19,
+        "content": "ExplanationNeuronSimulator is being used to generate a simulation prompt for the text-davinci-003 model. The prompt will include information about neurons in a neural network, their roles, and how they analyze short documents. Each token will have an activation level from 0 to 10 or \"unknown\".",
+        "type": "comment"
+    },
+    "310": {
+        "file_id": 19,
+        "content": "        ),\n        HarmonyMessage(\n            role=Role.ASSISTANT,\n            content=\"\"\"\nActivations: \n<start>\na\t10\nb\t0\nc\t0\n<end>\n<start>\nd\tunknown\ne\t10\nf\t0\n<end>\n\"\"\",\n        ),\n        HarmonyMessage(\n            role=Role.USER,\n            content=\"\"\"\nNeuron 2\nExplanation of neuron 2 behavior: the main thing this neuron does is find EXPLANATION\"\"\",\n        ),\n        HarmonyMessage(\n            role=Role.ASSISTANT,\n            content=\"\"\"\nActivations: \n<start>\n0\tunknown\n1\tunknown\n2\tunknown\n<end>\n\"\"\",\n        ),\n    ]\n    prompt = ExplanationNeuronSimulator(\n        model_name=\"gpt-4\",\n        explanation=\"EXPLANATION\",\n        few_shot_example_set=FewShotExampleSet.TEST,\n        prompt_format=PromptFormat.HARMONY_V4,\n    ).make_simulation_prompt(\n        tokens=[str(x) for x in range(3)],\n    )\n    assert isinstance(prompt, list)\n    assert isinstance(prompt[0], dict)  # Really a HarmonyMessage\n    for actual_message, expected_message in zip(prompt, expected_prompt):\n        assert actual_message[\"role\"] == expected_message[\"role\"]",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/test_simulator.py:70-119"
+    },
+    "311": {
+        "file_id": 19,
+        "content": "This code is defining a test simulation prompt using the ExplanationNeuronSimulator class, with given input parameters such as model_name, explanation, few_shot_example_set, and prompt_format. The simulation prompts are created in HarmonyMessage format, and assertions are used to check if the created prompts match the expected format and structure.",
+        "type": "comment"
+    },
+    "312": {
+        "file_id": 19,
+        "content": "        assert actual_message[\"content\"] == expected_message[\"content\"]\n    assert prompt == expected_prompt\ndef test_make_token_by_token_simulation_prompt_if_format() -> None:\n    expected_prompt = \"\"\"We're studying neurons in a neural network. Each neuron looks for some particular thing in a short document. Look at  an explanation of what the neuron does, and try to predict its activations on a particular token.\nThe activation format is token<tab>activation, and activations range from 0 to 10. Most activations will be 0.\nNeuron 1\nExplanation of neuron 1 behavior: the main thing this neuron does is find vowels\nActivations: \n<start>\na\t10\nb\t0\nc\t0\n<end>\n<start>\nd\t0\ne\t10\nf\t0\n<end>\nNow, we're going predict the activation of a new neuron on a single token, following the same rules as the examples above. Activations still range from 0 to 10.\nNeuron 2\nExplanation of neuron 2 behavior: the main thing this neuron does is find numbers and nothing else\nText:\nghi\nLast token in the text:\ni\nLast token activation, considering the token in the context in which it appeared in the text:",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/test_simulator.py:120-153"
+    },
+    "313": {
+        "file_id": 19,
+        "content": "The code is asserting that the actual message content matches the expected message, and that the prompt matches the expected prompt. This test checks if the simulation prompt and its format are as expected.",
+        "type": "comment"
+    },
+    "314": {
+        "file_id": 19,
+        "content": "10\nNeuron 3\nExplanation of neuron 3 behavior: the main thing this neuron does is find numbers and nothing else\nText:\n01\nLast token in the text:\n1\nLast token activation, considering the token in the context in which it appeared in the text:\n<|endofprompt|>\"\"\"\n    prompt = ExplanationTokenByTokenSimulator(\n        model_name=\"text-davinci-003\",\n        explanation=\"EXPLANATION\",\n        few_shot_example_set=FewShotExampleSet.TEST,\n        prompt_format=PromptFormat.INSTRUCTION_FOLLOWING,\n    ).make_single_token_simulation_prompt(\n        tokens=[str(x) for x in range(3)],\n        explanation=\"numbers and nothing else\",\n        token_index_to_score=1,\n    )\n    assert prompt == expected_prompt\ndef test_make_token_by_token_simulation_prompt_harmony_format() -> None:\n    expected_prompt = [\n        HarmonyMessage(\n            role=Role.SYSTEM,\n            content=\"\"\"We're studying neurons in a neural network. Each neuron looks for some particular thing in a short document. Look at  an explanation of what the neuron does, and try to predict its activations on a particular token.",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/test_simulator.py:154-184"
+    },
+    "315": {
+        "file_id": 19,
+        "content": "Test function that checks if a prompt generated for explaining the behavior of a neuron in a neural network is correct. It uses an explanation and token index to generate the prompt, which is then compared with the expected prompt.",
+        "type": "comment"
+    },
+    "316": {
+        "file_id": 19,
+        "content": "The activation format is token<tab>activation, and activations range from 0 to 10. Most activations will be 0.\n\"\"\",\n        ),\n        HarmonyMessage(\n            role=Role.USER,\n            content=\"\"\"Neuron 1\nExplanation of neuron 1 behavior: the main thing this neuron does is find vowels\n\"\"\",\n        ),\n        HarmonyMessage(\n            role=Role.ASSISTANT,\n            content=\"\"\"Activations: \n<start>\na\t10\nb\t0\nc\t0\n<end>\n<start>\nd\t0\ne\t10\nf\t0\n<end>\n\"\"\",\n        ),\n        HarmonyMessage(\n            role=Role.SYSTEM,\n            content=\"Now, we're going predict the activation of a new neuron on a single token, following the same rules as the examples above. Activations still range from 0 to 10.\",\n        ),\n        HarmonyMessage(\n            role=Role.USER,\n            content=\"\"\"\nNeuron 2\nExplanation of neuron 2 behavior: the main thing this neuron does is find numbers and nothing else\nText:\nghi\nLast token in the text:\ni\nLast token activation, considering the token in the context in which it appeared in the text:\n\"\"\",",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/test_simulator.py:186-229"
+    },
+    "317": {
+        "file_id": 19,
+        "content": "Code is defining and testing a neuron simulator to analyze the behavior of different neurons based on their activations when processing text tokens. Activations are represented in the format \"token<tab>activation\" and range from 0 to 10, with most being 0. The simulation considers single tokens in context and predicts the activation for new neurons following similar rules as previous examples.",
+        "type": "comment"
+    },
+    "318": {
+        "file_id": 19,
+        "content": "        ),\n        HarmonyMessage(\n            role=Role.ASSISTANT,\n            content=\"\"\"10\n\"\"\",\n        ),\n        HarmonyMessage(\n            role=Role.USER,\n            content=\"\"\"\nNeuron 3\nExplanation of neuron 3 behavior: the main thing this neuron does is find numbers and nothing else\nText:\n01\nLast token in the text:\n1\nLast token activation, considering the token in the context in which it appeared in the text:\n\"\"\",\n        ),\n    ]\n    prompt = ExplanationTokenByTokenSimulator(\n        model_name=\"gpt-4\",\n        explanation=\"EXPLANATION\",\n        few_shot_example_set=FewShotExampleSet.TEST,\n        prompt_format=PromptFormat.HARMONY_V4,\n    ).make_single_token_simulation_prompt(\n        tokens=[str(x) for x in range(3)],\n        explanation=\"numbers and nothing else\",\n        token_index_to_score=1,\n    )\n    assert isinstance(prompt, list)\n    assert isinstance(prompt[0], dict)  # Really a HarmonyMessage\n    for actual_message, expected_message in zip(prompt, expected_prompt):\n        assert actual_message[\"role\"] == expected_message[\"role\"]",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/test_simulator.py:230-267"
+    },
+    "319": {
+        "file_id": 19,
+        "content": "The code is generating a simulation prompt for an AI model (in this case, \"gpt-4\") to interpret the behavior of neuron 3. The prompt includes information about the neuron's function and the context it operates in. It checks that the output is a list of HarmonyMessage objects and that each message's role matches the expected roles.",
+        "type": "comment"
+    },
+    "320": {
+        "file_id": 19,
+        "content": "        assert actual_message[\"content\"] == expected_message[\"content\"]\n    assert prompt == expected_prompt",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/test_simulator.py:268-269"
+    },
+    "321": {
+        "file_id": 19,
+        "content": "Asserting that the content of actual_message matches expected_message and prompt matches expected_prompt.",
+        "type": "comment"
+    },
+    "322": {
+        "file_id": 20,
+        "content": "/neuron-explainer/neuron_explainer/explanations/token_space_few_shot_examples.py",
+        "type": "filepath"
+    },
+    "323": {
+        "file_id": 20,
+        "content": "The code introduces a class for few-shot examples and sets, primarily focusing on medical and scientific terms, to assist neuron explainers in token-based few-shot learning. It also defines two lists of token examples for testing the token space few-shot explanation function, with one list containing time and date tokens and another test example with three tokens each having an associated explanation.",
+        "type": "summary"
+    },
+    "324": {
+        "file_id": 20,
+        "content": "from dataclasses import dataclass\nfrom enum import Enum\nfrom typing import List\nfrom neuron_explainer.fast_dataclasses import FastDataclass\n@dataclass\nclass Example(FastDataclass):\n    \"\"\"\n    An example list of tokens as strings corresponding to top token space inputs of a neuron, with a\n    string explanation of the neuron's behavior on these tokens.\n    \"\"\"\n    tokens: List[str]\n    explanation: str\nclass TokenSpaceFewShotExampleSet(Enum):\n    \"\"\"Determines which few-shot examples to use when sampling explanations.\"\"\"\n    ORIGINAL = \"original\"\n    TEST = \"test\"\n    def get_examples(self) -> list[Example]:\n        \"\"\"Returns regular examples for use in a few-shot prompt.\"\"\"\n        if self is TokenSpaceFewShotExampleSet.ORIGINAL:\n            return ORIGINAL_EXAMPLES\n        elif self is TokenSpaceFewShotExampleSet.TEST:\n            return TEST_EXAMPLES\n        else:\n            raise ValueError(f\"Unhandled example set: {self}\")\nORIGINAL_EXAMPLES = [\n    Example(\n        tokens=[\n            \"actual\",\n            \" literal\",",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/token_space_few_shot_examples.py:1-39"
+    },
+    "325": {
+        "file_id": 20,
+        "content": "This code defines a class for token-based few shot examples and their sets. It also contains methods to get the examples based on the example set specified.",
+        "type": "comment"
+    },
+    "326": {
+        "file_id": 20,
+        "content": "            \" actual\",\n            \" hyper\",\n            \" real\",\n            \" EX\",\n            \" Real\",\n            \"^\",\n            \"Full\",\n            \" full\",\n            \" optical\",\n            \" style\",\n            \"any\",\n            \"ALL\",\n            \"extreme\",\n            \" miniature\",\n            \" Optical\",\n            \" faint\",\n            \"~\",\n            \" Physical\",\n            \" REAL\",\n            \"*\",\n            \"virtual\",\n            \"TYPE\",\n            \" technical\",\n            \"otally\",\n            \" physic\",\n            \"Type\",\n            \"<\",\n            \"images\",\n            \"atic\",\n            \" sheer\",\n            \" Style\",\n            \" partial\",\n            \" natural\",\n            \"Hyper\",\n            \" Any\",\n            \" theoretical\",\n            \"|\",\n            \" ultimate\",\n            \"oing\",\n            \" constant\",\n            \"ANY\",\n            \"antically\",\n            \"ishly\",\n            \" ex\",\n            \" visual\",\n            \"special\",\n            \"omorphic\",\n            \"visual\",\n        ],",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/token_space_few_shot_examples.py:40-88"
+    },
+    "327": {
+        "file_id": 20,
+        "content": "This code appears to be a list of words, likely used for tokenization purposes in natural language processing or machine learning tasks. The variety of terms suggests it could be related to various fields and concepts.",
+        "type": "comment"
+    },
+    "328": {
+        "file_id": 20,
+        "content": "        explanation=\" adjectives related to being real, or to physical properties and evidence\",\n    ),\n    Example(\n        tokens=[\n            \"cephal\",\n            \"aeus\",\n            \" coma\",\n            \"bered\",\n            \"abetes\",\n            \"inflamm\",\n            \"rugged\",\n            \"alysed\",\n            \"azine\",\n            \"hered\",\n            \"cells\",\n            \"aneously\",\n            \"fml\",\n            \"igm\",\n            \"culosis\",\n            \"iani\",\n            \"CTV\",\n            \"disabled\",\n            \"heric\",\n            \"ulo\",\n            \"geoning\",\n            \"awi\",\n            \"translation\",\n            \"iral\",\n            \"govtrack\",\n            \"mson\",\n            \"cloth\",\n            \"nesota\",\n            \" Dise\",\n            \" Lyme\",\n            \" dementia\",\n            \"agn\",\n            \" reversible\",\n            \" susceptibility\",\n            \"esthesia\",\n            \"orf\",\n            \" inflamm\",\n            \" Obesity\",\n            \" tox\",\n            \" Disorders\",\n            \"uberty\",\n            \"blind\",",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/token_space_few_shot_examples.py:89-134"
+    },
+    "329": {
+        "file_id": 20,
+        "content": "This code defines a list of examples for token-based few-shot learning in the context of neuron explainers. The examples consist of various tokens related to medical and scientific terms.",
+        "type": "comment"
+    },
+    "330": {
+        "file_id": 20,
+        "content": "            \"ALTH\",\n            \"avier\",\n            \" Immunity\",\n            \" Hurt\",\n            \"ulet\",\n            \"ueless\",\n            \" sluggish\",\n            \"rosis\",\n        ],\n        explanation=\" words related to physical medical conditions\",\n    ),\n    Example(\n        tokens=[\n            \" January\",\n            \"terday\",\n            \"cember\",\n            \" April\",\n            \" July\",\n            \"September\",\n            \"December\",\n            \"Thursday\",\n            \"quished\",\n            \"November\",\n            \"Tuesday\",\n            \"uesday\",\n            \" Sept\",\n            \"ruary\",\n            \" March\",\n            \";;;;;;;;;;;;\",\n            \" Monday\",\n            \"Wednesday\",\n            \" Saturday\",\n            \" Wednesday\",\n            \"Reloaded\",\n            \"aturday\",\n            \" August\",\n            \"Feb\",\n            \"Sunday\",\n            \"Reviewed\",\n            \"uggest\",\n            \" Dhabi\",\n            \"ACTED\",\n            \"tten\",\n            \"Year\",\n            \"August\",\n            \"alogue\",\n            \"MX\",",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/token_space_few_shot_examples.py:135-181"
+    },
+    "331": {
+        "file_id": 20,
+        "content": "This code is defining example sentences for few-shot learning in the token space, with tokens related to physical medical conditions and dates.",
+        "type": "comment"
+    },
+    "332": {
+        "file_id": 20,
+        "content": "            \" Janeiro\",\n            \"yss\",\n            \" Leilan\",\n            \" Fiscal\",\n            \" referen\",\n            \"semb\",\n            \"eele\",\n            \"wcs\",\n            \"detail\",\n            \"ertation\",\n            \" Reborn\",\n            \" Sunday\",\n            \"itially\",\n            \"aturdays\",\n            \" Dise\",\n            \"essage\",\n        ],\n        explanation=\" nouns related to time and dates\",\n    ),\n]\nTEST_EXAMPLES = [\n    Example(\n        tokens=[\n            \"these\",\n            \" are\",\n            \" tokens\",\n        ],\n        explanation=\" this is a test explanation\",\n    ),\n]",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/explanations/token_space_few_shot_examples.py:182-212"
+    },
+    "333": {
+        "file_id": 20,
+        "content": "This code defines two lists of token examples for testing the token space few shot explanation function. The first list contains tokens related to time and dates, and the second one is a test example with three tokens. Each example has an associated explanation.",
+        "type": "comment"
+    },
+    "334": {
+        "file_id": 21,
+        "content": "/neuron-explainer/neuron_explainer/fast_dataclasses/__init__.py",
+        "type": "filepath"
+    },
+    "335": {
+        "file_id": 21,
+        "content": "Imports FastDataclass and related functions from the fast_dataclasses module, and sets __all__ to include them.",
+        "type": "summary"
+    },
+    "336": {
+        "file_id": 21,
+        "content": "from .fast_dataclasses import FastDataclass, dumps, loads, register_dataclass\n__all__ = [\"FastDataclass\", \"dumps\", \"loads\", \"register_dataclass\"]",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/fast_dataclasses/__init__.py:1-3"
+    },
+    "337": {
+        "file_id": 21,
+        "content": "Imports FastDataclass and related functions from the fast_dataclasses module, and sets __all__ to include them.",
+        "type": "comment"
+    },
+    "338": {
+        "file_id": 22,
+        "content": "/neuron-explainer/neuron_explainer/fast_dataclasses/fast_dataclasses.py",
+        "type": "filepath"
+    },
+    "339": {
+        "file_id": 22,
+        "content": "The fast dataclass utility offers efficient serialization and deserialization with limited data validation, using orjson for numpy objects. It includes unit tests, a function to register new dataclasses, and a recursive object hook for handling lists and dictionaries.",
+        "type": "summary"
+    },
+    "340": {
+        "file_id": 22,
+        "content": "# Utilities for dataclasses that are very fast to serialize and deserialize, with limited data\n# validation. Fields must not be tuples, since they get serialized and then deserialized as lists.\n#\n# The unit tests for this library show how to use it.\nimport json\nfrom dataclasses import dataclass, field, fields, is_dataclass\nfrom functools import partial\nfrom typing import Any, Union\nimport orjson\ndataclasses_by_name = {}\ndataclasses_by_fieldnames = {}\n@dataclass\nclass FastDataclass:\n    dataclass_name: str = field(init=False)\n    def __post_init__(self) -> None:\n        self.dataclass_name = self.__class__.__name__\ndef register_dataclass(cls):  # type: ignore\n    assert is_dataclass(cls), \"Only dataclasses can be registered.\"\n    dataclasses_by_name[cls.__name__] = cls\n    name_set = frozenset(f.name for f in fields(cls) if f.name != \"dataclass_name\")\n    dataclasses_by_fieldnames[name_set] = cls\n    return cls\ndef dumps(obj: Any) -> bytes:\n    return orjson.dumps(obj, option=orjson.OPT_SERIALIZE_NUMPY)\ndef _object_hook(d: Any, backwards_compatible: bool = True) -> Any:",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/fast_dataclasses/fast_dataclasses.py:1-37"
+    },
+    "341": {
+        "file_id": 22,
+        "content": "The code defines a fast dataclass utility that provides efficient serialization and deserialization while limiting data validation. The library ensures fields are not tuples to avoid issues during serialization and deserialization. The unit tests in the codebase demonstrate how to use this fast dataclass utility. It uses orjson for serializing numpy objects and provides a function to register new dataclasses with the utility.",
+        "type": "comment"
+    },
+    "342": {
+        "file_id": 22,
+        "content": "    # If d is a list, recurse.\n    if isinstance(d, list):\n        return [_object_hook(x, backwards_compatible=backwards_compatible) for x in d]\n    # If d is not a dict, return it as is.\n    if not isinstance(d, dict):\n        return d\n    cls = None\n    if \"dataclass_name\" in d:\n        if d[\"dataclass_name\"] in dataclasses_by_name:\n            cls = dataclasses_by_name[d[\"dataclass_name\"]]\n        else:\n            assert backwards_compatible, (\n                f\"Dataclass {d['dataclass_name']} not found, set backwards_compatible=True if you \"\n                f\"are okay with that.\"\n            )\n    # Load objects created without dataclass_name set.\n    else:\n        # Try our best to find a dataclass if backwards_compatible is True.\n        if backwards_compatible:\n            d_fields = frozenset(d.keys())\n            if d_fields in dataclasses_by_fieldnames:\n                cls = dataclasses_by_fieldnames[d_fields]\n            elif len(d_fields) > 0:\n                # Check if the fields are a subset of a dataclass (if the dataclass had extra fields",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/fast_dataclasses/fast_dataclasses.py:38-61"
+    },
+    "343": {
+        "file_id": 22,
+        "content": "Checks if the input is a list, if so it recursively applies the object hook to each element. If not a list or dict, returns as is. If a dict, tries to find the corresponding dataclass based on either \"dataclass_name\" key or fieldnames, falling back if backwards_compatible is set to True.",
+        "type": "comment"
+    },
+    "344": {
+        "file_id": 22,
+        "content": "                # added since the data was created). Note that this will fail if fields were removed\n                # from the dataclass.\n                for key, possible_cls in dataclasses_by_fieldnames.items():\n                    if d_fields.issubset(key):\n                        cls = possible_cls\n                        break\n                else:\n                    print(f\"Could not find dataclass for {d_fields} {cls}\")\n    new_d = {\n        k: _object_hook(v, backwards_compatible=backwards_compatible)\n        for k, v in d.items()\n        if k != \"dataclass_name\"\n    }\n    if cls is not None:\n        return cls(**new_d)\n    else:\n        return new_d\ndef loads(s: Union[str, bytes], backwards_compatible: bool = True) -> Any:\n    return json.loads(\n        s,\n        object_hook=partial(_object_hook, backwards_compatible=backwards_compatible),\n    )",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/fast_dataclasses/fast_dataclasses.py:62-85"
+    },
+    "345": {
+        "file_id": 22,
+        "content": "The code aims to load and parse JSON data that uses dataclasses. It checks for the compatibility of the loaded data with existing dataclass definitions, then creates a new dataclass instance or a dictionary based on the input.",
+        "type": "comment"
+    },
+    "346": {
+        "file_id": 23,
+        "content": "/neuron-explainer/neuron_explainer/fast_dataclasses/test_fast_dataclasses.py",
+        "type": "filepath"
+    },
+    "347": {
+        "file_id": 23,
+        "content": "The code defines three classes, registers them for serialization and deserialization using FastDataclass, and tests functionality including handling of bad data, testing different scenarios for deserializing data using the `loads` function, asserting correct data type identification, and raising a TypeError when unexpected fields are present.",
+        "type": "summary"
+    },
+    "348": {
+        "file_id": 23,
+        "content": "from dataclasses import dataclass\nimport pytest\nfrom .fast_dataclasses import FastDataclass, dumps, loads, register_dataclass\n# Inheritance is a bit tricky with our setup. dataclass_name must be set for instances of these\n# classes to serialize and deserialize correctly, but if it's given a default value, then subclasses\n# can't have any fields that don't have default values, because of how constructors are generated\n# for dataclasses (fields with no default value can't follow those with default values). To work\n# around this, we set dataclass_name in __post_init__ on the base class, which is called after the\n# constructor. The implementation does the right thing for both the base class and the subclass.\n@register_dataclass\n@dataclass\nclass DataclassC(FastDataclass):\n    ints: list[int]\n@register_dataclass\n@dataclass\nclass DataclassC_ext(DataclassC):\n    s: str\n@register_dataclass\n@dataclass\nclass DataclassB(FastDataclass):\n    str_to_c: dict[str, DataclassC]\n    cs: list[DataclassC]\n@register_dataclass\n@dataclass",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/fast_dataclasses/test_fast_dataclasses.py:1-34"
+    },
+    "349": {
+        "file_id": 23,
+        "content": "This code defines three classes, DataclassC, DataclassC_ext, and DataclassB, which inherit from FastDataclass. These classes have fields of different types and are registered using the register_dataclass decorator. The purpose is to enable serialization and deserialization for instances of these classes.",
+        "type": "comment"
+    },
+    "350": {
+        "file_id": 23,
+        "content": "class DataclassA(FastDataclass):\n    floats: list[float]\n    strings: list[str]\n    bs: list[DataclassB]\n@register_dataclass\n@dataclass\nclass DataclassD(FastDataclass):\n    s1: str\n    s2: str = \"default\"\ndef test_dataclasses() -> None:\n    a = DataclassA(\n        floats=[1.0, 2.0],\n        strings=[\"a\", \"b\"],\n        bs=[\n            DataclassB(\n                str_to_c={\"a\": DataclassC(ints=[1, 2]), \"b\": DataclassC(ints=[3, 4])},\n                cs=[DataclassC(ints=[5, 6]), DataclassC_ext(ints=[7, 8], s=\"s\")],\n            ),\n            DataclassB(\n                str_to_c={\"c\": DataclassC_ext(ints=[9, 10], s=\"t\"), \"d\": DataclassC(ints=[11, 12])},\n                cs=[DataclassC(ints=[13, 14]), DataclassC(ints=[15, 16])],\n            ),\n        ],\n    )\n    assert loads(dumps(a)) == a\ndef test_c_and_c_ext() -> None:\n    c_ext = DataclassC_ext(ints=[3, 4], s=\"s\")\n    assert loads(dumps(c_ext)) == c_ext\n    c = DataclassC(ints=[1, 2])\n    assert loads(dumps(c)) == c\ndef test_bad_serialized_data() -> None:\n    assert type(loads(dumps(DataclassC(ints=[3, 4])))) == DataclassC",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/fast_dataclasses/test_fast_dataclasses.py:35-75"
+    },
+    "351": {
+        "file_id": 23,
+        "content": "- Instantiate a DataclassA object with specified floats, strings, and nested DataclassB objects.\n- Assert that the serialized and deserialized versions of the DataclassA object are equal.\n- Test serialization and deserialization for DataclassC and DataclassC_ext.\n- Test handling of bad serialized data.",
+        "type": "comment"
+    },
+    "352": {
+        "file_id": 23,
+        "content": "    assert type(loads('{\"ints\": [3, 4]}', backwards_compatible=False)) == dict\n    assert type(loads('{\"ints\": [3, 4], \"dataclass_name\": \"DataclassC\"}')) == DataclassC\n    with pytest.raises(TypeError):\n        loads('{\"ints\": [3, 4], \"bogus_extra_field\": \"foo\", \"dataclass_name\": \"DataclassC\"}')\n    with pytest.raises(TypeError):\n        loads('{\"ints_field_is_missing\": [3, 4], \"dataclass_name\": \"DataclassC\"}')\n    assert type(loads('{\"s1\": \"test\"}', backwards_compatible=False)) == dict\n    assert type(loads('{\"s1\": \"test\"}', backwards_compatible=True)) == DataclassD",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/fast_dataclasses/test_fast_dataclasses.py:76-83"
+    },
+    "353": {
+        "file_id": 23,
+        "content": "The code tests different scenarios for deserializing data using the `loads` function. It asserts that it correctly identifies the data type and raises a TypeError when unexpected fields are present.",
+        "type": "comment"
+    },
+    "354": {
+        "file_id": 24,
+        "content": "/neuron-viewer/README.md",
+        "type": "filepath"
+    },
+    "355": {
+        "file_id": 24,
+        "content": "This code is for a neuron viewer, which can be accessed through the public website. It provides an implementation of the website and supports local development with instructions to install and run both backend and frontend.",
+        "type": "summary"
+    },
+    "356": {
+        "file_id": 24,
+        "content": "# Neuron viewer\nThe easiest way to view neurons and explanations is using the\n[public website](https://openaipublic.blob.core.windows.net/neuron-explainer/neuron-viewer/index.html).\nThis directory contains the implementation of that website as well as lightweight servers that make\nit possible to run an alternative version of the website locally.\n## Local development\nInstall:\n```npm install```\nRun the backend:\n```npm run startpy```\nRun the frontend:\n```npm start```",
+        "type": "code",
+        "location": "/neuron-viewer/README.md:1-20"
+    },
+    "357": {
+        "file_id": 24,
+        "content": "This code is for a neuron viewer, which can be accessed through the public website. It provides an implementation of the website and supports local development with instructions to install and run both backend and frontend.",
+        "type": "comment"
+    },
+    "358": {
+        "file_id": 25,
+        "content": "/neuron-viewer/tailwind.config.js",
+        "type": "filepath"
+    },
+    "359": {
+        "file_id": 25,
+        "content": "Configuring Tailwind CSS with content from \"./src/**/*.{html,js,jsx}\" and empty extend and plugins.",
+        "type": "summary"
+    },
+    "360": {
+        "file_id": 25,
+        "content": "/** @type {import('tailwindcss').Config} */\nmodule.exports = {\n  content: [\"./src/**/*.{html,js,jsx}\"],\n  theme: {\n    extend: {},\n  },\n  plugins: [],\n}",
+        "type": "code",
+        "location": "/neuron-viewer/tailwind.config.js:1-8"
+    },
+    "361": {
+        "file_id": 25,
+        "content": "Configuring Tailwind CSS with content from \"./src/**/*.{html,js,jsx}\" and empty extend and plugins.",
+        "type": "comment"
+    },
+    "362": {
+        "file_id": 26,
+        "content": "/neuron-viewer/python/server.py",
+        "type": "filepath"
+    },
+    "363": {
+        "file_id": 26,
+        "content": "The code imports libraries, defines functions for loading JSON data and starting the Flask server. The Flask app is configured with logging, CORS, and an after_request function to allow cross-origin requests. It also includes a main function which can be executed if the script is run directly, accepting optional dev, host_name, and port arguments.",
+        "type": "summary"
+    },
+    "364": {
+        "file_id": 26,
+        "content": "# %%\nimport logging\nfrom flask import Flask, request\nfrom flask_cors import CORS\nimport json\nimport urllib.request\ndef load_az_json(url):\n    with urllib.request.urlopen(url) as f:\n        return json.load(f)\ndef start(\n    dev: bool = False,\n    host_name: str = \"0.0.0.0\",\n    port: int = 80,\n):\n    app = Flask(\"interpretability chat\")\n    app.logger.setLevel(logging.INFO)\n    # app.logger.disabled = True\n    CORS(app)\n    @app.after_request\n    def after_request(response):\n        response.headers.add(\"Access-Control-Allow-Origin\", \"*\")\n        response.headers.add(\n            \"Access-Control-Allow-Headers\", \"Content-Type,Authorization\"\n        )\n        response.headers.add(\n            \"Access-Control-Allow-Methods\", \"GET,PUT,POST,DELETE,OPTIONS\"\n        )\n        return response\n    @app.route(\"/load_az\", methods=[\"GET\", \"POST\"])\n    async def load_az():\n        args = request.get_json()\n        path = args[\"path\"]\n        result = load_az_json(path)\n        return result\n    app.run(debug=dev, host=host_name, port=port, use_reloader=False)",
+        "type": "code",
+        "location": "/neuron-viewer/python/server.py:1-43"
+    },
+    "365": {
+        "file_id": 26,
+        "content": "Imports necessary libraries and defines functions for loading JSON data and starting the Flask server.\nFlask app is configured with logging, CORS, and after_request function to allow cross-origin requests.",
+        "type": "comment"
+    },
+    "366": {
+        "file_id": 26,
+        "content": "def main(dev: bool = True, host_name: str = \"0.0.0.0\", port: int = 8000):\n    start(dev=dev, host_name=host_name, port=port)\nif __name__ == \"__main__\":\n    main()",
+        "type": "code",
+        "location": "/neuron-viewer/python/server.py:46-51"
+    },
+    "367": {
+        "file_id": 26,
+        "content": "This code defines a main function and executes it if the script is run directly. It accepts optional boolean dev, string host_name, and int port arguments.",
+        "type": "comment"
+    },
+    "368": {
+        "file_id": 27,
+        "content": "/neuron-viewer/src/App.jsx",
+        "type": "filepath"
+    },
+    "369": {
+        "file_id": 27,
+        "content": "Imports CSS and Feed component, sets up React Router for routing between components.",
+        "type": "summary"
+    },
+    "370": {
+        "file_id": 27,
+        "content": "import \"./App.css\"\nimport Feed from \"./feed\"\nimport React from \"react\"\nimport { Routes, Route, HashRouter } from \"react-router-dom\"\nfunction App() {\n  return (\n    <HashRouter>\n      <Routes>\n        <Route path=\"/\" element={<Feed />} />\n        <Route path=\"/layers/:layer/neurons/:neuron\" element={<Feed />} />\n      </Routes>\n    </HashRouter>\n  )\n}\nexport default App",
+        "type": "code",
+        "location": "/neuron-viewer/src/App.jsx:1-17"
+    },
+    "371": {
+        "file_id": 27,
+        "content": "Imports CSS and Feed component, sets up React Router for routing between components.",
+        "type": "comment"
+    },
+    "372": {
+        "file_id": 28,
+        "content": "/neuron-viewer/src/feed.jsx",
+        "type": "filepath"
+    },
+    "373": {
+        "file_id": 28,
+        "content": "The code sets up a functional component, Feed, which displays either a welcome message or information about the selected neuron depending on whether one is chosen. It checks for the neuron selection in URL parameters and renders additional panes such as explanation, dataset list, top tokens, and similar neurons if an active neuron is present; otherwise, it shows a welcome message.",
+        "type": "summary"
+    },
+    "374": {
+        "file_id": 28,
+        "content": "import * as Panes from \"./panes\"\nimport React, { useEffect } from \"react\"\nimport Welcome from \"./welcome\"\nimport { useState } from \"react\"\nimport { useParams, Link } from \"react-router-dom\"\nexport default function Feed() {\n  const params = useParams()\n  // If params is missing either index, there's no neuron selected.\n  let activeNeuron;\n  if (params.layer === undefined || params.neuron === undefined) {\n    activeNeuron = null\n  } else {\n    // Grab the layer and neuron indices from the params, casting them to ints.\n    activeNeuron = {\n      \"layer\": parseInt(params.layer),\n      \"neuron\": parseInt(params.neuron),\n    }\n  }\n  const Pane = ({ children }) => (\n    <div className=\"flex flex-col h-full\">{children}</div>\n  )\n  return (\n    <div>\n      <div>\n        <h2 className=\"flex flex-row\">\n          <Link to=\"/\">Neuron Viewer</Link>\n        </h2>\n        {activeNeuron && (\n          <h3 className=\"flex flex-row\">\n            Neuron {activeNeuron.layer}:{activeNeuron.neuron}\n          </h3>\n        )}\n      </div>\n      <div",
+        "type": "code",
+        "location": "/neuron-viewer/src/feed.jsx:1-38"
+    },
+    "375": {
+        "file_id": 28,
+        "content": "The code imports necessary components and sets up the Feed component, which displays a welcome message or information about the selected neuron. It checks if there is a neuron selected based on parameters passed in the URL, and if not, it displays null. If a neuron is selected, it displays the layer and neuron number.",
+        "type": "comment"
+    },
+    "376": {
+        "file_id": 28,
+        "content": "        style={{ width: '100%', padding: '0px 80px', margin: \"auto\", overflow: \"visible\" }}\n      >\n        <ul role=\"list\" className=\"mb-8 mt-10\">\n          {activeNeuron ?\n            <>\n              <Pane>\n                {React.createElement(Panes[\"Explanation\"], { activeNeuron })}\n              </Pane>\n              <Pane>\n                {React.createElement(Panes[\"DatasetList\"], { activeNeuron })}\n              </Pane>\n              <Pane>\n                {React.createElement(Panes[\"TopTokens\"], { activeNeuron })}\n              </Pane>\n              <Pane>\n                {React.createElement(Panes[\"SimilarNeurons\"], { activeNeuron })}\n              </Pane>\n            </> :\n            <Welcome/>\n          }\n        </ul>\n      </div>\n    </div>\n  )\n}",
+        "type": "code",
+        "location": "/neuron-viewer/src/feed.jsx:39-64"
+    },
+    "377": {
+        "file_id": 28,
+        "content": "This code defines a functional component that renders a layout for the neuron viewer. If an active neuron is present, it displays explanation, dataset list, top tokens, and similar neurons panes. Otherwise, it shows a welcome message.",
+        "type": "comment"
+    },
+    "378": {
+        "file_id": 29,
+        "content": "/neuron-viewer/src/heatmapGrid.tsx",
+        "type": "filepath"
+    },
+    "379": {
+        "file_id": 29,
+        "content": "This code exports a functional component that takes an array of 2D arrays of \"TokenAndActivation\" objects and renders a heatmap for each token. The tokens are displayed within a block-style div, with each token's heatmap displayed inside its respective div.",
+        "type": "summary"
+    },
+    "380": {
+        "file_id": 29,
+        "content": "import { TokenAndActivation } from \"./types\"\nimport TokenHeatmap from \"./tokenHeatmap\";\nexport default ({ allTokens }: { allTokens: TokenAndActivation[][]}) => {\n  return (\n    <div className=\"\">\n      {allTokens.map((tokens, i) => (\n        <div className=\"block my-3 border p-3 m-2 rounded-md\" style={{ }} key={i}>\n          <TokenHeatmap tokens={tokens} />\n        </div>\n      ))}\n    </div>\n  );\n};",
+        "type": "code",
+        "location": "/neuron-viewer/src/heatmapGrid.tsx:1-14"
+    },
+    "381": {
+        "file_id": 29,
+        "content": "This code exports a functional component that takes an array of 2D arrays of \"TokenAndActivation\" objects and renders a heatmap for each token. The tokens are displayed within a block-style div, with each token's heatmap displayed inside its respective div.",
+        "type": "comment"
+    },
+    "382": {
+        "file_id": 30,
+        "content": "/neuron-viewer/src/index.jsx",
+        "type": "filepath"
+    },
+    "383": {
+        "file_id": 30,
+        "content": "This code imports necessary modules and sets up the root element for a React application, which then renders the App component within a strict mode. It also configures performance measurement if desired.",
+        "type": "summary"
+    },
+    "384": {
+        "file_id": 30,
+        "content": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport './index.css';\nimport App from './App';\nimport reportWebVitals from './reportWebVitals';\nconst root = ReactDOM.createRoot(document.getElementById('root'));\nroot.render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n// If you want to start measuring performance in your app, pass a function\n// to log results (for example: reportWebVitals(console.log))\n// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals\nreportWebVitals();",
+        "type": "code",
+        "location": "/neuron-viewer/src/index.jsx:1-17"
+    },
+    "385": {
+        "file_id": 30,
+        "content": "This code imports necessary modules and sets up the root element for a React application, which then renders the App component within a strict mode. It also configures performance measurement if desired.",
+        "type": "comment"
+    },
+    "386": {
+        "file_id": 31,
+        "content": "/neuron-viewer/src/interpAPI.ts",
+        "type": "filepath"
+    },
+    "387": {
+        "file_id": 31,
+        "content": "The code retrieves top-connected neurons and their corresponding layer-neuron pairs, using functions to load JSON files from Azure Blob Storage and memoization.",
+        "type": "summary"
+    },
+    "388": {
+        "file_id": 31,
+        "content": "import {Neuron} from './types';\nimport {memoizeAsync} from \"./utils\"\nexport const load_file_no_cache = async(path: string) => {\n  const data = {\n    path: path\n  }\n  const url = new URL(\"/load_az\", window.location.href)\n  url.port = '8000';\n  return await (\n    await fetch(url, {\n      method: \"POST\", // or 'PUT'\n      headers: {\n        \"Content-Type\": \"application/json\",\n      },\n      body: JSON.stringify(data),\n    })\n  ).json()\n}\nexport  const load_file_az = async(path: string) => {\n  const res = (\n    await fetch(path, {\n      method: \"GET\",\n      mode: \"cors\",\n      headers: {\n        \"Content-Type\": \"application/json\",\n      },\n    })\n  )\n  if (!res.ok) {\n    console.error(`HTTP error: ${res.status} - ${res.statusText}`);\n    return;\n  }\n  return await res.json()\n}\n// export const load_file = memoizeAsync('load_file', load_file_no_cache)\nexport  const load_file = window.location.host.indexOf('localhost:') === -1 ? load_file_az : load_file_no_cache;\n// # (derived from az://oaialignment/datasets/interp/gpt2_xl/v1/webtext1/len_nomax/n_50000/mlp_post_act/ranked_by_max_activation)",
+        "type": "code",
+        "location": "/neuron-viewer/src/interpAPI.ts:1-44"
+    },
+    "389": {
+        "file_id": 31,
+        "content": "This code defines two functions, `load_file_no_cache` and `load_file_az`, for loading data from a file. The first function sends the file path to a server using POST request with JSON body. The second function retrieves the file content using GET request with CORS mode. A memoization function is defined but not used in this code. The `load_file` variable is set based on whether the application is running locally or remotely, and it points to either the local or remote loading function.",
+        "type": "comment"
+    },
+    "390": {
+        "file_id": 31,
+        "content": "// const NEURON_RECORDS_PATH = \"az://oaisbills/rcall/oss/migrated_make_crow_datasets/gpt2_xl_n_50000_64_token/neurons\"\nconst NEURON_RECORDS_PATH = \"https://openaipublic.blob.core.windows.net/neuron-explainer/data/collated-activations\"\n// # (derived from az://oaialignment/datasets/interp/gpt2_xl/v1/webtext1/len_nomax/n_50000/mlp_post_act/ranked_by_max_activation/neurons/explanations/canonical-run-v1)\n// const EXPLANATIONS_PATH = \"az://oaisbills/rcall/oss/migrated_explanation_datasets/canonical_gpt2_xl_all_neurons\"\nconst EXPLANATIONS_PATH = \"https://openaipublic.blob.core.windows.net/neuron-explainer/data/explanations\"\n// weight-based\n// const WHOLE_LAYER_WEIGHT_TOKENS_PATH = \"az://oaidan/rcall/data/interpretability/connections/gpt2-xl/mlp/unnorm_token_representations_uncommon_vanilla\"\n// const WEIGHT_TOKENS_PATH = \"az://oaijeffwu/jeffwu-data/interpretability/neuron-connections/gpt2-xl/weight-based\"\nconst WEIGHT_TOKENS_PATH = \"https://openaipublic.blob.core.windows.net/neuron-explainer/data/related-tokens/weight-based\"",
+        "type": "code",
+        "location": "/neuron-viewer/src/interpAPI.ts:45-55"
+    },
+    "391": {
+        "file_id": 31,
+        "content": "The code defines constants for the path to neuron records, explanations, and related tokens (weight-based). The previous paths were derived from Azure Storage, but now they are pointing to a public Blob storage in Windows. These paths are used to access the necessary data for interpretation tasks.",
+        "type": "comment"
+    },
+    "392": {
+        "file_id": 31,
+        "content": "// lookup table\n// const WHOLE_LAYER_ACTIVATION_TOKENS_PATH = \"az://oaidan/rcall/data/interpretability/connections/gpt2_xl/mlp/unnorm_token_representations_vanilla_and_common_in_colangv2_unigram\"\n// const ACTIVATION_TOKENS_PATH = \"az://oaijeffwu/jeffwu-data/interpretability/neuron-connections/gpt2-xl/lookup-table\"\nconst ACTIVATION_TOKENS_PATH = \"https://openaipublic.blob.core.windows.net/neuron-explainer/data/related-tokens/activation-based\"\n// const CONNECTIONS_PATH = \"az://oaialignment/datasets/interp/connections/gpt2/neuron_space/incl_attn_False\"\nconst CONNECTIONS_PATH = \"https://openaipublic.blob.core.windows.net/neuron-explainer/data/related-neurons/weight-based\"\nexport const get_explanations = async (activeNeuron: Neuron) => {\n  const result = await load_file(`${EXPLANATIONS_PATH}/${activeNeuron.layer}/${activeNeuron.neuron}.jsonl`)\n  return result\n}\nexport const get_top_tokens = async (activeNeuron: Neuron, weightType: string) => {\n  let TOKENS_PATH;\n  if (weightType === 'weight') {\n    TOKENS_PATH = WEIGHT_TOKENS_PATH;",
+        "type": "code",
+        "location": "/neuron-viewer/src/interpAPI.ts:56-73"
+    },
+    "393": {
+        "file_id": 31,
+        "content": "This code defines constants for storage locations of lookup table and connection paths, and functions to retrieve explanations and top tokens based on a given neuron and weight type. The code also uses Azure Blob Storage to load JSON files containing explanation data and token representations.",
+        "type": "comment"
+    },
+    "394": {
+        "file_id": 31,
+        "content": "  } else if (weightType === 'activation') {\n    TOKENS_PATH = ACTIVATION_TOKENS_PATH;\n  } else {\n    throw new Error(`Invalid weightType: ${weightType}`)\n  }\n  const result = await load_file(`${TOKENS_PATH}/${activeNeuron.layer}/${activeNeuron.neuron}.json`)\n  return result\n  // const result = await load_file_no_cache(`${ORIG_TOKENS_PATH}/${activeNeuron.layer}.json`)\n  // return result.neuron_summaries[activeNeuron.neuron]\n}\nexport const get_top_neuron_connections = async (activeNeuron: Neuron) => {\n    const result = await load_file(`${CONNECTIONS_PATH}/${activeNeuron.layer}/${activeNeuron.neuron}.json`)\n    const res: {[key: string]: [number, number]} = {};\n    [\"input\", \"output\"].forEach((direction) => {\n        const sign = \"positive\"  // \"negative\"\n        const weight_name: string = {output: \"c_proj\", input: \"c_fc\"}[direction] as string;\n        const res_for_dir = result[weight_name];\n        if (res_for_dir === null) {\n          return\n        }\n        // let key = 'top_negative_neurons'\n        c",
+        "type": "code",
+        "location": "/neuron-viewer/src/interpAPI.ts:74-97"
+    },
+    "395": {
+        "file_id": 31,
+        "content": "Checks the weightType and sets the corresponding TOKENS_PATH for loading neuron data. If an invalid weightType is given, throws an error. Loads and returns the neuron data from the specified file path.",
+        "type": "comment"
+    },
+    "396": {
+        "file_id": 31,
+        "content": "onst top_neuron_strs = res_for_dir[`top_${sign}_neurons`]  // {layer}_{neuron} strings for each top-connected neuron\n        const top_weights = res_for_dir[`top_${sign}_weights`]\n        const top_layer_neuron_tuples = top_neuron_strs.map((neuron_str: string, i: number) => {\n            const [layer, neuron] = neuron_str.split(\"_\").map((x: string) => parseInt(x))\n            return [layer, neuron, top_weights[i]] as [number, number, number]\n        })\n        res[direction] = top_layer_neuron_tuples.slice(0, 10)\n    })\n    return res\n}\nexport const get_neuron_record = async(activeNeuron: Neuron) => {\n  const result = await load_file(`${NEURON_RECORDS_PATH}/${activeNeuron.layer}/${activeNeuron.neuron}.json`)\n  return result\n}",
+        "type": "code",
+        "location": "/neuron-viewer/src/interpAPI.ts:97-112"
+    },
+    "397": {
+        "file_id": 31,
+        "content": "This code retrieves the top-connected neurons for a given direction and sign from a result object, maps them to layer, neuron, and weight tuples, and returns the top 10 layer-neuron pairs. It also defines a function `get_neuron_record` that asynchronously loads a JSON file representing a neuron's record based on its layer and neuron ID.",
+        "type": "comment"
+    },
+    "398": {
+        "file_id": 32,
+        "content": "/neuron-viewer/src/reportWebVitals.js",
+        "type": "filepath"
+    },
+    "399": {
+        "file_id": 32,
+        "content": "This code defines a function `reportWebVitals` that, when given a callback function as an argument, uses the `web-vitals` library to measure and report various web vital metrics like CLS, FID, FCP, LCP, TTFB. If no callback or invalid callback is passed, it does nothing.",
+        "type": "summary"
+    }
+}

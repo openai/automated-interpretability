@@ -1,0 +1,20 @@
+{
+    "summary": "The code accesses a lookup table from an Azure dataset, containing tokens and their average activations for specified neuron using standardized URLs. This function then reads the file and displays its contents in a readable format.",
+    "details": [
+        {
+            "comment": "Loading token-weight connections of a neuron from an Azure dataset. The function retrieves and returns the TokenLookupTableSummaryOfNeuron for the specified layer index and neuron index. It uses standardized Azure URLs for accessing the data.",
+            "location": "\"/media/root/Toshiba XG3/works/automated-interpretability/docs/src/neuron-explainer/neuron_explainer/activations/token_connections.py\":0-32",
+            "content": "from dataclasses import dataclass\nfrom typing import List, Union\nimport blobfile as bf\nfrom neuron_explainer.fast_dataclasses import FastDataclass, loads, register_dataclass\nfrom neuron_explainer.azure import standardize_azure_url\nimport urllib.request\n@register_dataclass\n@dataclass\nclass TokensAndWeights(FastDataclass):\n    tokens: List[str]\n    strengths: List[float]\n@register_dataclass\n@dataclass\nclass WeightBasedSummaryOfNeuron(FastDataclass):\n    input_positive: TokensAndWeights\n    input_negative: TokensAndWeights\n    output_positive: TokensAndWeights\n    output_negative: TokensAndWeights\ndef load_token_weight_connections_of_neuron(\n    layer_index: Union[str, int],\n    neuron_index: Union[str, int],\n    dataset_path: str = \"https://openaipublic.blob.core.windows.net/neuron-explainer/data/related-tokens/weight-based\",\n) -> WeightBasedSummaryOfNeuron:\n    \"\"\"Load the TokenLookupTableSummaryOfNeuron for the specified neuron.\"\"\"\n    url = \"/\".join([dataset_path, str(layer_index), f\"{neuron_index}.json\"])\n    url = standardize_azure_url(url)"
+        },
+        {
+            "comment": "This code loads a lookup table containing tokens and their average activations for a given neuron. The table is generated from the highest average activations across an internet text dataset, and the data is retrieved from an Azure URL.",
+            "location": "\"/media/root/Toshiba XG3/works/automated-interpretability/docs/src/neuron-explainer/neuron_explainer/activations/token_connections.py\":33-57",
+            "content": "    with urllib.request.urlopen(url) as f:\n        return loads(f.read(), backwards_compatible=False)\n@register_dataclass\n@dataclass\nclass TokenLookupTableSummaryOfNeuron(FastDataclass):\n    \"\"\"List of tokens and the average activations of a given neuron in response to each\n    respective token. These are selected from among the tokens in the vocabulary with the\n    highest average activations across an internet text dataset, with the highest activations\n    first.\"\"\"\n    tokens: List[str]\n    average_activations: List[float]\ndef load_token_lookup_table_connections_of_neuron(\n    layer_index: Union[str, int],\n    neuron_index: Union[str, int],\n    dataset_path: str = \"https://openaipublic.blob.core.windows.net/neuron-explainer/data/related-tokens/activation-based\",\n) -> TokenLookupTableSummaryOfNeuron:\n    \"\"\"Load the TokenLookupTableSummaryOfNeuron for the specified neuron.\"\"\"\n    url = \"/\".join([dataset_path, str(layer_index), f\"{neuron_index}.json\"])\n    url = standardize_azure_url(url)\n    with urllib.request.urlopen(url) as f:"
+        },
+        {
+            "comment": "This function reads the file and returns its contents in a readable format.",
+            "location": "\"/media/root/Toshiba XG3/works/automated-interpretability/docs/src/neuron-explainer/neuron_explainer/activations/token_connections.py\":58-58",
+            "content": "        return loads(f.read(), backwards_compatible=False)"
+        }
+    ]
+}
