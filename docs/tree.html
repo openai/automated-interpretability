@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="github-markdown.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .directory:hover {
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        :target {
+            background-color: yellow;
+        }
+
+        .folded::before {
+            content: '\25B6';
+            margin-right: 8px;
+            /* Add space between marker and text */
+        }
+
+        .expanded::before {
+            content: '\25BC';
+            margin-right: 8px;
+            /* Add space between marker and text */
+        }
+    </style>
+    <script>
+        function toggleVisibility(element) {
+            let mclass = element.getAttribute("class");
+            if (mclass == "expanded") {
+                element.setAttribute('class', 'folded');
+            } else {
+                element.setAttribute('class', 'expanded');
+            }
+            const siblings = element.parentNode.children;
+            for (const sibling of siblings) {
+                if (sibling !== element) {
+                    sibling.style.display = (sibling.style.display === 'none') ? 'block' : 'none';
+                }
+            }
+        }
+    </script>
+    <style>
+        .markdown-body {
+            box-sizing: border-box;
+            min-width: 200px;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 45px;
+        }
+
+        @media (max-width: 767px) {
+            .markdown-body {
+                padding: 15px;
+            }
+
+            .partial-repository-url {
+                display: none;
+            }
+        }
+
+        ul {
+            list-style: none;
+        }
+    </style>
+</head>
+
+<body>
+    <article class="markdown-body">
+        <h2>Project Structure<span hierarchy="0" class="partial-repository-url"> of: openai/automated-interpretability</span><div style="float: right;"><a href="index.html"><i class="bi bi-search"></i></a></div></h2>
+<ul>
+<li><span hierarchy="0" class="expanded" onclick="toggleVisibility(this)" ><strong class="directory" id="/"><code>automated-interpretability</code></strong> <em>Neuron Explainer AI toolkit, demos &amp; datasets</em></span><ul>
+<li><a href="index.html?q=/README.md" id="/README.md"><code>README.md</code></a> <em>Neuron explanation tools for language models with datasets and fixes.</em></li>
+<li><span hierarchy="1" class="expanded" onclick="toggleVisibility(this)" ><strong class="directory" id="/neuron-explainer/"><code>neuron-explainer</code></strong> <em>Neuron Explainer: AI model analysis and demo hub</em></span><ul>
+<li><a href="index.html?q=/neuron-explainer/README.md" id="/neuron-explainer/README.md"><code>README.md</code></a> <em>Neuron simulation code for explanation generation</em></li>
+<li><span hierarchy="2" class="expanded" onclick="toggleVisibility(this)" ><strong class="directory" id="/neuron-explainer/demos/"><code>demos</code></strong> <em>Neuron explanation demo hub</em></span><ul>
+<li><a href="index.html?q=/neuron-explainer/demos/explain_puzzles.py" id="/neuron-explainer/demos/explain_puzzles.py"><code>explain_puzzles.py</code></a> <em>AI-powered puzzle solver.</em></li>
+<li><a href="index.html?q=/neuron-explainer/demos/generate_and_score_explanation.py" id="/neuron-explainer/demos/generate_and_score_explanation.py"><code>generate_and_score_explanation.py</code></a> <em>Neuron data explanation generation and simulation.</em></li>
+<li><a href="index.html?q=/neuron-explainer/demos/generate_and_score_token_look_up_table_explanation.py" id="/neuron-explainer/demos/generate_and_score_token_look_up_table_explanation.py"><code>generate_and_score_token_look_up_table_explanation.py</code></a> <em>Generate and score token explanation table.</em></li>
+</ul>
+</li>
+<li><span hierarchy="2" class="expanded" onclick="toggleVisibility(this)" ><strong class="directory" id="/neuron-explainer/neuron_explainer/"><code>neuron_explainer</code></strong> <em>Neuron Explainer: AI model analysis and explanation.</em></span><ul>
+<li><span hierarchy="3" class="expanded" onclick="toggleVisibility(this)" ><strong class="directory" id="/neuron-explainer/neuron_explainer/activations/"><code>activations</code></strong> <em>Neuron activations management and analysis.</em></span><ul>
+<li><a href="index.html?q=/neuron-explainer/neuron_explainer/activations/activation_records.py" id="/neuron-explainer/neuron_explainer/activations/activation_records.py"><code>activation_records.py</code></a> <em>Activation records management and analysis.</em></li>
+<li><a href="index.html?q=/neuron-explainer/neuron_explainer/activations/activations.py" id="/neuron-explainer/neuron_explainer/activations/activations.py"><code>activations.py</code></a> <em>Neuron activation record slicing and processing.</em></li>
+<li><a href="index.html?q=/neuron-explainer/neuron_explainer/activations/token_connections.py" id="/neuron-explainer/neuron_explainer/activations/token_connections.py"><code>token_connections.py</code></a> <em>Reads token-activation data from Azure, formats results.</em></li>
+</ul>
+</li>
+<li><a href="index.html?q=/neuron-explainer/neuron_explainer/api_client.py" id="/neuron-explainer/neuron_explainer/api_client.py"><code>api_client.py</code></a> <em>Async OpenAI API client with error handling and exponential backoff</em></li>
+<li><a href="index.html?q=/neuron-explainer/neuron_explainer/azure.py" id="/neuron-explainer/neuron_explainer/azure.py"><code>azure.py</code></a> <em>Azure format converter for input URLs.</em></li>
+<li><span hierarchy="3" class="expanded" onclick="toggleVisibility(this)" ><strong class="directory" id="/neuron-explainer/neuron_explainer/explanations/"><code>explanations</code></strong> <em>Neuron explanation, AI model, asynchronous loading</em></span><ul>
+<li><a href="index.html?q=/neuron-explainer/neuron_explainer/explanations/calibrated_simulator.py" id="/neuron-explainer/neuron_explainer/explanations/calibrated_simulator.py"><code>calibrated_simulator.py</code></a> <em>Calibrated Neuron Simulator Improvements</em></li>
+<li><a href="index.html?q=/neuron-explainer/neuron_explainer/explanations/explainer.py" id="/neuron-explainer/neuron_explainer/explanations/explainer.py"><code>explainer.py</code></a> <em>Neuron explainer AI model for generating explanations using API calls and prompts.</em></li>
+<li><a href="index.html?q=/neuron-explainer/neuron_explainer/explanations/explanations.py" id="/neuron-explainer/neuron_explainer/explanations/explanations.py"><code>explanations.py</code></a> <em>Neuron explanation, asynchronous loading, sorted indices.</em></li>
+<li><a href="index.html?q=/neuron-explainer/neuron_explainer/explanations/prompt_builder.py" id="/neuron-explainer/neuron_explainer/explanations/prompt_builder.py"><code>prompt_builder.py</code></a> <em>PromptBuilder: Format messages, build prompts with GPT-4 encoding.</em></li>
+<li><a href="index.html?q=/neuron-explainer/neuron_explainer/explanations/puzzles.py" id="/neuron-explainer/neuron_explainer/explanations/puzzles.py"><code>puzzles.py</code></a> <em>Puzzle class for ground truth and false explanations.</em></li>
+<li><a href="index.html?q=/neuron-explainer/neuron_explainer/explanations/scoring.py" id="/neuron-explainer/neuron_explainer/explanations/scoring.py"><code>scoring.py</code></a> <em>Scoring function for neuron evaluations using correlation &amp; R-squared.</em></li>
+<li><a href="index.html?q=/neuron-explainer/neuron_explainer/explanations/simulator.py" id="/neuron-explainer/neuron_explainer/explanations/simulator.py"><code>simulator.py</code></a> <em>Neuron simulator: improved initialization, API calls, prompt formats.</em></li>
+<li><a href="index.html?q=/neuron-explainer/neuron_explainer/explanations/test_explainer.py" id="/neuron-explainer/neuron_explainer/explanations/test_explainer.py"><code>test_explainer.py</code></a> <em>Test neuron explainer with event loop, GPT-4, and Harmony V4.</em></li>
+<li><a href="index.html?q=/neuron-explainer/neuron_explainer/explanations/test_simulator.py" id="/neuron-explainer/neuron_explainer/explanations/test_simulator.py"><code>test_simulator.py</code></a> <em>Test script for neuron accuracy in neural networks, text-davinci-003 model.</em></li>
+<li><a href="index.html?q=/neuron-explainer/neuron_explainer/explanations/token_space_few_shot_examples.py" id="/neuron-explainer/neuron_explainer/explanations/token_space_few_shot_examples.py"><code>token_space_few_shot_examples.py</code></a> <em>Few-shot medical/scientific token class for neuron explainers.</em></li>
+</ul>
+</li>
+<li><span hierarchy="3" class="expanded" onclick="toggleVisibility(this)" ><strong class="directory" id="/neuron-explainer/neuron_explainer/fast_dataclasses/"><code>fast_dataclasses</code></strong> <em>Efficient, validated dataclasses with orjson.</em></span><ul>
+<li><a href="index.html?q=/neuron-explainer/neuron_explainer/fast_dataclasses/__init__.py" id="/neuron-explainer/neuron_explainer/fast_dataclasses/__init__.py"><code><strong>init</strong>.py</code></a> <em>Imports FastDataclass functions and sets <strong>all</strong>.</em></li>
+<li><a href="index.html?q=/neuron-explainer/neuron_explainer/fast_dataclasses/fast_dataclasses.py" id="/neuron-explainer/neuron_explainer/fast_dataclasses/fast_dataclasses.py"><code>fast_dataclasses.py</code></a> <em>Efficient dataclasses with limited validation using orjson.</em></li>
+<li><a href="index.html?q=/neuron-explainer/neuron_explainer/fast_dataclasses/test_fast_dataclasses.py" id="/neuron-explainer/neuron_explainer/fast_dataclasses/test_fast_dataclasses.py"><code>test_fast_dataclasses.py</code></a> <em>Tests FastDataclass functionality and error handling.</em></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="index.html?q=/neuron-explainer/setup.py" id="/neuron-explainer/setup.py"><code>setup.py</code></a> <em>Setup script for neuron_explainer package</em></li>
+</ul>
+</li>
+<li><span hierarchy="1" class="expanded" onclick="toggleVisibility(this)" ><strong class="directory" id="/neuron-viewer/"><code>neuron-viewer</code></strong> <em>Neuron viewer website, Flask server, Tailwind CSS, JSON data</em></span><ul>
+<li><a href="index.html?q=/neuron-viewer/README.md" id="/neuron-viewer/README.md"><code>README.md</code></a> <em>Neuron viewer website with local development support</em></li>
+<li><span hierarchy="2" class="expanded" onclick="toggleVisibility(this)" ><strong class="directory" id="/neuron-viewer/python/"><code>python</code></strong></span><ul>
+<li><a href="index.html?q=/neuron-viewer/python/server.py" id="/neuron-viewer/python/server.py"><code>server.py</code></a> <em>Starts Flask server, imports libs, loads JSON data</em></li>
+</ul>
+</li>
+<li><span hierarchy="2" class="expanded" onclick="toggleVisibility(this)" ><strong class="directory" id="/neuron-viewer/src/"><code>src</code></strong> <em>Visualizes and analyzes neuron data with component-based interface</em></span><ul>
+<li><a href="index.html?q=/neuron-viewer/src/App.jsx" id="/neuron-viewer/src/App.jsx"><code>App.jsx</code></a> <em>Sets up routing with CSS, Feed import.</em></li>
+<li><a href="index.html?q=/neuron-viewer/src/feed.jsx" id="/neuron-viewer/src/feed.jsx"><code>feed.jsx</code></a> <em>Neuron-Viewer: Display welcome or neuron info based on selection.</em></li>
+<li><a href="index.html?q=/neuron-viewer/src/heatmapGrid.tsx" id="/neuron-viewer/src/heatmapGrid.tsx"><code>heatmapGrid.tsx</code></a> <em>Heatmap grid for TokenAndActivation objects.</em></li>
+<li><a href="index.html?q=/neuron-viewer/src/index.jsx" id="/neuron-viewer/src/index.jsx"><code>index.jsx</code></a> <em>Setup React app with performance measurement</em></li>
+<li><a href="index.html?q=/neuron-viewer/src/interpAPI.ts" id="/neuron-viewer/src/interpAPI.ts"><code>interpAPI.ts</code></a> <em>Retrieves top-connected neurons and layer pairs using JSON loading.</em></li>
+<li><span hierarchy="3" class="expanded" onclick="toggleVisibility(this)" ><strong class="directory" id="/neuron-viewer/src/panes/"><code>panes</code></strong> <em>Visualize and analyze neuron data, component-based interface.</em></span><ul>
+<li><a href="index.html?q=/neuron-viewer/src/panes/datasetList.jsx" id="/neuron-viewer/src/panes/datasetList.jsx"><code>datasetList.jsx</code></a> <em>Visualize and analyze neuron activation datasets.</em></li>
+<li><a href="index.html?q=/neuron-viewer/src/panes/explanation.jsx" id="/neuron-viewer/src/panes/explanation.jsx"><code>explanation.jsx</code></a> <em>Neuron viewer: component for loading, toggling sequences</em></li>
+<li><a href="index.html?q=/neuron-viewer/src/panes/index.js" id="/neuron-viewer/src/panes/index.js"><code>index.js</code></a> <em>Importing components for application use.</em></li>
+<li><a href="index.html?q=/neuron-viewer/src/panes/similarNeurons.jsx" id="/neuron-viewer/src/panes/similarNeurons.jsx"><code>similarNeurons.jsx</code></a> <em>Fetch and display neuron info, organized visually with loading animation.</em></li>
+<li><a href="index.html?q=/neuron-viewer/src/panes/topTokens.jsx" id="/neuron-viewer/src/panes/topTokens.jsx"><code>topTokens.jsx</code></a> <em>Interactive token display with red text and tooltips.</em></li>
+</ul>
+</li>
+<li><a href="index.html?q=/neuron-viewer/src/reportWebVitals.js" id="/neuron-viewer/src/reportWebVitals.js"><code>reportWebVitals.js</code></a> <em>Measures web vitals with callback function.</em></li>
+<li><a href="index.html?q=/neuron-viewer/src/simulationHeatmap.tsx" id="/neuron-viewer/src/simulationHeatmap.tsx"><code>simulationHeatmap.tsx</code></a> <em>Visualizes matching sequences in heatmaps, rendering each simulation.</em></li>
+<li><a href="index.html?q=/neuron-viewer/src/tokenHeatmap.tsx" id="/neuron-viewer/src/tokenHeatmap.tsx"><code>tokenHeatmap.tsx</code></a> <em>Visualize token activations as heatmap with customizable colors and boundaries.</em></li>
+<li><a href="index.html?q=/neuron-viewer/src/types.ts" id="/neuron-viewer/src/types.ts"><code>types.ts</code></a> <em>Color interpolation and normalization functions.</em></li>
+<li><a href="index.html?q=/neuron-viewer/src/utils.ts" id="/neuron-viewer/src/utils.ts"><code>utils.ts</code></a> <em>Memoize async, get query params utilities</em></li>
+<li><a href="index.html?q=/neuron-viewer/src/welcome.tsx" id="/neuron-viewer/src/welcome.tsx"><code>welcome.tsx</code></a> <em>NeuronForm component, hooks, predefined neurons, random selection.</em></li>
+</ul>
+</li>
+<li><a href="index.html?q=/neuron-viewer/tailwind.config.js" id="/neuron-viewer/tailwind.config.js"><code>tailwind.config.js</code></a> <em>Tailwind CSS config with source content and empty extend/plugins.</em></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+    </article>
+    <script type="text/javascript">
+        function getQueryParams() {
+            var search = window.location.search.substring(1); // Remove leading '?'
+            var queryParams = {};
+            search.split('&').forEach(function (pair) {
+                var parts = pair.split('=');
+                var key = decodeURIComponent(parts[0]);
+                var value = decodeURIComponent(parts[1]);
+                queryParams[key] = value;
+            });
+            return queryParams;
+        }
+
+        const queryParams = getQueryParams(window.location.search);
+        const show_full = queryParams.full == "true";
+        if (!show_full) {
+            const spans = document.querySelectorAll('span');
+            for (let span of spans) {
+                if (span.getAttribute("hierarchy") == '0') { continue }
+
+                toggleVisibility(span);
+            }
+        }
+    </script>
+</body>
+
+</html>
