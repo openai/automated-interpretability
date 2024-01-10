@@ -652,37 +652,37 @@ def _parse_no_logprobs_completion_json(
     try:
         completion = json.loads(completion)
         if "activations" not in completion:
-            logger.error("The key 'activations' is not in the completion:\n%s", json.dumps(completion))
+            logger.error("The key 'activations' is not in the completion:\n%s\nExpected Tokens:\n%s", json.dumps(completion), tokens)
             return zero_prediction
         activations = completion["activations"]
         if len(activations) != len(tokens):
-            logger.error("Tokens and activations length did not match:\n%s", json.dumps(completion))
+            logger.error("Tokens and activations length did not match:\n%s\nExpected Tokens:\n%s", json.dumps(completion), tokens)
             return zero_prediction
         predicted_activations = []
         # check that there is a token and activation value
         # no need to double check the token matches exactly
         for i, activation in enumerate(activations):
             if "token" not in activation:
-                logger.error("The key 'token' is not in activation:\n%s\nCompletion:%s", activation, json.dumps(completion))
+                logger.error("The key 'token' is not in activation:\n%s\nCompletion:%s\nExpected Tokens:\n%s", activation, json.dumps(completion), tokens)
                 predicted_activations.append(0)
                 continue
             if "activation" not in activation:
-                logger.error("The key 'activation' is not in activation:\n%s\nCompletion:%s", activation, json.dumps(completion))
+                logger.error("The key 'activation' is not in activation:\n%s\nCompletion:%s\nExpected Tokens:\n%s", activation, json.dumps(completion), tokens)
                 predicted_activations.append(0)
                 continue
             # Ensure activation value is between 0-10 inclusive
             try:
                 predicted_activation_float = float(activation["activation"])
                 if predicted_activation_float < 0 or predicted_activation_float > MAX_NORMALIZED_ACTIVATION:
-                    logger.error("activation value out of range: %s\nCompletion:%s", predicted_activation_float, json.dumps(completion))
+                    logger.error("activation value out of range: %s\nCompletion:%s\nExpected Tokens:\n%s", predicted_activation_float, json.dumps(completion), tokens)
                     predicted_activations.append(0)
                 else:
                     predicted_activations.append(predicted_activation_float)
             except ValueError:
-                logger.error("activation value invalid: %s\nCompletion:%s", activation["activation"], json.dumps(completion))
+                logger.error("activation value invalid: %s\nCompletion:%s\nExpected Tokens:\n%s", activation["activation"], json.dumps(completion), tokens)
                 predicted_activations.append(0)
             except TypeError:
-                logger.error("activation value incorrect type: %s\nCompletion:%s", activation["activation"], json.dumps(completion))
+                logger.error("activation value incorrect type: %s\nCompletion:%s\nExpected Tokens:\n%s", activation["activation"], json.dumps(completion), tokens)
                 predicted_activations.append(0)
         logger.debug("predicted activations: %s", predicted_activations)
         return predicted_activations
