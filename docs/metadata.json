@@ -12,7 +12,7 @@
         "1": {
             "filepath": "/neuron-explainer/README.md",
             "entry_id": 14,
-            "language_id": "markdown"
+            "language_id": "plain-text"
         },
         "2": {
             "filepath": "/neuron-explainer/demos/explain_puzzles.py",
