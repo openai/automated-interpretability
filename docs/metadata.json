@@ -7,7 +7,7 @@
         "0": {
             "filepath": "/README.md",
             "entry_id": 0,
-            "language_id": "markdown"
+            "language_id": "plain-text"
         },
         "1": {
             "filepath": "/neuron-explainer/README.md",
@@ -127,7 +127,7 @@
         "24": {
             "filepath": "/neuron-viewer/README.md",
             "entry_id": 354,
-            "language_id": "plain-text"
+            "language_id": "markdown"
         },
         "25": {
             "filepath": "/neuron-viewer/python/server.py",
