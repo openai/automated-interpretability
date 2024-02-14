@@ -605,27 +605,21 @@ def _format_record_for_logprob_free_simulation(
     return response
 
 def _format_record_for_logprob_free_simulation_json(
-    neuron: int,
     explanation: str,
     activation_record: ActivationRecord,
     include_activations: bool = False,
-    max_activation: Optional[float] = None,
 ) -> str:
     if include_activations:
-        assert max_activation is not None
         assert len(activation_record.tokens) == len(
             activation_record.activations
         ), f"{len(activation_record.tokens)=}, {len(activation_record.activations)=}"
-        normalized_activations = normalize_activations(
-            activation_record.activations, max_activation=max_activation
-        )
     return json.dumps({
-        "neuron": neuron,
-        "explanation": explanation,
+        "to_find": explanation,
+        "document": "".join(activation_record.tokens),
         "activations": [
             {
                 "token": token,
-                "activation": normalized_activations[i] if include_activations else None
+                "activation": activation_record.activations[i] if include_activations else None
             } for i, token in enumerate(activation_record.tokens)
         ]
     })
@@ -898,22 +892,20 @@ class LogprobFreeExplanationTokenSimulator(NeuronSimulator):
         prompt_builder = PromptBuilder()
         prompt_builder.add_message(
             Role.SYSTEM,
-            """We're studying neurons in a neural network. Each neuron looks for some particular thing in a short document. Look at an explanation of what the neuron does, and try to predict its activations on a particular token.
+            """We're studying neurons in a neural network. Each neuron looks for certain things in a short document. Your task is to read the explanation of what the neuron does, and predict the neuron's activations for each token in the document.
 
-For each sequence, you will see the tokens in the sequence where the activations are left blank. You will print, in valid json, the exact same tokens verbatim, but with the activation values filled in according to the explanation.
-Fill out the activation values from 0 to 10. Most activations will be 0.
+For each document, you will see the full text of the document, then the tokens in the document with the activation left blank. You will print, in valid json, the exact same tokens verbatim, but with the activation values filled in according to the explanation. Pay special attention to the explanation's description of the context and order of tokens or words.
+
+Fill out the activation values from 0 to 10. Please think carefully.";
 """,
         )
 
         few_shot_examples = self.few_shot_example_set.get_examples()
-        for i, example in enumerate(few_shot_examples):
-            few_shot_example_max_activation = calculate_max_activation(example.activation_records)
+        for example in few_shot_examples:
             """
             {
-                "neuron": 1,
-                // The explanation for the neuron behavior
-                "explanation": "hello"
-                // Fill out the activation with a value from 0 to 10. Most activations will be 0.
+                "to_find": "hello",
+                "document": "The",
                 "activations": [
                     {
                         "token": "The",
@@ -924,29 +916,28 @@ Fill out the activation values from 0 to 10. Most activations will be 0.
             """
             prompt_builder.add_message(
                 Role.USER,
-                _format_record_for_logprob_free_simulation_json(i + 1, explanation=example.explanation, activation_record=example.activation_records[0], include_activations=False)
+                _format_record_for_logprob_free_simulation_json(explanation=example.explanation, activation_record=example.activation_records[0], include_activations=False)
             )
             """
             {
-            "neuron": 1,
-            "explanation": "hello"
-            "activations": [
-                {
-                    "token": "The",
-                    "activation": 3
-                }
-            ]
+                "to_find": "hello",
+                "document": "The",
+                "activations": [
+                    {
+                        "token": "The",
+                        "activation": 10
+                    }
+                ]
             }
             """
             prompt_builder.add_message(
                 Role.ASSISTANT,
-                _format_record_for_logprob_free_simulation_json(i + 1, explanation=example.explanation, activation_record=example.activation_records[0], include_activations=True, max_activation=few_shot_example_max_activation)
+                _format_record_for_logprob_free_simulation_json(explanation=example.explanation, activation_record=example.activation_records[0], include_activations=True)
             )
-        neuron_index = len(few_shot_examples) + 1
         """
         {
-            "neuron": 3,
-            "explanation": "hello"
+            "to_find": "hello",
+            "document": "The",
             "activations": [
                 {
                     "token": "The",
@@ -957,7 +948,7 @@ Fill out the activation values from 0 to 10. Most activations will be 0.
         """
         prompt_builder.add_message(
             Role.USER,
-            _format_record_for_logprob_free_simulation_json(neuron_index, explanation=explanation, activation_record=ActivationRecord(tokens=tokens, activations=[]), include_activations=False)
+            _format_record_for_logprob_free_simulation_json(explanation=explanation, activation_record=ActivationRecord(tokens=tokens, activations=[]), include_activations=False)
         )
         return prompt_builder.build(self.prompt_format, allow_extra_system_messages=True)
 

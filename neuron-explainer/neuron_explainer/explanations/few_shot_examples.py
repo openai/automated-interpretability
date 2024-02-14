@@ -40,6 +40,7 @@ class FewShotExampleSet(Enum):
     ORIGINAL = "original"
     NEWER = "newer"
     TEST = "test"
+    JL_FINE_TUNED = "jl_fine_tuned"
 
     @classmethod
     def from_string(cls, string: str) -> FewShotExampleSet:
@@ -56,6 +57,8 @@ class FewShotExampleSet(Enum):
             return NEWER_EXAMPLES
         elif self is FewShotExampleSet.TEST:
             return TEST_EXAMPLES
+        elif self is FewShotExampleSet.JL_FINE_TUNED:
+            return JL_FINE_TUNED_EXAMPLES
         else:
             raise ValueError(f"Unhandled example set: {self}")
 
@@ -980,6 +983,182 @@ NEWER_EXAMPLES = [
     ),
 ]
 
+
+NEWER_SINGLE_TOKEN_EXAMPLE = Example(
+    activation_records=[
+        ActivationRecord(
+            tokens=[
+                "B",
+                "10",
+                " ",
+                "111",
+                " MON",
+                "DAY",
+                ",",
+                " F",
+                "EB",
+                "RU",
+                "ARY",
+                " ",
+                "11",
+                ",",
+                " ",
+                "201",
+                "9",
+                " DON",
+                "ATE",
+                "fake higher scoring token",  # See below.
+            ],
+            activations=[
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0.37,
+                # This fake activation makes the previous token's activation normalize to 8, which
+                # might help address overconfidence in "10" activations for the one-token-at-a-time
+                # scoring prompt. This value and the associated token don't actually appear anywhere
+                # in the prompt.
+                0.45,
+            ],
+        ),
+    ],
+    first_revealed_activation_indices=[],
+    token_index_to_score=18,
+    explanation="instances of the token 'ate' as part of another word",
+)
+
+
+JL_FINE_TUNED_EXAMPLES = [
+    Example(
+        activation_records=[
+            ActivationRecord(
+                tokens=[
+                    "The",
+                    " cat",
+                    " jumped",
+                    " on",
+                    " my",
+                    " laptop",
+                    ".",
+                ],
+                activations=[
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+            ),
+        ],
+        first_revealed_activation_indices=[],
+        explanation="the word \"laptop\" before the word \"cat\"",
+    ),
+    Example(
+        activation_records=[
+            ActivationRecord(
+                tokens=[
+                    "The",
+                    " cat",
+                    " jumped",
+                    " on",
+                    " my",
+                    " laptop",
+                    ".",
+                ],
+                activations=[
+                    0,
+                    10,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+            ),
+        ],
+        first_revealed_activation_indices=[],
+        explanation="the word \"cat\" before the word \"laptop\"",
+    ),
+    Example(
+        activation_records=[
+            ActivationRecord(
+                tokens=[
+                    "I",
+                    " am",
+                    " using",
+                    " a",
+                    " keyboard",
+                    ".",
+                ],
+                activations=[
+                    0,
+                    0,
+                    0,
+                    0,
+                    10,
+                    0
+                ],
+            ),
+        ],
+        first_revealed_activation_indices=[],
+        explanation="the word before a period",
+    ),
+    Example(
+        activation_records=[
+            ActivationRecord(
+                tokens=[
+                    "The",
+                    " sun",
+                    " is",
+                    " shining",
+                    ".",
+                    " The",
+                    " clouds",
+                    " are",
+                    " gone",
+                    ".",
+                    " Great",
+                    " weather",
+                    "!",
+                ],
+                activations=[
+                    0,
+                    0,
+                    0,
+                    10,
+                    0,
+                    0,
+                    0,
+                    0,
+                    10,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+            ),
+        ],
+        first_revealed_activation_indices=[],
+        explanation="the word before period",
+    ),
+]
 
 NEWER_SINGLE_TOKEN_EXAMPLE = Example(
     activation_records=[
