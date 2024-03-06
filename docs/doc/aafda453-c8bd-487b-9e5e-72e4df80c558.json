@@ -1,0 +1,15 @@
+{
+    "summary": "The code imports libraries, defines functions for loading JSON data and starting the Flask server. The Flask app is configured with logging, CORS, and an after_request function to allow cross-origin requests. It also includes a main function which can be executed if the script is run directly, accepting optional dev, host_name, and port arguments.",
+    "details": [
+        {
+            "comment": "Imports necessary libraries and defines functions for loading JSON data and starting the Flask server.\nFlask app is configured with logging, CORS, and after_request function to allow cross-origin requests.",
+            "location": "\"/media/root/Toshiba XG3/works/automated-interpretability/docs/src/neuron-viewer/python/server.py\":0-42",
+            "content": "# %%\nimport logging\nfrom flask import Flask, request\nfrom flask_cors import CORS\nimport json\nimport urllib.request\ndef load_az_json(url):\n    with urllib.request.urlopen(url) as f:\n        return json.load(f)\ndef start(\n    dev: bool = False,\n    host_name: str = \"0.0.0.0\",\n    port: int = 80,\n):\n    app = Flask(\"interpretability chat\")\n    app.logger.setLevel(logging.INFO)\n    # app.logger.disabled = True\n    CORS(app)\n    @app.after_request\n    def after_request(response):\n        response.headers.add(\"Access-Control-Allow-Origin\", \"*\")\n        response.headers.add(\n            \"Access-Control-Allow-Headers\", \"Content-Type,Authorization\"\n        )\n        response.headers.add(\n            \"Access-Control-Allow-Methods\", \"GET,PUT,POST,DELETE,OPTIONS\"\n        )\n        return response\n    @app.route(\"/load_az\", methods=[\"GET\", \"POST\"])\n    async def load_az():\n        args = request.get_json()\n        path = args[\"path\"]\n        result = load_az_json(path)\n        return result\n    app.run(debug=dev, host=host_name, port=port, use_reloader=False)"
+        },
+        {
+            "comment": "This code defines a main function and executes it if the script is run directly. It accepts optional boolean dev, string host_name, and int port arguments.",
+            "location": "\"/media/root/Toshiba XG3/works/automated-interpretability/docs/src/neuron-viewer/python/server.py\":45-50",
+            "content": "def main(dev: bool = True, host_name: str = \"0.0.0.0\", port: int = 8000):\n    start(dev=dev, host_name=host_name, port=port)\nif __name__ == \"__main__\":\n    main()"
+        }
+    ]
+}

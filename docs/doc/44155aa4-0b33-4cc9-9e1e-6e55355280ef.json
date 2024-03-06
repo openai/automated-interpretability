@@ -1,0 +1,20 @@
+{
+    "summary": "The code utilizes OpenAI API for puzzle explanation generation and adheres to Jupyter Notebook format version.",
+    "details": [
+        {
+            "comment": "Importing OpenAI API key, setting up explainer model with prompt format and max concurrent. Loading PUZZLES_BY_NAME for puzzle explanation.",
+            "location": "\"/media/root/Toshiba XG3/works/automated-interpretability/docs/src/neuron-explainer/demos/explain_puzzles.ipynb\":0-36",
+            "content": "{\n \"cells\": [\n  {\n   \"cell_type\": \"code\",\n   \"execution_count\": null,\n   \"metadata\": {},\n   \"outputs\": [],\n   \"source\": [\n    \"%load_ext autoreload\\n\",\n    \"%autoreload 2\"\n   ]\n  },\n  {\n   \"cell_type\": \"code\",\n   \"execution_count\": null,\n   \"metadata\": {},\n   \"outputs\": [],\n   \"source\": [\n    \"import os\\n\",\n    \"\\n\",\n    \"os.environ[\\\"OPENAI_API_KEY\\\"] = \\\"put-key-here\\\"\\n\",\n    \"\\n\",\n    \"from neuron_explainer.activations.activation_records import calculate_max_activation\\n\",\n    \"from neuron_explainer.explanations.explainer import TokenActivationPairExplainer\\n\",\n    \"from neuron_explainer.explanations.prompt_builder import PromptFormat\\n\",\n    \"from neuron_explainer.explanations.puzzles import PUZZLES_BY_NAME\\n\",\n    \"\\n\",\n    \"\\n\",\n    \"EXPLAINER_MODEL_NAME = \\\"gpt-4\\\"\\n\",\n    \"\\n\",\n    \"explainer = TokenActivationPairExplainer(\\n\",\n    \"    model_name=EXPLAINER_MODEL_NAME,\\n\",\n    \"    prompt_format=PromptFormat.HARMONY_V4,\\n\",\n    \"    max_concurrent=1,\\n\",\n    \")\\n\",\n    \"\\n\",\n    \"for puzzle_name, puzzle in PUZZLES_BY_NAME.items():\\n\","
+        },
+        {
+            "comment": "This code is generating an explanation for a given puzzle using an explainer. It prints the name of the puzzle, the model-generated explanation, and the expected answer for the puzzle.",
+            "location": "\"/media/root/Toshiba XG3/works/automated-interpretability/docs/src/neuron-explainer/demos/explain_puzzles.ipynb\":37-72",
+            "content": "    \"    print(f\\\"{puzzle_name=}\\\")\\n\",\n    \"    puzzle_answer = puzzle.explanation\\n\",\n    \"    # Generate an explanation for the puzzle.\\n\",\n    \"    explanations = await explainer.generate_explanations(\\n\",\n    \"        all_activation_records=puzzle.activation_records,\\n\",\n    \"        max_activation=calculate_max_activation(puzzle.activation_records),\\n\",\n    \"        num_samples=1,\\n\",\n    \"    )\\n\",\n    \"    assert len(explanations) == 1\\n\",\n    \"    model_generated_explanation = explanations[0]\\n\",\n    \"    print(f\\\"{model_generated_explanation=}\\\")\\n\",\n    \"    print(f\\\"{puzzle_answer=}\\\\n\\\")\\n\",\n    \"\\n\"\n   ]\n  }\n ],\n \"metadata\": {\n  \"kernelspec\": {\n   \"display_name\": \"openai\",\n   \"language\": \"python\",\n   \"name\": \"openai\"\n  },\n  \"language_info\": {\n   \"codemirror_mode\": {\n    \"name\": \"ipython\",\n    \"version\": 3\n   },\n   \"file_extension\": \".py\",\n   \"mimetype\": \"text/x-python\",\n   \"name\": \"python\",\n   \"nbconvert_exporter\": \"python\",\n   \"pygments_lexer\": \"ipython3\",\n   \"version\": \"3.9.9\"\n  },\n  \"orig_nbformat\": 4\n },"
+        },
+        {
+            "comment": "These lines specify the Jupyter Notebook format version and minor version.",
+            "location": "\"/media/root/Toshiba XG3/works/automated-interpretability/docs/src/neuron-explainer/demos/explain_puzzles.ipynb\":73-75",
+            "content": " \"nbformat\": 4,\n \"nbformat_minor\": 2\n}"
+        }
+    ]
+}

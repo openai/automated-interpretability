@@ -1,0 +1,541 @@
+{
+    "400": {
+        "file_id": 31,
+        "content": "      setData(all_sequences)\n      setIsLoading(false)\n    }\n    fetchData()\n  }, [activeNeuron])\n  if (isLoading) {\n    return (\n      <div className=\"flex justify-center items-center h-64\">\n        <div className=\"w-8 h-8 border-4 border-gray-300 rounded-full animate-spin\"></div>\n        <div>loading top dataset examples</div>\n      </div>\n    )\n  }\n  // const activations = data.top_activations;\n  const all_normalized_sequences = normalizeTokenActs(...data.map(({sequences}) => sequences))\n  return (\n    <div>\n      <h2 className=\"text-2xl font-bold mb-4\">Activations</h2>\n      {\n        data.map(({label, default_show}, idx) => {\n          const n_show = showingMore[label] ? all_normalized_sequences[idx].length : default_show;\n          return (\n          <React.Fragment key={idx}>\n          <h3 className=\"text-md font-bold\">\n            {label}\n            <button className=\"ml-2 text-sm text-gray-500\"\n              onClick={() => setShowingMore({...showingMore, [label]: !showingMore[label]})}>\n              {showingMore[label] ? 'show less' : 'show more'}",
+        "type": "code",
+        "location": "/neuron-viewer/src/panes/datasetList.jsx:64-94"
+    },
+    "401": {
+        "file_id": 31,
+        "content": "This code fetches data for a dataset and displays it in a loading state until the data is available. It then normalizes the sequences of activations and renders them with their labels. A button allows users to show more or less of the data depending on the label.",
+        "type": "comment"
+    },
+    "402": {
+        "file_id": 31,
+        "content": "            </button>\n          </h3>\n          <HeatmapGrid allTokens={all_normalized_sequences[idx].slice(0, n_show)} />\n          </React.Fragment>\n          )\n        })\n      }\n    </div>\n  )\n}",
+        "type": "code",
+        "location": "/neuron-viewer/src/panes/datasetList.jsx:95-104"
+    },
+    "403": {
+        "file_id": 31,
+        "content": "Iterating through slices of data to display heatmaps.",
+        "type": "comment"
+    },
+    "404": {
+        "file_id": 32,
+        "content": "/neuron-viewer/src/panes/explanation.jsx",
+        "type": "filepath"
+    },
+    "405": {
+        "file_id": 32,
+        "content": "The code imports React, creates a component with loading and toggle switch, and displays top 5 or remaining sequences based on toggle value in the interface.",
+        "type": "summary"
+    },
+    "406": {
+        "file_id": 32,
+        "content": "import React, { useState, useEffect } from \"react\"\nimport { get_explanations } from \"../interpAPI\"\n// import HeatmapGrid from \"../heatmapGrid\"\nimport SimulationHeatmap from \"../simulationHeatmap\"\nimport { normalizeTokenActs } from \"../types\"\nfunction zip_simulated_sequences(sequences) {\n  return sequences.map(({ simulation }) => {\n    return simulation.tokens.map((token, idx) => ({\n      token,\n      activation: simulation.expected_activations[idx],\n    }))\n  })\n}\nfunction zip_real_sequences(sequences) {\n  return sequences.map(({ simulation, true_activations }) => {\n    return simulation.tokens.map((token, idx) => ({\n      token,\n      activation: true_activations[idx],\n    }))\n  })\n}\nconst ExplanationDisplay = ({ activeNeuron }) => {\n  const [isLoading, setIsLoading] = useState(true)\n  const [data, setData] = useState(null)\n  const [showingScoringDetails, setShowingScoringDetails] = useState(false)\n  const [toggle, setToggle] = useState(false);\n  const loadExplanation = async () => {\n    const result = await get_explanations(activeNeuron);",
+        "type": "code",
+        "location": "/neuron-viewer/src/panes/explanation.jsx:1-33"
+    },
+    "407": {
+        "file_id": 32,
+        "content": "Code imports React and related hooks, defines utility functions for zipping simulated and real sequences, and sets up state variables and a function to load explanations.",
+        "type": "comment"
+    },
+    "408": {
+        "file_id": 32,
+        "content": "    setData(result.scored_explanations[0])\n    setIsLoading(false)\n  }\n  useEffect(() => {\n    if (!data) {\n      loadExplanation()\n    }\n  }, [])\n  const handleToggleChange = () => {\n    setToggle(!toggle);\n  };\n  let sim_sequences;\n  if (data) {\n    sim_sequences = zip_simulated_sequences(data.scored_simulation.scored_sequence_simulations);\n    [sim_sequences] = normalizeTokenActs(sim_sequences)\n  } else {\n    sim_sequences = []\n  }\n  let real_sequences;\n  if (data) {\n    real_sequences = zip_real_sequences(data.scored_simulation.scored_sequence_simulations);\n    [real_sequences] = normalizeTokenActs(real_sequences)\n  } else {\n    real_sequences = []\n  }\n  const suggest_explanation_link = \"https://docs.google.com/forms/d/e/1FAIpQLSckMyDQedGhdISIqaqn0YGUtd2xqEWgPu7ehoPUTT2pTge_-g/viewform?\"\n    + `usp=pp_url&entry.541490611=${activeNeuron.layer}`\n    + `&entry.1688855196=${activeNeuron.neuron}`\n    + `&entry.495312202=https://openaipublic.blob.core.windows.net/neuron-explainer/neuron-viewer/index.html%23/layers/${activeNeuron.layer}/neurons/${activeNeuron.neuron}`;",
+        "type": "code",
+        "location": "/neuron-viewer/src/panes/explanation.jsx:34-67"
+    },
+    "409": {
+        "file_id": 32,
+        "content": "This code is setting up data and handling loading of explanation, normalizing token actions, and providing a suggestion link for further explanation. It uses useEffect to check if there's data available and loads the explanation if not. It also calculates simulated and real sequences based on the data provided, and creates a suggestion link to provide more information about the neuron.",
+        "type": "comment"
+    },
+    "410": {
+        "file_id": 32,
+        "content": "  return (\n    <>\n      <div className=\"min-w-0 flex-1\">\n        <h2 className=\"text-2xl font-bold mb-4\">Explanation</h2>\n        {isLoading ? (\n          <div className=\"flex justify-center items-center\">\n            <div className=\"loader\">Loading...</div>\n          </div>\n        ) : (\n          <>\n            <blockquote className=\"p-1 px-4 mx-1 my-0\">\n              <p className=\"py-1\">\n                <em>{data.explanation}</em>\n              </p>\n              <p className=\"py-1\">\n                <em>score: {data.scored_simulation.ev_correlation_score.toFixed(2)}</em>\n              </p>\n              <p className=\"py-1\">\n                <a href={suggest_explanation_link}>Suggest Better Explanation</a>\n              </p>\n            </blockquote>\n            <button onClick={() => { setShowingScoringDetails(!showingScoringDetails) }}>\n              {showingScoringDetails ? 'Hide' : 'Show'} scoring details\n            </button>\n            {\n              showingScoringDetails ?\n                <>\n                  <div",
+        "type": "code",
+        "location": "/neuron-viewer/src/panes/explanation.jsx:69-96"
+    },
+    "411": {
+        "file_id": 32,
+        "content": "This code represents a component in a React application that displays an explanation, along with the option to suggest a better one and toggle scoring details. The explanation is stored in 'data' prop, and a loading state is shown when 'isLoading' is true.",
+        "type": "comment"
+    },
+    "412": {
+        "file_id": 32,
+        "content": "                    style={{\n                      textAlign: 'right',\n                    }}\n                  >\n                    <div\n                      style={{\n                        display: 'inline-block',\n                        position: 'relative',\n                        width: '60px',\n                        height: '34px',\n                        marginLeft: '10px',\n                        marginBottom: '5px',\n                        borderRadius: '34px',\n                        backgroundColor: toggle ? '#0A978B' : '#CCC',\n                        cursor: 'pointer',\n                        transition: 'background-color 0.2s',\n                      }}\n                    >\n                      <input\n                        type=\"checkbox\"\n                        id=\"toggle\"\n                        checked={toggle}\n                        onChange={handleToggleChange}\n                        style={{\n                          width: '100%',\n                          height: '100%',\n                          margin: '0',",
+        "type": "code",
+        "location": "/neuron-viewer/src/panes/explanation.jsx:97-123"
+    },
+    "413": {
+        "file_id": 32,
+        "content": "This code represents a toggle switch with a checkbox input. The toggle's background color changes based on its state (checked or not).",
+        "type": "comment"
+    },
+    "414": {
+        "file_id": 32,
+        "content": "                          opacity: '0',\n                          cursor: 'pointer',\n                        }}\n                      />\n                      <span\n                        onClick={handleToggleChange}\n                        style={{\n                          position: 'absolute',\n                          top: '2px',\n                          left: toggle ? '29px' : '2px',\n                          width: '30px',\n                          height: '30px',\n                          backgroundColor: 'white',\n                          borderRadius: '50%',\n                          boxShadow: '0 2px 5px rgba(0, 0, 0, 0.3)',\n                          transition: 'left 0.2s',\n                        }}\n                      ></span>\n                    </div>\n                    <br />\n                    {toggle ? 'Activations overlaid (top = real, bottom = simulated)' : 'Activations not overlaid'}\n                  </div>\n                  <h3 className=\"text-md font-bold\">Top</h3>\n                  <SimulationHeatmap",
+        "type": "code",
+        "location": "/neuron-viewer/src/panes/explanation.jsx:124-147"
+    },
+    "415": {
+        "file_id": 32,
+        "content": "A toggle switch and text indicating whether activations are overlaid or not, with a heatmap visualization below.",
+        "type": "comment"
+    },
+    "416": {
+        "file_id": 32,
+        "content": "                    sequences={real_sequences.slice(0, 5)}\n                    simulated_sequences={sim_sequences.slice(0, 5)}\n                    overlay_activations={toggle}\n                  />\n                  <h3 className=\"text-md font-bold\">Random</h3>\n                  <SimulationHeatmap\n                    sequences={real_sequences.slice(5)}\n                    simulated_sequences={sim_sequences.slice(5)}\n                    overlay_activations={toggle}\n                  />\n                </> : null\n            }\n          </>\n        )}\n      </div>\n    </>\n  )\n}\nexport default ExplanationDisplay",
+        "type": "code",
+        "location": "/neuron-viewer/src/panes/explanation.jsx:148-167"
+    },
+    "417": {
+        "file_id": 32,
+        "content": "This code renders two SimulationHeatmap components, one for the top 5 real and simulated sequences, and another for the remaining real and simulated sequences. The toggle value determines if overlay activations should be displayed.",
+        "type": "comment"
+    },
+    "418": {
+        "file_id": 33,
+        "content": "/neuron-viewer/src/panes/index.js",
+        "type": "filepath"
+    },
+    "419": {
+        "file_id": 33,
+        "content": "Importing components from separate files for use in the application.",
+        "type": "summary"
+    },
+    "420": {
+        "file_id": 33,
+        "content": "export { default as TopTokens } from \"./topTokens\"\nexport { default as Explanation } from \"./explanation\"\nexport { default as DatasetList } from \"./datasetList\"\nexport { default as SimilarNeurons } from \"./similarNeurons\"",
+        "type": "code",
+        "location": "/neuron-viewer/src/panes/index.js:1-4"
+    },
+    "421": {
+        "file_id": 33,
+        "content": "Importing components from separate files for use in the application.",
+        "type": "comment"
+    },
+    "422": {
+        "file_id": 34,
+        "content": "/neuron-viewer/src/panes/similarNeurons.jsx",
+        "type": "filepath"
+    },
+    "423": {
+        "file_id": 34,
+        "content": "The functional component fetches and displays information about neurons, using state variables and hooks to manage data. It organizes the displayed connections in a visually pleasing format and shows related neurons based on user-selected neuron, fetching similar ones in upstream and downstream sections with a loading animation while data is fetched, showing up to 3 related neurons for each section using NeuronInfo component.",
+        "type": "summary"
+    },
+    "424": {
+        "file_id": 34,
+        "content": "import React, { useEffect, useState } from \"react\"\nimport _ from \"lodash\"\nimport { Link } from \"react-router-dom\"\nimport { get_explanations, get_top_neuron_connections } from \"../interpAPI\"\nfunction NeuronInfo({ neuron, strength }) {\n  const [info, setInfo] = useState(null)\n  useEffect(() => {\n    async function fetchInfo() {\n      const result = (await get_explanations({\n        layer: neuron.layer,\n        neuron: neuron.neuron,\n      }))\n      setInfo(result)\n    }\n    if (!info) {\n      fetchInfo()\n    }\n  }, [])\n  if (!info) {\n    return (\n      <div className=\"m-4 flex justify-center items-center h-32\">\n        <p className=\"text-gray-500 mb-2\">\n          Loading neuron {neuron.layer}:{neuron.neuron}...\n        </p>\n        <div className=\"w-8 h-8 border-4 border-gray-300 rounded-full animate-spin\"></div>\n      </div>\n    )\n  }\n  return (\n    <div>\n      <div className=\"overflow-hidden mb-4 border rounded-lg bg-white shadow\">\n        <h3\n          className=\"px-4 text-lg pb-0 mb-0 font-bold\">\n          <Link to={`/layers/${neuron.layer}/neurons/${neuron.neuron}`}>",
+        "type": "code",
+        "location": "/neuron-viewer/src/panes/similarNeurons.jsx:1-40"
+    },
+    "425": {
+        "file_id": 34,
+        "content": "Importing necessary modules and defining a functional component for displaying neuron information.\nState variable \"info\" is set to null initially using useState hook.\nuseEffect hook is used to fetch the explanation data when the component mounts.\nIf info is not available, a loading indicator is displayed.\nWhen info is available, the neuron information is rendered within a div element.",
+        "type": "comment"
+    },
+    "426": {
+        "file_id": 34,
+        "content": "          Neuron {neuron.layer}:{neuron.neuron}\n          </Link>\n        </h3>\n        <div className=\"text-sm px-4 py-2\">\n        Connection strength: {strength.toFixed(2)}\n        </div>\n        <blockquote className=\"p-1 px-4 mx-1 my-0\">\n          {info.scored_explanations.map((explanation, i) => (\n            <React.Fragment key={i}>\n            <p className=\"py-1\">\n              <em>{explanation.explanation}</em>\n            </p>\n            <p className=\"py-1\">\n              <em>score: {explanation.scored_simulation.ev_correlation_score.toFixed(2)}</em>\n            </p>\n            </React.Fragment>\n          ))}\n        </blockquote>\n      </div>\n    </div>\n  )\n}\nexport default function SimilarNeurons({ activeNeuron: neuron }) {\n  const [similarNeurons, setSimilarNeurons] = useState([])\n  const [isLoading, setIsLoading] = useState(true)\n  useEffect(() => {\n    async function fetchSimilarNeurons() {\n      const result = await get_top_neuron_connections(neuron)\n      setSimilarNeurons(result)\n      setIsLoading(false)",
+        "type": "code",
+        "location": "/neuron-viewer/src/panes/similarNeurons.jsx:41-72"
+    },
+    "427": {
+        "file_id": 34,
+        "content": "Code snippet displays information about similar neurons, their connection strength and scored explanations for a given activeNeuron. It fetches data using the 'get_top_neuron_connections' function and renders it in a visually formatted way. The state variables 'similarNeurons', 'isLoading' are managed with useState hook, and the useEffect hook is used to fetch similar neurons data when the activeNeuron prop changes.",
+        "type": "comment"
+    },
+    "428": {
+        "file_id": 34,
+        "content": "    }\n    fetchSimilarNeurons()\n  }, [neuron])\n  if (isLoading) {\n    return (\n      <div className=\"flex justify-center items-center h-64\">\n        <div className=\"w-8 h-8 border-4 border-gray-300 rounded-full animate-spin\"></div>\n      </div>\n    )\n  }\n  const n_show = 3;\n  return (\n    <div className=\"min-w-0 flex-1\">\n      <h2 className=\"text-2xl font-bold mb-4\">Related neurons</h2>\n      <div className=\"full-width mt-6\">\n        <div className=\"flex flow-row justify-center align-self-center\">\n          {\n          similarNeurons.input ?\n          <div style={{ width: 450 }} className=\"mx-2\">\n            <h5>Upstream</h5>\n            <div className=\"flex flex-row flex-wrap\">\n              {similarNeurons.input.slice(0, n_show).map(([layer, neuron, strength]) => (\n                <NeuronInfo key={layer + neuron} neuron={{ layer, neuron }} strength={strength} />\n              ))}\n            </div>\n          </div> : null\n          }\n          {\n          similarNeurons.output ?\n          <div style={{ width: 450 }} className=\"mx-2\">",
+        "type": "code",
+        "location": "/neuron-viewer/src/panes/similarNeurons.jsx:73-105"
+    },
+    "429": {
+        "file_id": 34,
+        "content": "Functionality: Displays related neurons based on user-selected neuron\n\nCode explanation:\n- If a user selects a neuron, fetch the similar neurons and display them in two sections - upstream and downstream.\n- Show a loading animation while data is fetched.\n- Display up to 3 related neurons for each section (upstream and downstream).\n- Use NeuronInfo component to represent each displayed neuron.",
+        "type": "comment"
+    },
+    "430": {
+        "file_id": 34,
+        "content": "            <h5>Downstream</h5>\n            <div className=\"flex flex-row flex-wrap\">\n              {similarNeurons.output.slice(0, n_show).map(([layer, neuron, strength]) => (\n                <NeuronInfo key={layer + neuron} neuron={{ layer, neuron }} strength={strength}/>\n              ))}\n            </div>\n          </div> : null\n          }\n        </div>\n      </div>\n    </div>\n  )\n}",
+        "type": "code",
+        "location": "/neuron-viewer/src/panes/similarNeurons.jsx:106-118"
+    },
+    "431": {
+        "file_id": 34,
+        "content": "Rendering a list of downstream neurons for the selected neuron, up to n_show.",
+        "type": "comment"
+    },
+    "432": {
+        "file_id": 35,
+        "content": "/neuron-viewer/src/panes/topTokens.jsx",
+        "type": "filepath"
+    },
+    "433": {
+        "file_id": 35,
+        "content": "The code imports React, fetches token data from an API, renders loading indicator, displays tokens with interactive elements and tooltips, limited to 20 input tokens, and formats the tokens in rounded-full boxes with red text color.",
+        "type": "summary"
+    },
+    "434": {
+        "file_id": 35,
+        "content": "import React, { useState, useEffect } from \"react\"\nimport { get_top_tokens } from \"../interpAPI\"\nconst TokenDisplay = ({ activeNeuron }) => {\n  const [isLoading, setIsLoading] = useState(true)\n  const [data, setData] = useState(null)\n  const loadTokens = async () => {\n    setIsLoading(true)\n    const weightStrengths = await get_top_tokens(activeNeuron, 'weight')\n    const activationStrengths = await get_top_tokens(activeNeuron, 'activation')\n    const data = {\n      activeNeuron,\n      weightStrengths,\n      activationStrengths,\n    }\n    setData(data)\n    setIsLoading(false)\n  }\n  useEffect(() => {\n    if (!data) {\n      loadTokens()\n    }\n  }, [])\n  return (\n    <div className=\"min-w-0 flex-1\">\n      <h2 className=\"text-2xl font-bold mb-4\">Related tokens</h2>\n      {isLoading ? (\n        <div className=\"flex justify-center items-center\">\n          <div className=\"loader\">loading tokens</div>\n        </div>\n      ) : (\n        <>\n          <h3 className=\"text-md font-bold mb-4\">Mean-activation-based</h3>\n          <div className=\"mt-2 text-sm text-gray-700\">",
+        "type": "code",
+        "location": "/neuron-viewer/src/panes/topTokens.jsx:1-41"
+    },
+    "435": {
+        "file_id": 35,
+        "content": "This code imports React and two useState/useEffect hooks. It defines a TokenDisplay component that fetches related tokens data from an interpAPI endpoint based on the activeNeuron prop. It checks if the data is loaded, displays a loading indicator if not, and renders mean-activation-based token information when done loading.",
+        "type": "comment"
+    },
+    "436": {
+        "file_id": 35,
+        "content": "            {data.activationStrengths.tokens.map((token, idx) => {\n              return (\n                data.activationStrengths.average_activations[idx] === null ? null :\n                <span\n                  key={idx}\n                  title={`Strength: ${data.activationStrengths.average_activations[idx].toFixed(2)}`}\n                  className=\"inline-flex m-1 items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800\"\n                >\n                  {token}\n                </span>\n              )\n            })}\n          </div>\n          <h3 className=\"text-md font-bold mb-4\">Weight-based</h3>\n          <div className=\"mt-2 text-sm text-gray-700\">\n            <p>Input tokens:</p>\n            {data.weightStrengths.input_positive.tokens.slice(0, 20).map((token, idx) => {\n              return (\n                data.weightStrengths.input_positive.strengths[idx] === null ? null :\n                <span\n                  key={idx}\n                  title={`Strength: ${data.weightStrengths.input_positive.strengths[idx].toFixed(2)}`}",
+        "type": "code",
+        "location": "/neuron-viewer/src/panes/topTokens.jsx:42-63"
+    },
+    "437": {
+        "file_id": 35,
+        "content": "The code is mapping over tokens based on activation strengths and weight strengths to display them as interactive elements with their respective strength values. It also includes a limit of 20 input tokens for the weight-based section.",
+        "type": "comment"
+    },
+    "438": {
+        "file_id": 35,
+        "content": "                  className=\"inline-flex m-1 items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800\"\n                >\n                  {token}\n                </span>\n              )\n            })}\n          </div>\n          {\n          <div className=\"mt-2 text-sm text-gray-700\">\n            <p>Input tokens negative:</p>\n            {data.weightStrengths.input_negative.tokens.slice(0, 20).map((token, idx) => {\n              return (\n                data.weightStrengths.input_negative.strengths[idx] === null ? null :\n                <span\n                  key={idx}\n                  title={`Strength: ${data.weightStrengths.input_negative.strengths[idx].toFixed(2)}`}\n                  className=\"inline-flex m-1 items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 text-red-800\"\n                >\n                  {token}\n                </span>\n              )\n            })}\n          </div>\n          }\n          <div className=\"mt-2 text-sm text-gray-700\">",
+        "type": "code",
+        "location": "/neuron-viewer/src/panes/topTokens.jsx:64-88"
+    },
+    "439": {
+        "file_id": 35,
+        "content": "This code maps over input tokens and displays them with a specific styling. It also handles the strength values of each token for negative inputs, displaying them only if they are not null and showing the title with the respective strength value when hovered over.",
+        "type": "comment"
+    },
+    "440": {
+        "file_id": 35,
+        "content": "            <p>Output tokens:</p>\n            {data.weightStrengths.output_positive.tokens.slice(0, 20).map((token, idx) => {\n              return (\n                data.weightStrengths.output_positive.strengths[idx] === null ? null :\n                <span\n                  key={idx}\n                  title={`Strength: ${data.weightStrengths.output_positive.strengths[idx].toFixed(2)}`}\n                  className=\"inline-flex m-1 items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800\"\n                >\n                  {token}\n                </span>\n              )\n            })}\n          </div>\n          {\n          <div className=\"mt-2 text-sm text-gray-700\">\n            <p>Output tokens negative:</p>\n            {data.weightStrengths.output_negative.tokens.slice(0, 20).map((token, idx) => {\n              return (\n                <span\n                  key={idx}\n                  title={`Strength: ${data.weightStrengths.output_negative.strengths[idx].toFixed(2)}`}\n     ",
+        "type": "code",
+        "location": "/neuron-viewer/src/panes/topTokens.jsx:89-111"
+    },
+    "441": {
+        "file_id": 35,
+        "content": "Output tokens section:\nIterates over top 20 output positive tokens and displays with strength information in tooltip.",
+        "type": "comment"
+    },
+    "442": {
+        "file_id": 35,
+        "content": "             className=\"inline-flex m-1 items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 text-red-800\"\n                >\n                  {token}\n                </span>\n              )\n            })}\n          </div>\n          }\n        </>\n      )}\n    </div>\n  )\n}\nexport default TokenDisplay",
+        "type": "code",
+        "location": "/neuron-viewer/src/panes/topTokens.jsx:111-124"
+    },
+    "443": {
+        "file_id": 35,
+        "content": "This code is rendering a div containing tokens in an array. The tokens are displayed within rounded-full text boxes with red text color.",
+        "type": "comment"
+    },
+    "444": {
+        "file_id": 36,
+        "content": "/neuron-viewer/src/reportWebVitals.js",
+        "type": "filepath"
+    },
+    "445": {
+        "file_id": 36,
+        "content": "This code defines a function `reportWebVitals` that, when given a callback function as an argument, uses the `web-vitals` library to measure and report various web vital metrics like CLS, FID, FCP, LCP, TTFB. If no callback or invalid callback is passed, it does nothing.",
+        "type": "summary"
+    },
+    "446": {
+        "file_id": 36,
+        "content": "const reportWebVitals = onPerfEntry => {\n    if (onPerfEntry && onPerfEntry instanceof Function) {\n      import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {\n        getCLS(onPerfEntry);\n        getFID(onPerfEntry);\n        getFCP(onPerfEntry);\n        getLCP(onPerfEntry);\n        getTTFB(onPerfEntry);\n      });\n    }\n  };\n  export default reportWebVitals;",
+        "type": "code",
+        "location": "/neuron-viewer/src/reportWebVitals.js:1-13"
+    },
+    "447": {
+        "file_id": 36,
+        "content": "This code defines a function `reportWebVitals` that, when given a callback function as an argument, uses the `web-vitals` library to measure and report various web vital metrics like CLS, FID, FCP, LCP, TTFB. If no callback or invalid callback is passed, it does nothing.",
+        "type": "comment"
+    },
+    "448": {
+        "file_id": 37,
+        "content": "/neuron-viewer/src/simulationHeatmap.tsx",
+        "type": "filepath"
+    },
+    "449": {
+        "file_id": 37,
+        "content": "The React component visualizes matching sequences and activations through colored divs or heatmaps, while rendering a div for each simulation in the array.",
+        "type": "summary"
+    },
+    "450": {
+        "file_id": 37,
+        "content": "import React, { useState } from 'react';\nimport { interpolateColor, Color, getInterpolatedColor, DEFAULT_COLORS, DEFAULT_BOUNDARIES, TokenAndActivation } from './types'\ntype Props = {\n  sequences: TokenAndActivation[][], \n  simulated_sequences: TokenAndActivation[][], \n  overlay_activations: boolean,\n  colors?: Color[], \n  boundaries?: number[],\n}\nexport default function SimulationSequences({ sequences, simulated_sequences, overlay_activations, colors = DEFAULT_COLORS, boundaries = DEFAULT_BOUNDARIES }: Props) {\n  return <>\n    {\n      sequences.map((tokens, i) => {\n        let simulated_tokens = simulated_sequences[i];\n        if (overlay_activations) {\n          return (\n            <div className=\"block my-3 border p-3 m-2 rounded-md\" style={{ width: '100%' /*,whiteSpace: 'nowrap', overflowX: 'auto' */ }} key={i}>\n              {tokens.map(({ token, activation, normalized_activation }, j) => {\n                const { token: simulated_token, activation: simulated_activation, normalized_activation: simulated_normalized_activation } = simulated_tokens[j];",
+        "type": "code",
+        "location": "/neuron-viewer/src/simulationHeatmap.tsx:1-21"
+    },
+    "451": {
+        "file_id": 37,
+        "content": "This code is a React component that takes in two sets of sequences (sequences and simulated_sequences), along with optional overlay_activations, colors, and boundaries props. It maps through each sequence, then each token within the sequence, comparing the activation values between the original sequence and the simulated one. If overlay_activations is true, it will display both sets of activations in a div element with custom styling.",
+        "type": "comment"
+    },
+    "452": {
+        "file_id": 37,
+        "content": "                if (simulated_token !== token) {\n                  throw new Error('simulated tokens not matching')\n                }\n                const color = getInterpolatedColor(colors, boundaries, normalized_activation || activation);\n                const simcolor = getInterpolatedColor(colors, boundaries, simulated_normalized_activation || simulated_activation);\n                return <div style={{ display: 'inline-block', whiteSpace: 'pre' }} key={j}>\n                  <div style={{ display: 'flex', flexDirection: 'column' }}>\n                    <span\n                      title={`Activation: ${activation.toFixed(2)}`}\n                      style={{\n                        transition: \"500ms ease-in all\",\n                        background: `rgba(${color.r}, ${color.g}, ${color.b}, 0.5)`,\n                      }}\n                    >{token}</span>\n                    <span\n                      title={`Simulation: ${simulated_activation.toFixed(2)}`}\n                      style={{\n                        transition: \"500ms ease-in all\",",
+        "type": "code",
+        "location": "/neuron-viewer/src/simulationHeatmap.tsx:22-40"
+    },
+    "453": {
+        "file_id": 37,
+        "content": "Checking if simulated tokens match and creating colored divs for activation and simulation values.",
+        "type": "comment"
+    },
+    "454": {
+        "file_id": 37,
+        "content": "                        background: `rgba(${simcolor.r}, ${simcolor.g}, ${simcolor.b}, 0.5)`,\n                      }}\n                    >{token}</span>\n                  </div>\n                </div>\n              })}\n            </div>\n          )\n        } else {\n          return (\n            <div className=\"block my-3 border p-3 m-2 rounded-md\" style={{ width: '100%' /*,whiteSpace: 'nowrap', overflowX: 'auto' */ }} key={i}>\n              <div>\n                <span\n                  style={{\n                    fontSize: '0.7em',\n                    fontWeight: 'bold',\n                  }}\n                >Real activations:</span><br />\n                {tokens.map(({ token, activation, normalized_activation }, j) => {\n                  const color = getInterpolatedColor(colors, boundaries, normalized_activation || activation);\n                  return <span key={j}\n                    title={`Activation: ${activation.toFixed(2)}`}\n                    style={{\n                      transition: \"500ms ease-in all\",",
+        "type": "code",
+        "location": "/neuron-viewer/src/simulationHeatmap.tsx:41-64"
+    },
+    "455": {
+        "file_id": 37,
+        "content": "Code displays a heatmap of real activations for each token in the simulation. If there is no data, it displays \"Real activations:\" followed by the token names with colored placeholders based on their activation values.",
+        "type": "comment"
+    },
+    "456": {
+        "file_id": 37,
+        "content": "                      background: `rgba(${color.r}, ${color.g}, ${color.b}, 0.5)`,\n                    }}\n                  >{token}</span>\n                })}\n              </div>\n              <hr style={{ margin: '5px 0 5px 0' }} />\n              <div>\n                <span\n                  style={{\n                    fontSize: '0.7em',\n                    fontWeight: 'bold',\n                  }}\n                >Simulated activations:</span><br />\n                {simulated_tokens.map(({ token, activation, normalized_activation }, j) => {\n                  const color = getInterpolatedColor(colors, boundaries, normalized_activation || activation);\n                  return <span key={j}\n                    title={`Activation: ${activation.toFixed(2)}`}\n                    style={{\n                      transition: \"500ms ease-in all\",\n                      background: `rgba(${color.r}, ${color.g}, ${color.b}, 0.5)`,\n                    }}\n                  >{token}</span>\n                })}\n              </div>",
+        "type": "code",
+        "location": "/neuron-viewer/src/simulationHeatmap.tsx:65-88"
+    },
+    "457": {
+        "file_id": 37,
+        "content": "This code renders simulated tokens with corresponding activations and normalized_activations, applying colors based on the activation value for visualization.",
+        "type": "comment"
+    },
+    "458": {
+        "file_id": 37,
+        "content": "            </div>\n          )\n        }\n      })\n    }\n    </>\n}",
+        "type": "code",
+        "location": "/neuron-viewer/src/simulationHeatmap.tsx:89-95"
+    },
+    "459": {
+        "file_id": 37,
+        "content": "Renders a div component for each simulation in the simulations array.",
+        "type": "comment"
+    },
+    "460": {
+        "file_id": 38,
+        "content": "/neuron-viewer/src/tokenHeatmap.tsx",
+        "type": "filepath"
+    },
+    "461": {
+        "file_id": 38,
+        "content": "The TokenHeatmap React component visualizes token activations as a heatmap, with optional user-specified colors and boundaries. It manages loading state and provides tooltips for activation values, while the mentioned colored span functionality seems unrelated to the main focus of the summary.",
+        "type": "summary"
+    },
+    "462": {
+        "file_id": 38,
+        "content": "import React from \"react\"\nimport { interpolateColor, Color, getInterpolatedColor, DEFAULT_COLORS, DEFAULT_BOUNDARIES, TokenAndActivation } from './types'\ntype Props = {\n  tokens: TokenAndActivation[], \n  loading?: boolean, \n  colors?: Color[], \n  boundaries?: number[]\n}\nexport default function TokenHeatmap({ tokens, loading, colors = DEFAULT_COLORS, boundaries = DEFAULT_BOUNDARIES }: Props) {\n    // <div className=\"block\" style={{width:'100%', whiteSpace: 'pre', overflowX: 'scroll' }}>\n  return (\n    <div className=\"block\" style={{width:'100%', whiteSpace: 'pre-wrap'}}>\n      {tokens.map(({ token, activation, normalized_activation }, i) => {\n        const color = getInterpolatedColor(colors, boundaries, normalized_activation || activation);\n        return <span key={i}\n          title={loading ? '' : `Activation: ${activation.toFixed(2)}`}\n          className={`${loading ? \"animate-pulse\" : \"\"}`}\n          style={{\n            transition: \"500ms ease-in all\",\n            background: loading\n              ? `rgba(0, 0, 0, 0.03)`",
+        "type": "code",
+        "location": "/neuron-viewer/src/tokenHeatmap.tsx:1-23"
+    },
+    "463": {
+        "file_id": 38,
+        "content": "This code is a React component called TokenHeatmap that takes in an array of tokens and their activations, and renders them as a heatmap. It uses the DEFAULT_COLORS and DEFAULT_BOUNDARIES if not specified by the user. The component handles loading state and provides tooltips for activation values when not in loading state.",
+        "type": "comment"
+    },
+    "464": {
+        "file_id": 38,
+        "content": "              : `rgba(${color.r}, ${color.g}, ${color.b}, 0.5)`,\n          }}\n        >\n          {token}\n        </span>\n      })}\n    </div>\n  )\n}",
+        "type": "code",
+        "location": "/neuron-viewer/src/tokenHeatmap.tsx:24-32"
+    },
+    "465": {
+        "file_id": 38,
+        "content": "Creates a colored span for each token in the input text, using RGB values to determine color intensity.",
+        "type": "comment"
+    },
+    "466": {
+        "file_id": 39,
+        "content": "/neuron-viewer/src/types.ts",
+        "type": "filepath"
+    },
+    "467": {
+        "file_id": 39,
+        "content": "This code defines functions for color interpolation and normalization of activation values. It flattens, scales, and normalizes data using imported types, with a function to interpolate colors between two given colors based on a ratio, and default color and boundary values provided.",
+        "type": "summary"
+    },
+    "468": {
+        "file_id": 39,
+        "content": "import { scaleLinear } from \"d3-scale\"\nimport { min, max, flatten } from \"lodash\"\nexport type Neuron = {\n  layer: number;\n  neuron: number;\n}\nexport type TokenAndActivation = {\n  token: string,\n  activation: number\n  normalized_activation?: number\n}\nexport type TokenSequence = TokenAndActivation[]\nexport const normalizeTokenActs = (...sequences: TokenSequence[][]) => {\n  // console.log('sequences', sequences)\n  let flattened: TokenAndActivation[] = flatten(flatten(sequences))\n  // Replace all activations less than 0 in data.tokens with 0. This matches the format in the\n  // top + random activation records displayed in the main grid.\n  flattened = flattened.map(({token, activation}) => {\n    return {\n      token,\n      activation: Math.max(activation, 0)\n    }\n  })\n  const maxActivation = max(flattened.map((ta) => ta.activation)) || 0;\n  const neuronScale = scaleLinear()\n    // Even though we're only displaying positive activations, we still need to scale in a way that\n    // accounts for the existence of negative activations, since our color scale includes them.",
+        "type": "code",
+        "location": "/neuron-viewer/src/types.ts:1-31"
+    },
+    "469": {
+        "file_id": 39,
+        "content": "This code imports necessary functions and defines types for neuron, token and activation data. It then creates a function normalizeTokenActs that takes in multiple sequences of tokens and their activations, flattens them into one array, replaces any negative activations with 0, finds the maximum activation value across all sequences, and scales the data to be between 0 and 1 for colorization purposes.",
+        "type": "comment"
+    },
+    "470": {
+        "file_id": 39,
+        "content": "    .domain([0, maxActivation])\n    .range([0, 1])\n  return sequences.map((seq) => seq.map((tas) => tas.map(({ token, activation }) => ({\n      token,\n      activation,\n      normalized_activation: neuronScale(activation),\n  }))))\n}\nexport type Color = {r: number, g: number, b: number};\nexport function interpolateColor(color_l: Color, color_r: Color, value: number) {\n  const color = {\n    r: Math.round(color_l.r + (color_r.r - color_l.r) * value),\n    g: Math.round(color_l.g + (color_r.g - color_l.g) * value),\n    b: Math.round(color_l.b + (color_r.b - color_l.b) * value),\n  }\n  return color\n}\nexport function getInterpolatedColor(colors: Color[], boundaries: number[], value: number) {\n  const index = boundaries.findIndex((boundary) => boundary >= value)\n  const colorIndex = Math.max(0, index - 1)\n  const color_left = colors[colorIndex]\n  const color_right = colors[colorIndex + 1]\n  const boundary_left = boundaries[colorIndex]\n  const boundary_right = boundaries[colorIndex + 1]\n  const ratio = (value - boundary_left) / (boundary_right - boundary_left)",
+        "type": "code",
+        "location": "/neuron-viewer/src/types.ts:32-59"
+    },
+    "471": {
+        "file_id": 39,
+        "content": "This code defines functions for color interpolation and normalization of activation values in sequences. It also exports a Color type which represents RGB colors, with each component ranging from 0 to 255. The \"interpolateColor\" function takes three parameters: two colors (left and right) and a value between 0 and 1, representing the position on a gradient between the left and right colors. It calculates the new color based on the interpolation of the RGB components between these two colors. The \"getInterpolatedColor\" function uses color boundaries to determine the appropriate color for a given value by finding the index of the boundary and using it to choose the appropriate color from the predefined colors array.",
+        "type": "comment"
+    },
+    "472": {
+        "file_id": 39,
+        "content": "  const color = interpolateColor(color_left, color_right, ratio)\n  return color\n}\nexport const DEFAULT_COLORS = [\n  // { r: 255, g: 0, b: 105 },\n  { r: 255, g: 255, b: 255 },\n  { r: 0, g: 255, b: 0 },\n]\nexport const DEFAULT_BOUNDARIES = [\n  // 0, 0.5, 1\n  0, 1\n]",
+        "type": "code",
+        "location": "/neuron-viewer/src/types.ts:60-72"
+    },
+    "473": {
+        "file_id": 39,
+        "content": "This code defines a function to interpolate colors between two given colors based on a ratio, and provides default color and boundary values.",
+        "type": "comment"
+    },
+    "474": {
+        "file_id": 40,
+        "content": "/neuron-viewer/src/utils.ts",
+        "type": "filepath"
+    },
+    "475": {
+        "file_id": 40,
+        "content": "1. memoizeAsync: Memoizes asynchronous functions by storing their results in localStorage and returning them if they have already been computed.\n2. getQueryParams: Retrieves URL query parameters from the current window location and returns them as an object.",
+        "type": "summary"
+    },
+    "476": {
+        "file_id": 40,
+        "content": "export const memoizeAsync = (fnname: string, fn: any) => {\n  return async (...args: any) => {\n    const key = `memoized:${fnname}:${args.map((x: any) => JSON.stringify(x)).join(\"-\")}`\n    const val = localStorage.getItem(key);\n    if (val === null) {\n      const value = await fn(...args)\n      localStorage.setItem(key, JSON.stringify(value))\n      console.log(`memoized ${fnname}(${args.map((x: any) => JSON.stringify(x)).join(\", \")})`, value)\n      return value\n    } else {\n      // console.log(`parsing`, val)\n      return JSON.parse(val)\n    }\n  }\n}\nexport const getQueryParams = () => {\n  const urlParams = new URLSearchParams(window.location.search)\n  const params: {[key: string]: any} = {}\n  for (const [key, value] of urlParams.entries()) {\n    params[key] = value\n  }\n  return params\n}",
+        "type": "code",
+        "location": "/neuron-viewer/src/utils.ts:1-25"
+    },
+    "477": {
+        "file_id": 40,
+        "content": "1. memoizeAsync: Memoizes asynchronous functions by storing their results in localStorage and returning them if they have already been computed.\n2. getQueryParams: Retrieves URL query parameters from the current window location and returns them as an object.",
+        "type": "comment"
+    },
+    "478": {
+        "file_id": 41,
+        "content": "/neuron-viewer/src/welcome.tsx",
+        "type": "filepath"
+    },
+    "479": {
+        "file_id": 41,
+        "content": "The code provides a NeuronForm component that uses hooks to handle layers and neurons, featuring an array of predefined text classification neurons. The Neuron Viewer tool allows users to view specific details or select neurons randomly.",
+        "type": "summary"
+    },
+    "480": {
+        "file_id": 41,
+        "content": "import { useState, FormEvent } from \"react\"\nimport { useNavigate } from \"react-router-dom\"\nfunction NeuronForm() {\n  const [input_layer, setLayer] = useState(0)\n  const [input_neuron, setNeuron] = useState(0)\n  const navigate = useNavigate()\n  const knownGoodNeurons = [\n    /**************\n    /* well explained + interesting\n    ***************/\n    {heading: 'Somewhat well explained by GPT-4', layer: 0, neuron: 0, label: ''},\n    {layer: 5, neuron: 131, label: \"citations\", description: \"citations, especially biblical and legal\"},\n    {layer: 12, neuron: 847, label: \"numbers in fractions\", description: \"numbers in fractions\"}, // \n    {layer: 12, neuron: 5820, label: \"short flags\", description: \"single letter command line flags\"}, // \n    {layer: 14, neuron: 417, label: \"doing things right\", description: \"words and phrases related to performing actions correctly or properly\"}, // score 0.42\n    {layer: 15, neuron: 4538, label: \"leading transitions\", description: \"transition words at the start of documents\"},",
+        "type": "code",
+        "location": "/neuron-viewer/src/welcome.tsx:1-18"
+    },
+    "481": {
+        "file_id": 41,
+        "content": "This code imports React hooks and defines a NeuronForm component that utilizes useState to store the layer and neuron values. It also uses useNavigate from react-router-dom for navigation. The code includes an array of objects representing known good neurons with their respective layers, neurons, labels, and descriptions.",
+        "type": "comment"
+    },
+    "482": {
+        "file_id": 41,
+        "content": "    {layer: 17, neuron: 3218, label: \"success\", description: \"expressions of completion or success\"}, // score 0.38\n    {layer: 18, neuron: 5302, label: \"X *by*\", description: \"the word 'by' in phrases indicating side by side or sequential events.\"}, // score 0.48\n    {layer: 19, neuron: 1377, label: \"similes\", description: \"comparisons and analogies, often using the word 'like'\"}, // score 0.42\n    {layer: 21, neuron: 2932, label: \"Canada\", description: \"references to Canadian people, places, and entities\"}, // score 0.78\n    {layer: 25, neuron: 2602, label: \"similes\", description: \"descriptive comparisons, especially similes\"}, // score 0.40\n    {layer: 25, neuron: 4870, label: \"certainty\", description: \"phrases related to certainty and confidence.\"}, // score 0.37\n    {layer: 30, neuron: 28, label: \"times\", description: \"specific times (with hours and minutes)\"}, \n    // https://openaipublic.blob.core.windows.net/neuron-explainer/neuron-viewer/index.html#/layers/5/neurons/2326\n    {heading: 'Partially explained by GPT-4', layer: 0, neuron: 0, label: ''},",
+        "type": "code",
+        "location": "/neuron-viewer/src/welcome.tsx:19-27"
+    },
+    "483": {
+        "file_id": 41,
+        "content": "This code represents a collection of neuron explanations for an AI model. Each entry in the array includes information about the layer, neuron number, label, and description. The scores indicate how relevant each neuron is to the given text.",
+        "type": "comment"
+    },
+    "484": {
+        "file_id": 41,
+        "content": "    {layer: 0, neuron: 816, label: \"Marvel comics vibes\", description: \"language and context related to Marvel comics, movies, and characters, as well as other superhero-themed content\"}, // score 0.44\n    {layer: 0, neuron: 742, label: \"Second token 'and'\", description: \"'and', 'in', and punctuation at the second token\"},\n    {layer: 4, neuron: 4342, label: \"token counter\", description: \"counting repeated occurrences of a token\"},\n    {layer: 5, neuron: 2326, label: \"rhymes with 'at'\", description: \"syllables rhyming with 'at', sometimes 'it', 'et', 'ot'\"},\n    {layer: 5, neuron: 4492, label: \"leading 'an'\", description: \"sentences that start with 'an'\"}, // score 0.77\n    {layer: 6, neuron: 3251, label: \"not all\", description: \"not all\"},\n    {layer: 10, neuron: 2851, label: \"leading acronyms\", description: \"acronyms after punctuation or newlines\"},\n    {layer: 12, neuron: 2884, label: \"hypothetical had\", description: \"had in hypothetical contexts\"}, // \n    {layer: 14, neuron: 3539, label: \"long sequences\", description: \"long sequences of stuff\"},",
+        "type": "code",
+        "location": "/neuron-viewer/src/welcome.tsx:28-36"
+    },
+    "485": {
+        "file_id": 41,
+        "content": "These are individual neuron definitions for various layers in a neural network, each with a specific label and description. The numbers represent unique identifiers for these neurons.",
+        "type": "comment"
+    },
+    "486": {
+        "file_id": 41,
+        "content": "    {layer: 14, neuron: 3822, label: \"X by/after *X*\", description: \"noun repetitions separated by 'by' or 'after'\"},\n    {layer: 21, neuron: 3982, label: \"any *and* all\", description: \"any/anything *and/&* all/everything\"},\n    {layer: 26, neuron: 20, label: \"truth, skin, or sun\", description: \"truth, skin, or sun\"},\n    // layer=18&neuron=5302\n    /**************\n    /* boring\n    ***************/\n    /**************\n    /* poorly explained + interesting\n    ***************/\n    {heading: 'Poorly explained by GPT-4', layer: 0, neuron: 0, label: ''},\n    // Actually activates for negated version “not so much … as” even when not so much is fairly far apart\n    // another \"not all\":  13&neuron=1352\n    // {layer: 0, neuron: 2823, label: \"Hillary email leak vibes\", description: \"contexts related to Hillary Clinton leaked emails\"}, // score ??\n    // {layer: 12, neuron: 3718, label: \"comparative phrases and negations\", description: \"comparative phrases and negations\"}, // score 0.12\n    {layer: 13, neuron: 410, label: \"N and N+1\", description: \"a number following its predecessor\"}, // score ??",
+        "type": "code",
+        "location": "/neuron-viewer/src/welcome.tsx:37-52"
+    },
+    "487": {
+        "file_id": 41,
+        "content": "This code represents a collection of layers and neurons with their respective labels and descriptions. The comments describe the meaning or purpose behind each entry, such as \"X by/after *X*\", which refers to noun repetitions separated by 'by' or 'after', and \"any *and* all\" for any/anything & all/everything. Some entries are marked as poorly explained, interesting, or have specific contexts like Hillary Clinton leaked emails. The scores represent the relevance of these entries in the context.",
+        "type": "comment"
+    },
+    "488": {
+        "file_id": 41,
+        "content": "    {layer: 13, neuron: 979, label: \"subtle plurals\", description: \"subtle/nonobvious plurals\"}, // score ??\n    // slash after number 12&neuron=847\n    // numbers predicting slash: 14&neuron=92\n    // 0&neuron=2823\n    {layer: 14, neuron: 1251, label: \"subjunctive verbs\", description: \"verbs in subjunctive mood\"}, // score ??\n    {layer: 16, neuron: 518, label: \"pattern breaks\", description: \"tokens that break an established pattern in an ongoing list\"}, // score 0.2 with totally wrong explanation\n    {layer: 17, neuron: 821, label: \"idioms\", description: \"idioms\"},\n    {layer: 18, neuron: 3481, label: \"post-typo\", description: \"first token following a typo\"}, // score ??\n    {layer: 18, neuron: 3552, label: \"repeated text\", description: \"repeated text\"}, // score ??\n    // another shared last names: https://openaipublic.blob.core.windows.net/neuron-explainer/neuron-viewer/index.html#/layers/20/neurons/3164\n    {layer: 19, neuron: 1763, label: \"shared last names\", description: \"last names when two different people sharing last name are mentioned\"}, // score 0.36",
+        "type": "code",
+        "location": "/neuron-viewer/src/welcome.tsx:53-63"
+    },
+    "489": {
+        "file_id": 41,
+        "content": "Code represents a list of neurons in the Neuron Viewer tool, each with a layer, neuron ID, label, description, and possibly a score. The labels indicate different types of linguistic patterns or features identified by OpenAI's GPT-3 model. The descriptions provide context on what these neurons represent.",
+        "type": "comment"
+    },
+    "490": {
+        "file_id": 41,
+        "content": "    {layer: 20, neuron: 4334, label: \"previous break\", description: \"tokens that previously preceded a linebreak\"}, // score ??\n    {layer: 27, neuron: 116, label: \"MTG vibes\", description: \"Magic the Gathering contexts\"}, // score ??\n    {layer: 35, neuron: 1523, label: \"NBA name predictor\", description: \"NBA person/player name predictor\"}, // score ??\n    // {layer: 36, neuron: 2275, label: \"she predictor\", description: \"prediction of the token 'she'\"}, // score ??\n    // {layer: 36, neuron: 5107, label: \"Mormon vibes\", description: \"Mormon related context\"}, // score ??\n    // ] predictor 40&neuron=4505\n    {layer: 46, neuron: 2181, label: \"C predictor\", description: \"prediction of the token 'C'\"}, // score ??\n  ]\n  const handleSubmit = (e: FormEvent) => {\n    e.preventDefault()\n    navigate(`/layers/${input_layer}/neurons/${input_neuron}`)\n    return false\n  }\n  const handleNeuronClick = (layer: number, neuron: number) => {\n    navigate(`/layers/${layer}/neurons/${neuron}`)\n  }\n  const feelingLuckySubmit = () => {",
+        "type": "code",
+        "location": "/neuron-viewer/src/welcome.tsx:64-83"
+    },
+    "491": {
+        "file_id": 41,
+        "content": "These are examples of neurons with their associated labels, descriptions, and potential scores. The handleSubmit function handles form submission to navigate to a specific layer and neuron. The handleNeuronClick function navigates to a specific neuron when clicked.",
+        "type": "comment"
+    },
+    "492": {
+        "file_id": 41,
+        "content": "    const layer = Math.floor(Math.random() * 48);\n    const neuron = Math.floor(Math.random() * 6400);\n    navigate(`/layers/${layer}/neurons/${neuron}`)\n    return false\n  }\n  return (\n    <div className=\"flex flex-col items-center justify-center\">\n      <h1 className=\"text-2xl font-bold mb-4\">Welcome!  Pick a neuron:</h1>\n      <form\n        onSubmit={handleSubmit}\n        className=\"flex flex-col items-center justify-center\"\n        style={{ flexFlow: 'row wrap' }}\n      >\n        Layer <input\n          type=\"number\"\n          id=\"inputLayer\"\n          value={input_layer}\n          min={0}\n          max={47}\n          style={{ width: 70, marginLeft: 10, marginRight: 10 }}\n          onChange={(e) => setLayer(parseInt(e.target.value))}\n          className=\"border border-gray-300 rounded-md p-2\"\n        />\n        Index <input\n          type=\"number\"\n          id=\"inputNeuron\"\n          value={input_neuron}\n          min={0}\n          max={6399}\n          style={{ width: 70, marginLeft: 10, marginRight: 10 }}\n          onChange={(e) => setNeuron(parseInt(e.target.value))}",
+        "type": "code",
+        "location": "/neuron-viewer/src/welcome.tsx:84-116"
+    },
+    "493": {
+        "file_id": 41,
+        "content": "Picks a random neuron from the given layers and navigates to that neuron's page. Allows user to input layer and neuron index, but doesn't seem to have functionality for choosing specific neurons.",
+        "type": "comment"
+    },
+    "494": {
+        "file_id": 41,
+        "content": "          className=\"border border-gray-300 rounded-md p-2\"\n        />\n        <button\n          onClick={handleSubmit}\n          className=\"border border-gray-300 rounded-md p-2 mb-4 mt-4\"\n        >\n          Go to {input_layer}:{input_neuron}\n        </button>\n      </form>\n      <button\n        onClick={feelingLuckySubmit}\n        className=\"border border-gray-300 rounded-md p-2 mb-4 mt-4\"\n      >\n        I'm feeling lucky\n      </button>\n      <div className=\"mt-4\">\n        <h2 className=\"text-xl font-bold mb-2\">Interesting neurons:</h2>\n        <div className=\"mb-10 flex-row\">\n          <div\n            className=\"flex flex-flow flex-wrap\"\n          >\n            {knownGoodNeurons.map(({ heading, layer, neuron, label, description }, j) => (\n              heading ? <div style={{width: '100%'}} key={j}><h4>\n              {heading}\n              </h4></div> : <button\n                onClick={() => handleNeuronClick(layer, neuron)}\n                key={`${layer}:${neuron}`}\n                style={{ width: 200 }}",
+        "type": "code",
+        "location": "/neuron-viewer/src/welcome.tsx:117-144"
+    },
+    "495": {
+        "file_id": 41,
+        "content": "This code renders a form to input layer and neuron number, two buttons - one for going to the specific neuron and another for feeling lucky, and a list of interesting neurons with their details.",
+        "type": "comment"
+    },
+    "496": {
+        "file_id": 41,
+        "content": "                className=\"m-2 text-blue-500 hover:text-blue-700\"\n                title={description}\n              >\n                {label} ({layer}:{neuron})\n              </button>\n            ))}\n          </div>\n        </div>\n      </div>\n    </div>\n  )\n}\nexport default NeuronForm",
+        "type": "code",
+        "location": "/neuron-viewer/src/welcome.tsx:145-158"
+    },
+    "497": {
+        "file_id": 41,
+        "content": "This code represents a JSX component called NeuronForm. It displays a set of buttons, each representing a neuron and its associated layer number. The buttons have hover effects for styling and display the description, label, layer, and neuron count for each neuron.",
+        "type": "comment"
+    },
+    "498": {
+        "file_id": 42,
+        "content": "/neuron-viewer/tailwind.config.js",
+        "type": "filepath"
+    },
+    "499": {
+        "file_id": 42,
+        "content": "Configuring Tailwind CSS with content from \"./src/**/*.{html,js,jsx}\" and empty extend and plugins.",
+        "type": "summary"
+    }
+}

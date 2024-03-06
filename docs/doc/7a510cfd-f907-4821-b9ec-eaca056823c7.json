@@ -1,0 +1,10 @@
+{
+    "summary": "This function converts the input URL to Azure format if it starts with \"az://openaipublic/\".",
+    "details": [
+        {
+            "comment": "This function converts the input URL to Azure format if it starts with \"az://openaipublic/\".",
+            "location": "\"/media/root/Toshiba XG3/works/automated-interpretability/docs/src/neuron-explainer/neuron_explainer/azure.py\":0-4",
+            "content": "def standardize_azure_url(url):\n    \"\"\"Make sure url is converted to url format, not an azure path\"\"\"\n    if url.startswith(\"az://openaipublic/\"):\n        url = url.replace(\"az://openaipublic/\", \"https://openaipublic.blob.core.windows.net/\")\n    return url"
+        }
+    ]
+}

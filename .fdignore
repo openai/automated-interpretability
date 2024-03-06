@@ -1,0 +1,11 @@
+.*
+*.ico
+*.css
+*.html
+*.json
+docs
+*.{png,svg,in,tiktoken,npz,flac,json,ipynb}
+*.{gz,tar,zip,rar,7z,xz}
+LICENSE*
+.*
+*/.*

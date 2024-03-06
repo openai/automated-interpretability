@@ -1,0 +1,542 @@
+{
+    "0": {
+        "file_id": 0,
+        "content": "/README.md",
+        "type": "filepath"
+    },
+    "1": {
+        "file_id": 0,
+        "content": "This code repository contains tools for generating and analyzing neuron explanations in language models, including public datasets in JSON format and data sources for related neurons and tokens. It also addresses GPT-2 model availability and fixes a GELU implementation bug for inference.",
+        "type": "summary"
+    },
+    "2": {
+        "file_id": 0,
+        "content": "# Automated interpretability\n## Code and tools\nThis repository contains code and tools associated with the [Language models can explain neurons in\nlanguage models](https://openaipublic.blob.core.windows.net/neuron-explainer/paper/index.html) paper, specifically:\n* Code for automatically generating, simulating, and scoring explanations of neuron behavior using\nthe methodology described in the paper. See the\n[neuron-explainer README](neuron-explainer/README.md) for more information.\nNote: if you run into errors of the form \"Error: Could not find any credentials that grant access to storage account: 'openaipublic' and container: 'neuron-explainer'\".\" you might be able to fix this by signing up for an azure account and specifying the credentials as described in the error message. \n* A tool for viewing neuron activations and explanations, accessible\n[here](https://openaipublic.blob.core.windows.net/neuron-explainer/neuron-viewer/index.html). See\nthe [neuron-viewer README](neuron-viewer/README.md) for more information.",
+        "type": "code",
+        "location": "/README.md:1-16"
+    },
+    "3": {
+        "file_id": 0,
+        "content": "This repository contains code and tools for the Language models can explain neurons in language models paper. It includes a tool for generating, simulating, and scoring explanations of neuron behavior using the methodology described in the paper. Additionally, there's a tool for viewing neuron activations and explanations accessible online.",
+        "type": "comment"
+    },
+    "4": {
+        "file_id": 0,
+        "content": "## Public datasets\nTogether with this code, we're also releasing public datasets of GPT-2 XL neurons and explanations.\nHere's an overview of those datasets.  \n* Neuron activations: `az://openaipublic/neuron-explainer/data/collated-activations/{layer_index}/{neuron_index}.json`\n    - Tokenized text sequences and their activations for the neuron. We\n    provide multiple sets of tokens and activations: top-activating ones, random\n    samples from several quantiles; and a completely random sample. We also provide\n    some basic statistics for the activations.\n    - Each file contains a JSON-formatted\n    [`NeuronRecord`](neuron-explainer/neuron_explainer/activations/activations.py#L89) dataclass.\n* Neuron explanations: `az://openaipublic/neuron-explainer/data/explanations/{layer_index}/{neuron_index}.jsonl`\n    - Scored model-generated explanations of the behavior of the neuron, including simulation results.\n    - Each file contains a JSON-formatted\n    [`NeuronSimulationResults`](neuron-explainer/neuron_explainer/explanations/explanations.py#L146)",
+        "type": "code",
+        "location": "/README.md:18-33"
+    },
+    "5": {
+        "file_id": 0,
+        "content": "This code provides the location and overview of public datasets for GPT-2 XL neurons and explanations. The datasets include neuron activations and explanations in JSON format, with different sets of tokens and activations provided.",
+        "type": "comment"
+    },
+    "6": {
+        "file_id": 0,
+        "content": "    dataclass.\n* Related neurons: `az://openaipublic/neuron-explainer/data/related-neurons/weight-based/{layer_index}/{neuron_index}.json`\n    - Lists of the upstream and downstream neurons with the most positive and negative connections (see below for definition).\n    - Each file contains a JSON-formatted dataclass whose definition is not included in this repo.\n* Tokens with high average activations:\n`az://openaipublic/neuron-explainer/data/related-tokens/activation-based/{layer_index}/{neuron_index}.json`\n    - Lists of tokens with the highest average activations for individual neurons, and their average activations.\n    - Each file contains a JSON-formatted [`TokenLookupTableSummaryOfNeuron`](neuron-explainer/neuron_explainer/activations/token_connections.py#L36)\n    dataclass.\n* Tokens with large inbound and outbound weights:\n`az://openaipublic/neuron-explainer/data/related-tokens/weight-based/{layer_index}/{neuron_index}.json`\n    - List of the most-positive and most-negative input and output tokens for individual neurons,",
+        "type": "code",
+        "location": "/README.md:34-45"
+    },
+    "7": {
+        "file_id": 0,
+        "content": "This code defines data sources for related neurons and tokens in a model, stored in Azure Blob Storage. The related neurons include upstream and downstream neurons with the most positive and negative connections, as well as tokens with high average activations or large inbound and outbound weights. Each file contains a JSON-formatted dataclass, which is not included in this repository.",
+        "type": "comment"
+    },
+    "8": {
+        "file_id": 0,
+        "content": "    as well as the associated weight (see below for definition). \n    - Each file contains a JSON-formatted [`WeightBasedSummaryOfNeuron`](neuron-explainer/neuron_explainer/activations/token_connections.py#L17)\n    dataclass.\nUpdate (July 5, 2023):\nWe also released a set of explanations for GPT-2 Small. The methodology is slightly different from the methodology used for GPT-2 XL so the results aren't directly comparable.\n* Neuron activations: `az://openaipublic/neuron-explainer/gpt2_small_data/collated-activations/{layer_index}/{neuron_index}.json`\n* Neuron explanations: `az://openaipublic/neuron-explainer/gpt2_small_data/explanations/{layer_index}/{neuron_index}.jsonl`\nUpdate (August 30, 2023): We recently discovered a bug in how we performed inference on the GPT-2 series models used for the paper and for these datasets. Specifically, we used an optimized GELU implementation rather than the original GELU implementation associated with GPT-2. While the model’s behavior is very similar across ",
+        "type": "code",
+        "location": "/README.md:46-55"
+    },
+    "9": {
+        "file_id": 0,
+        "content": "This code provides information about the availability of neuron activations and explanations for GPT-2 models in different sizes. It also mentions updates on the data, including a bug fix related to the GELU implementation used for inference.",
+        "type": "comment"
+    },
+    "10": {
+        "file_id": 0,
+        "content": "these two configurations, the post-MLP activation values we used to generate and simulate explanations differ from the correct values by the following amounts for GPT-2 small:\n- Median: 0.0090\n- 90th percentile: 0.0252\n- 99th percentile: 0.0839\n- 99.9th percentile: 0.1736\n### Definition of connection weights\nRefer to [GPT-2 model code](https://github.com/openai/gpt-2/blob/master/src/model.py) for\nunderstanding of model weight conventions.\n*Neuron-neuron*: For two neurons `(l1, n1)` and `(l2, n2)` with `l1 < l2`, the connection strength is defined as\n`h{l1}.mlp.c_proj.w[:, n1, :] @ diag(h{l2}.ln_2.g) @ h{l2}.mlp.c_fc.w[:, :, n2]`.\n*Neuron-token*: For token `t` and neuron `(l, n)`, the input weight is computed as\n`wte[t, :] @ diag(h{l}.ln_2.g) @ h{l}.mlp.c_fc.w[:, :, n]`\nand the output weight is computed as\n`h{l}.mlp.c_proj.w[:, n, :] @ diag(ln_f.g) @ wte[t, :]`.\n### Misc Lists of Interesting Neurons\nLists of neurons we thought were interesting according to different criteria, with some preliminary descriptions.",
+        "type": "code",
+        "location": "/README.md:55-76"
+    },
+    "11": {
+        "file_id": 0,
+        "content": "This code is explaining the difference in activation values between two configurations for GPT-2 small. It also provides a link to understand the model weight conventions and defines connection weights between neurons and tokens. Additionally, it mentions lists of interesting neurons with some preliminary descriptions.",
+        "type": "comment"
+    },
+    "12": {
+        "file_id": 0,
+        "content": "* [Interesting Neurons (external)](https://docs.google.com/spreadsheets/d/1p7fYs31NU8sJoeKyUx4Mn2laGx8xXfHg_KcIvYiKPpg/edit#gid=0)\n* [Neurons that score high on random, possibly monosemantic? (external)](https://docs.google.com/spreadsheets/d/1TqKFcz-84jyIHLU7VRoTc8BoFBMpbgac-iNBnxVurQ8/edit?usp=sharing)\n* [Clusters of neurons well explained by activation explanation but not by tokens](https://docs.google.com/document/d/1lWhKowpKDdwTMALD_K541cdwgGoQx8DFUSuEe1U2AGE/edit?usp=sharing)\n* [Neurons sensitive to truncation](https://docs.google.com/document/d/1x89TWBvuHcyC2t01EDbJZJ5LQYHozlcS-VUmr5shf_A/edit?usp=sharing)",
+        "type": "code",
+        "location": "/README.md:77-80"
+    },
+    "13": {
+        "file_id": 0,
+        "content": "These are links to external spreadsheets and documents containing neurons with specific characteristics, such as interesting neurons, high-scoring neurons on random tests, clusters well explained by activation explanation but not by tokens, and neurons sensitive to truncation.",
+        "type": "comment"
+    },
+    "14": {
+        "file_id": 1,
+        "content": "/neuron-explainer/README.md",
+        "type": "filepath"
+    },
+    "15": {
+        "file_id": 1,
+        "content": "This directory contains our code for generating and simulating explanations of neuron behavior.",
+        "type": "summary"
+    },
+    "16": {
+        "file_id": 1,
+        "content": "# Neuron explainer\nThis directory contains a version of our code for generating, simulating and scoring explanations of\nneuron behavior.\n# Setup\n```\npip install -e .\n```\n# Usage\nFor example usage, see the `demos` folder:\n* [Generating and scoring activation-based explanations](demos/generate_and_score_explanation.ipynb)\n* [Generating and scoring explanations based on tokens with high average activations](demos/generate_and_score_token_look_up_table_explanation.ipynb)\n* [Generating explanations for human-written neuron puzzles](demos/explain_puzzles.ipynb)",
+        "type": "code",
+        "location": "/neuron-explainer/README.md:1-18"
+    },
+    "17": {
+        "file_id": 1,
+        "content": "This directory contains our code for generating and simulating explanations of neuron behavior.",
+        "type": "comment"
+    },
+    "18": {
+        "file_id": 2,
+        "content": "/neuron-explainer/demos/explain_puzzles.py",
+        "type": "filepath"
+    },
+    "19": {
+        "file_id": 2,
+        "content": "The code imports libraries, sets up the OpenAI API key, initializes the explainer model, and loops through each puzzle to generate explanations. It generates one explanation for a given input, checks if there's only 1 explanation, assigns it to 'model_generated_explanation', and prints both the explanation and expected answer for the puzzle.",
+        "type": "summary"
+    },
+    "20": {
+        "file_id": 2,
+        "content": "#!/usr/bin/env python\n# coding: utf-8\n# In[ ]:\nget_ipython().run_line_magic('load_ext', 'autoreload')\nget_ipython().run_line_magic('autoreload', '2')\n# In[ ]:\nimport os\nos.environ[\"OPENAI_API_KEY\"] = \"put-key-here\"\nfrom neuron_explainer.activations.activation_records import calculate_max_activation\nfrom neuron_explainer.explanations.explainer import TokenActivationPairExplainer\nfrom neuron_explainer.explanations.prompt_builder import PromptFormat\nfrom neuron_explainer.explanations.puzzles import PUZZLES_BY_NAME\nEXPLAINER_MODEL_NAME = \"gpt-4\"\nexplainer = TokenActivationPairExplainer(\n    model_name=EXPLAINER_MODEL_NAME,\n    prompt_format=PromptFormat.HARMONY_V4,\n    max_concurrent=1,\n)\nfor puzzle_name, puzzle in PUZZLES_BY_NAME.items():\n    print(f\"{puzzle_name=}\")\n    puzzle_answer = puzzle.explanation\n    # Generate an explanation for the puzzle.\n    explanations = await explainer.generate_explanations(\n        all_activation_records=puzzle.activation_records,\n        max_activation=calculate_max_activation(puzzle.activation_records),",
+        "type": "code",
+        "location": "/neuron-explainer/demos/explain_puzzles.py:1-38"
+    },
+    "21": {
+        "file_id": 2,
+        "content": "Code imports necessary libraries, sets up OpenAI API key, initializes the explainer model, and begins looping through each puzzle in PUZZLES_BY_NAME to generate explanations.",
+        "type": "comment"
+    },
+    "22": {
+        "file_id": 2,
+        "content": "        num_samples=1,\n    )\n    assert len(explanations) == 1\n    model_generated_explanation = explanations[0]\n    print(f\"{model_generated_explanation=}\")\n    print(f\"{puzzle_answer=}\\n\")",
+        "type": "code",
+        "location": "/neuron-explainer/demos/explain_puzzles.py:39-44"
+    },
+    "23": {
+        "file_id": 2,
+        "content": "This code generates one explanation for a given input and asserts that the number of explanations is equal to 1. It then assigns the generated explanation to 'model_generated_explanation' and prints it along with the expected answer for the puzzle.",
+        "type": "comment"
+    },
+    "24": {
+        "file_id": 3,
+        "content": "/neuron-explainer/demos/generate_and_score_explanation.py",
+        "type": "filepath"
+    },
+    "25": {
+        "file_id": 3,
+        "content": "The code loads neuron data, generates an explanation using an explainer model, and sets up a simulator to evaluate the impact of explanations on neuron output, then performs simulations with given activation records and prints preferred scores.",
+        "type": "summary"
+    },
+    "26": {
+        "file_id": 3,
+        "content": "#!/usr/bin/env python\n# coding: utf-8\n# In[ ]:\nget_ipython().run_line_magic('load_ext', 'autoreload')\nget_ipython().run_line_magic('autoreload', '2')\n# In[ ]:\nimport os\nos.environ[\"OPENAI_API_KEY\"] = \"put-key-here\"\nfrom neuron_explainer.activations.activation_records import calculate_max_activation\nfrom neuron_explainer.activations.activations import ActivationRecordSliceParams, load_neuron\nfrom neuron_explainer.explanations.calibrated_simulator import UncalibratedNeuronSimulator\nfrom neuron_explainer.explanations.explainer import TokenActivationPairExplainer\nfrom neuron_explainer.explanations.prompt_builder import PromptFormat\nfrom neuron_explainer.explanations.scoring import simulate_and_score\nfrom neuron_explainer.explanations.simulator import ExplanationNeuronSimulator\nEXPLAINER_MODEL_NAME = \"gpt-4\"\nSIMULATOR_MODEL_NAME = \"text-davinci-003\"\n# test_response = await client.make_request(prompt=\"test 123<|endofprompt|>\", max_tokens=2)\n# print(\"Response:\", test_response[\"choices\"][0][\"text\"])\n# Load a neuron record.",
+        "type": "code",
+        "location": "/neuron-explainer/demos/generate_and_score_explanation.py:1-33"
+    },
+    "27": {
+        "file_id": 3,
+        "content": "This code sets the OpenAI API key, imports necessary modules, defines constants for explainer and simulator models, and loads a neuron record.",
+        "type": "comment"
+    },
+    "28": {
+        "file_id": 3,
+        "content": "neuron_record = load_neuron(9, 6236)\n# Grab the activation records we'll need.\nslice_params = ActivationRecordSliceParams(n_examples_per_split=5)\ntrain_activation_records = neuron_record.train_activation_records(\n    activation_record_slice_params=slice_params\n)\nvalid_activation_records = neuron_record.valid_activation_records(\n    activation_record_slice_params=slice_params\n)\n# Generate an explanation for the neuron.\nexplainer = TokenActivationPairExplainer(\n    model_name=EXPLAINER_MODEL_NAME,\n    prompt_format=PromptFormat.HARMONY_V4,\n    max_concurrent=1,\n)\nexplanations = await explainer.generate_explanations(\n    all_activation_records=train_activation_records,\n    max_activation=calculate_max_activation(train_activation_records),\n    num_samples=1,\n)\nassert len(explanations) == 1\nexplanation = explanations[0]\nprint(f\"{explanation=}\")\n# Simulate and score the explanation.\nsimulator = UncalibratedNeuronSimulator(\n    ExplanationNeuronSimulator(\n        SIMULATOR_MODEL_NAME,\n        explanation,\n        max_concurrent=1,",
+        "type": "code",
+        "location": "/neuron-explainer/demos/generate_and_score_explanation.py:34-65"
+    },
+    "29": {
+        "file_id": 3,
+        "content": "Loading neuron data for layer 9, split 6236.\nCreating activation records slices and loading the train and validation activation records.\nGenerating an explanation for the selected neuron using a specified explainer model.\nRetrieving the generated explanation and storing it in the variable \"explanation\".\nSetting up a simulator to evaluate the provided explanation's impact on the neuron's output.",
+        "type": "comment"
+    },
+    "30": {
+        "file_id": 3,
+        "content": "        prompt_format=PromptFormat.INSTRUCTION_FOLLOWING,\n    )\n)\nscored_simulation = await simulate_and_score(simulator, valid_activation_records)\nprint(f\"score={scored_simulation.get_preferred_score():.2f}\")",
+        "type": "code",
+        "location": "/neuron-explainer/demos/generate_and_score_explanation.py:66-70"
+    },
+    "31": {
+        "file_id": 3,
+        "content": "Performs simulation with given activation records and prints preferred score.",
+        "type": "comment"
+    },
+    "32": {
+        "file_id": 4,
+        "content": "/neuron-explainer/demos/generate_and_score_token_look_up_table_explanation.py",
+        "type": "filepath"
+    },
+    "33": {
+        "file_id": 4,
+        "content": "The code prepares the environment, imports modules, and configures API keys for an explanation model. It loads data, generates explanations, and simulates them using a specific format. The preferred score is then printed with two decimal places.",
+        "type": "summary"
+    },
+    "34": {
+        "file_id": 4,
+        "content": "#!/usr/bin/env python\n# coding: utf-8\n# In[ ]:\nget_ipython().run_line_magic('load_ext', 'autoreload')\nget_ipython().run_line_magic('autoreload', '2')\n# In[ ]:\nimport os\nos.environ[\"OPENAI_API_KEY\"] = \"put-key-here\"\nfrom neuron_explainer.activations.activations import ActivationRecordSliceParams, load_neuron\nfrom neuron_explainer.activations.token_connections import load_token_lookup_table_connections_of_neuron\nfrom neuron_explainer.explanations.calibrated_simulator import UncalibratedNeuronSimulator\nfrom neuron_explainer.explanations.explainer import TokenSpaceRepresentationExplainer\nfrom neuron_explainer.explanations.prompt_builder import PromptFormat\nfrom neuron_explainer.explanations.scoring import simulate_and_score\nfrom neuron_explainer.explanations.simulator import ExplanationNeuronSimulator\nEXPLAINER_MODEL_NAME = \"gpt-4\"\nSIMULATOR_MODEL_NAME = \"text-davinci-003\"\n# test_response = await client.make_request(prompt=\"test 123<|endofprompt|>\", max_tokens=2)\n# print(\"Response:\", test_response[\"choices\"][0][\"text\"])",
+        "type": "code",
+        "location": "/neuron-explainer/demos/generate_and_score_token_look_up_table_explanation.py:1-31"
+    },
+    "35": {
+        "file_id": 4,
+        "content": "This code is setting up the environment and importing necessary modules for running an explanation model and simulator. It also sets the OpenAI API key, explanation model name, and simulator model name.",
+        "type": "comment"
+    },
+    "36": {
+        "file_id": 4,
+        "content": "layer_index = 9\nneuron_index = 6236\n# Load a token lookup table.\ntoken_lookup_table = load_token_lookup_table_connections_of_neuron(layer_index, neuron_index)\n# Load a neuron record.\nneuron_record = load_neuron(layer_index, neuron_index)\n# Grab the activation records we'll need.\nslice_params = ActivationRecordSliceParams(n_examples_per_split=5)\nvalid_activation_records = neuron_record.valid_activation_records(\n    activation_record_slice_params=slice_params\n)\n# Generate an explanation for the neuron.\nexplainer = TokenSpaceRepresentationExplainer(\n    model_name=EXPLAINER_MODEL_NAME,\n    prompt_format=PromptFormat.HARMONY_V4,\n    max_concurrent=1,\n)\nexplanations = await explainer.generate_explanations(\n    tokens=token_lookup_table.tokens,\n    num_samples=1,\n)\nassert len(explanations) == 1\nexplanation = explanations[0]\nprint(f\"{explanation=}\")\n# Simulate and score the explanation.\nsimulator = UncalibratedNeuronSimulator(\n    ExplanationNeuronSimulator(\n        SIMULATOR_MODEL_NAME,\n        explanation,\n        max_concurrent=1,",
+        "type": "code",
+        "location": "/neuron-explainer/demos/generate_and_score_token_look_up_table_explanation.py:33-67"
+    },
+    "37": {
+        "file_id": 4,
+        "content": "Loading token lookup table and neuron record for a specific layer and index.\nGenerating an explanation using the provided token look up table.\nSimulating and scoring the generated explanation.",
+        "type": "comment"
+    },
+    "38": {
+        "file_id": 4,
+        "content": "        prompt_format=PromptFormat.INSTRUCTION_FOLLOWING,\n    )\n)\nscored_simulation = await simulate_and_score(simulator, valid_activation_records)\nprint(f\"score={scored_simulation.get_preferred_score():.2f}\")",
+        "type": "code",
+        "location": "/neuron-explainer/demos/generate_and_score_token_look_up_table_explanation.py:68-72"
+    },
+    "39": {
+        "file_id": 4,
+        "content": "Setting prompt format to \"INSTRUCTION_FOLLOWING\" and calling a function to simulate and score the activation records. Then, printing the preferred score with two decimal places.",
+        "type": "comment"
+    },
+    "40": {
+        "file_id": 5,
+        "content": "/neuron-explainer/neuron_explainer/activations/activation_records.py",
+        "type": "filepath"
+    },
+    "41": {
+        "file_id": 5,
+        "content": "The code handles activation records, features for max values and formatting neuron activations, and marks activations as unknown based on user inputs. It also calculates the ratio of non-zero activations to total activations across all records.",
+        "type": "summary"
+    },
+    "42": {
+        "file_id": 5,
+        "content": "\"\"\"Utilities for formatting activation records into prompts.\"\"\"\nimport math\nfrom typing import Optional, Sequence\nfrom neuron_explainer.activations.activations import ActivationRecord\nUNKNOWN_ACTIVATION_STRING = \"unknown\"\ndef relu(x: float) -> float:\n    return max(0.0, x)\ndef calculate_max_activation(activation_records: Sequence[ActivationRecord]) -> float:\n    \"\"\"Return the maximum activation value of the neuron across all the activation records.\"\"\"\n    flattened = [\n        # Relu is used to assume any values less than 0 are indicating the neuron is in the resting\n        # state. This is a simplifying assumption that works with relu/gelu.\n        max(relu(x) for x in activation_record.activations)\n        for activation_record in activation_records\n    ]\n    return max(flattened)\ndef normalize_activations(activation_record: list[float], max_activation: float) -> list[int]:\n    \"\"\"Convert raw neuron activations to integers on the range [0, 10].\"\"\"\n    if max_activation <= 0:\n        return [0 for x in activation_record]",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/activations/activation_records.py:1-29"
+    },
+    "43": {
+        "file_id": 5,
+        "content": "This code defines functions to handle activation records, including calculating the maximum activation value and normalizing neuron activations. It also includes a REALU function for handling activation values less than 0 as resting state indicators.",
+        "type": "comment"
+    },
+    "44": {
+        "file_id": 5,
+        "content": "    # Relu is used to assume any values less than 0 are indicating the neuron is in the resting\n    # state. This is a simplifying assumption that works with relu/gelu.\n    return [min(10, math.floor(10 * relu(x) / max_activation)) for x in activation_record]\ndef _format_activation_record(\n    activation_record: ActivationRecord,\n    max_activation: float,\n    omit_zeros: bool,\n    hide_activations: bool = False,\n    start_index: int = 0,\n) -> str:\n    \"\"\"Format neuron activations into a string, suitable for use in prompts.\"\"\"\n    tokens = activation_record.tokens\n    normalized_activations = normalize_activations(activation_record.activations, max_activation)\n    if omit_zeros:\n        assert (not hide_activations) and start_index == 0, \"Can't hide activations and omit zeros\"\n        tokens = [\n            token for token, activation in zip(tokens, normalized_activations) if activation > 0\n        ]\n        normalized_activations = [x for x in normalized_activations if x > 0]\n    entries = []\n    assert len(tokens) == len(normalized_activations)",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/activations/activation_records.py:30-53"
+    },
+    "45": {
+        "file_id": 5,
+        "content": "The code snippet is responsible for formatting neuron activations into a string. It first applies an optional normalization to the activations, then optionally removes zeros and hides activations based on user inputs. The resulting string contains tokens and their corresponding normalized or hidden activations, suitable for use in prompts.",
+        "type": "comment"
+    },
+    "46": {
+        "file_id": 5,
+        "content": "    for index, token, activation in zip(range(len(tokens)), tokens, normalized_activations):\n        activation_string = str(int(activation))\n        if hide_activations or index < start_index:\n            activation_string = UNKNOWN_ACTIVATION_STRING\n        entries.append(f\"{token}\\t{activation_string}\")\n    return \"\\n\".join(entries)\ndef format_activation_records(\n    activation_records: Sequence[ActivationRecord],\n    max_activation: float,\n    *,\n    omit_zeros: bool = False,\n    start_indices: Optional[list[int]] = None,\n    hide_activations: bool = False,\n) -> str:\n    \"\"\"Format a list of activation records into a string.\"\"\"\n    return (\n        \"\\n<start>\\n\"\n        + \"\\n<end>\\n<start>\\n\".join(\n            [\n                _format_activation_record(\n                    activation_record,\n                    max_activation,\n                    omit_zeros=omit_zeros,\n                    hide_activations=hide_activations,\n                    start_index=0 if start_indices is None else start_indices[i],\n                )",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/activations/activation_records.py:54-81"
+    },
+    "47": {
+        "file_id": 5,
+        "content": "The code formats a list of activation records into a string. It iterates through each token, activation pair and normalizes the activations. If hide_activations or index is less than start_index, it replaces activation with UNKNOWN_ACTIVATION_STRING. The final formatted string joins entries with newline characters and includes <start> and <end> markers.",
+        "type": "comment"
+    },
+    "48": {
+        "file_id": 5,
+        "content": "                for i, activation_record in enumerate(activation_records)\n            ]\n        )\n        + \"\\n<end>\\n\"\n    )\ndef _format_tokens_for_simulation(tokens: Sequence[str]) -> str:\n    \"\"\"\n    Format tokens into a string with each token marked as having an \"unknown\" activation, suitable\n    for use in prompts.\n    \"\"\"\n    entries = []\n    for token in tokens:\n        entries.append(f\"{token}\\t{UNKNOWN_ACTIVATION_STRING}\")\n    return \"\\n\".join(entries)\ndef format_sequences_for_simulation(\n    all_tokens: Sequence[Sequence[str]],\n) -> str:\n    \"\"\"\n    Format a list of lists of tokens into a string with each token marked as having an \"unknown\"\n    activation, suitable for use in prompts.\n    \"\"\"\n    return (\n        \"\\n<start>\\n\"\n        + \"\\n<end>\\n<start>\\n\".join(\n            [_format_tokens_for_simulation(tokens) for tokens in all_tokens]\n        )\n        + \"\\n<end>\\n\"\n    )\ndef non_zero_activation_proportion(\n    activation_records: Sequence[ActivationRecord], max_activation: float\n) -> float:\n    \"\"\"Return the proportion of activation values that aren't zero.\"\"\"",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/activations/activation_records.py:82-119"
+    },
+    "49": {
+        "file_id": 5,
+        "content": "This code contains several functions to format and manipulate activation records and tokens for simulation purposes. The `_format_tokens_for_simulation` function formats a sequence of strings into a string with each token marked as having an \"unknown\" activation, suitable for use in prompts. The `format_sequences_for_simulation` function extends this to format a list of lists of tokens into a string with each token marked as having an \"unknown\" activation, also suitable for use in prompts. Finally, the `non_zero_activation_proportion` function calculates the proportion of non-zero activation values among a sequence of ActivationRecord objects.",
+        "type": "comment"
+    },
+    "50": {
+        "file_id": 5,
+        "content": "    total_activations_count = sum(\n        [len(activation_record.activations) for activation_record in activation_records]\n    )\n    normalized_activations = [\n        normalize_activations(activation_record.activations, max_activation)\n        for activation_record in activation_records\n    ]\n    non_zero_activations_count = sum(\n        [len([x for x in activations if x != 0]) for activations in normalized_activations]\n    )\n    return non_zero_activations_count / total_activations_count",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/activations/activation_records.py:120-130"
+    },
+    "51": {
+        "file_id": 5,
+        "content": "Calculating the ratio of non-zero activations to total activations across all activation records.",
+        "type": "comment"
+    },
+    "52": {
+        "file_id": 6,
+        "content": "/neuron-explainer/neuron_explainer/activations/activations.py",
+        "type": "filepath"
+    },
+    "53": {
+        "file_id": 6,
+        "content": "The code involves dataclasses, enums for slicing activation records, ensures disjoint and covering slices, obtains interleaved subsets for training, validation, explanation evaluations, checks neuron existence, fetches neuron data from a file, ensures compatibility with NeuronRecord dataclass, provides options for synchronous/asynchronous processing, retrieves fold names in numeric order from the \"neurons\" directory.",
+        "type": "summary"
+    },
+    "54": {
+        "file_id": 6,
+        "content": "# Dataclasses and enums for storing neuron-indexed information about activations. Also, related\n# helper functions.\nimport math\nfrom dataclasses import dataclass, field\nfrom typing import List, Optional, Union\nimport urllib.request\nimport blobfile as bf\nimport boostedblob as bbb\nfrom neuron_explainer.fast_dataclasses import FastDataclass, loads, register_dataclass\nfrom neuron_explainer.azure import standardize_azure_url\n@register_dataclass\n@dataclass\nclass ActivationRecord(FastDataclass):\n    \"\"\"Collated lists of tokens and their activations for a single neuron.\"\"\"\n    tokens: List[str]\n    \"\"\"Tokens in the text sequence, represented as strings.\"\"\"\n    activations: List[float]\n    \"\"\"Raw activation values for the neuron on each token in the text sequence.\"\"\"\n@register_dataclass\n@dataclass\nclass NeuronId(FastDataclass):\n    \"\"\"Identifier for a neuron in an artificial neural network.\"\"\"\n    layer_index: int\n    \"\"\"The index of layer the neuron is in. The first layer used during inference has index 0.\"\"\"\n    neuron_index: int",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/activations/activations.py:1-33"
+    },
+    "55": {
+        "file_id": 6,
+        "content": "Defines dataclasses and enums for storing information about neuron-indexed activations, along with related helper functions.",
+        "type": "comment"
+    },
+    "56": {
+        "file_id": 6,
+        "content": "    \"\"\"The neuron's index within in its layer. Indices start from 0 in each layer.\"\"\"\ndef _check_slices(\n    slices_by_split: dict[str, slice],\n    expected_num_values: int,\n) -> None:\n    \"\"\"Assert that the slices are disjoint and fully cover the intended range.\"\"\"\n    indices = set()\n    sum_of_slice_lengths = 0\n    n_splits = len(slices_by_split.keys())\n    for s in slices_by_split.values():\n        subrange = range(expected_num_values)[s]\n        sum_of_slice_lengths += len(subrange)\n        indices |= set(subrange)\n    assert (\n        sum_of_slice_lengths == expected_num_values\n    ), f\"{sum_of_slice_lengths=} != {expected_num_values=}\"\n    stride = n_splits\n    expected_indices = set.union(\n        *[set(range(start_index, expected_num_values, stride)) for start_index in range(n_splits)]\n    )\n    assert indices == expected_indices, f\"{indices=} != {expected_indices=}\"\ndef get_slices_for_splits(\n    splits: list[str],\n    num_activation_records_per_split: int,\n) -> dict[str, slice]:\n    \"\"\"\n    Get equal-sized interleaved subsets for each of a list of splits, given the number of elements",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/activations/activations.py:34-64"
+    },
+    "57": {
+        "file_id": 6,
+        "content": "This code defines two functions: `_check_slices` and `get_slices_for_splits`.\n- `_check_slices` checks if slices are disjoint and fully cover the intended range.\n- `get_slices_for_splits` gets equal-sized interleaved subsets for a list of splits.",
+        "type": "comment"
+    },
+    "58": {
+        "file_id": 6,
+        "content": "    to include in each split.\n    \"\"\"\n    stride = len(splits)\n    num_activation_records_for_even_splits = num_activation_records_per_split * stride\n    slices_by_split = {\n        split: slice(split_index, num_activation_records_for_even_splits, stride)\n        for split_index, split in enumerate(splits)\n    }\n    _check_slices(\n        slices_by_split=slices_by_split,\n        expected_num_values=num_activation_records_for_even_splits,\n    )\n    return slices_by_split\n@dataclass\nclass ActivationRecordSliceParams:\n    \"\"\"How to select splits (train, valid, etc.) of activation records.\"\"\"\n    n_examples_per_split: Optional[int]\n    \"\"\"The number of examples to include in each split.\"\"\"\n@register_dataclass\n@dataclass\nclass NeuronRecord(FastDataclass):\n    \"\"\"Neuron-indexed activation data, including summary stats and notable activation records.\"\"\"\n    neuron_id: NeuronId\n    \"\"\"Identifier for the neuron.\"\"\"\n    random_sample: list[ActivationRecord] = field(default_factory=list)\n    \"\"\"\n    Random activation records for this neuron. The random sample is independent from those used for",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/activations/activations.py:65-99"
+    },
+    "59": {
+        "file_id": 6,
+        "content": "This code defines a class for ActivationRecordSliceParams, which specifies how to slice activation records based on the number of examples per split. It also includes a dataclass NeuronRecord that stores neuron-indexed activation data with summary stats and notable activation records.",
+        "type": "comment"
+    },
+    "60": {
+        "file_id": 6,
+        "content": "    other neurons.\n    \"\"\"\n    random_sample_by_quantile: Optional[list[list[ActivationRecord]]] = None\n    \"\"\"\n    Random samples of activation records in each of the specified quantiles. None if quantile\n    tracking is disabled.\n    \"\"\"\n    quantile_boundaries: Optional[list[float]] = None\n    \"\"\"Boundaries of the quantiles used to generate the random_sample_by_quantile field.\"\"\"\n    # Moments of activations\n    mean: Optional[float] = math.nan\n    variance: Optional[float] = math.nan\n    skewness: Optional[float] = math.nan\n    kurtosis: Optional[float] = math.nan\n    most_positive_activation_records: list[ActivationRecord] = field(default_factory=list)\n    \"\"\"\n    Activation records with the most positive figure of merit value for this neuron over all dataset\n    examples.\n    \"\"\"\n    @property\n    def max_activation(self) -> float:\n        \"\"\"Return the maximum activation value over all top-activating activation records.\"\"\"\n        return max([max(ar.activations) for ar in self.most_positive_activation_records])",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/activations/activations.py:100-125"
+    },
+    "61": {
+        "file_id": 6,
+        "content": "This code represents a class for neuron activation records. It has attributes for random samples at specific quantiles, quantile boundaries, and moments of the activation values (mean, variance, skewness, kurtosis). Additionally, it includes a list of most positive activation records and a property to return the maximum activation value across all top-activating activation records.",
+        "type": "comment"
+    },
+    "62": {
+        "file_id": 6,
+        "content": "    def _get_top_activation_slices(\n        self, activation_record_slice_params: ActivationRecordSliceParams\n    ) -> dict[str, slice]:\n        splits = [\"train\", \"calibration\", \"valid\", \"test\"]\n        n_examples_per_split = activation_record_slice_params.n_examples_per_split\n        if n_examples_per_split is None:\n            n_examples_per_split = len(self.most_positive_activation_records) // len(splits)\n        assert len(self.most_positive_activation_records) >= n_examples_per_split * len(splits)\n        return get_slices_for_splits(splits, n_examples_per_split)\n    def _get_random_activation_slices(\n        self, activation_record_slice_params: ActivationRecordSliceParams\n    ) -> dict[str, slice]:\n        splits = [\"calibration\", \"valid\", \"test\"]\n        n_examples_per_split = activation_record_slice_params.n_examples_per_split\n        if n_examples_per_split is None:\n            n_examples_per_split = len(self.random_sample) // len(splits)\n        # NOTE: this assert could trigger on some ol",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/activations/activations.py:127-144"
+    },
+    "63": {
+        "file_id": 6,
+        "content": "Code defines two methods, _get_top_activation_slices and _get_random_activation_slices, which return slices for activation records based on specified parameters. These slices are used to select a subset of the activation records for further processing.",
+        "type": "comment"
+    },
+    "64": {
+        "file_id": 6,
+        "content": "d datasets with only 10 random samples, in which case you may have to remove \"test\" from the set of splits\n        assert len(self.random_sample) >= n_examples_per_split * len(splits)\n        return get_slices_for_splits(splits, n_examples_per_split)\n    def train_activation_records(\n        self,\n        activation_record_slice_params: ActivationRecordSliceParams,\n    ) -> list[ActivationRecord]:\n        \"\"\"\n        Train split, typically used for generating explanations. Consists exclusively of\n        top-activating records since context window limitations make it difficult to include\n        random records.\n        \"\"\"\n        return self.most_positive_activation_records[\n            self._get_top_activation_slices(activation_record_slice_params)[\"train\"]\n        ]\n    def calibration_activation_records(\n        self,\n        activation_record_slice_params: ActivationRecordSliceParams,\n    ) -> list[ActivationRecord]:\n        \"\"\"\n        Calibration split, typically used for calibrating neuron simulations. See",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/activations/activations.py:144-166"
+    },
+    "65": {
+        "file_id": 6,
+        "content": "The code defines three methods: \"get_slices_for_splits\", \"train_activation_records\", and \"calibration_activation_records\".\n\"get_slices_for_splits\" returns slices for the specified splits based on the given number of examples per split.\n\"train_activation_records\" retrieves activation records from the \"most_positive_activation_records\" list for the training split.\n\"calibration_activation_records\" retrieves activation records for the calibration split.",
+        "type": "comment"
+    },
+    "66": {
+        "file_id": 6,
+        "content": "        http://go/neuron_explanation_methodology for an explanation of calibration. Consists of\n        top-activating records and random records in a 1:1 ratio.\n        \"\"\"\n        return (\n            self.most_positive_activation_records[\n                self._get_top_activation_slices(activation_record_slice_params)[\"calibration\"]\n            ]\n            + self.random_sample[\n                self._get_random_activation_slices(activation_record_slice_params)[\"calibration\"]\n            ]\n        )\n    def valid_activation_records(\n        self,\n        activation_record_slice_params: ActivationRecordSliceParams,\n    ) -> list[ActivationRecord]:\n        \"\"\"\n        Validation split, typically used for evaluating explanations, either automatically with\n        simulation + correlation coefficient scoring, or manually by humans. Consists of\n        top-activating records and random records in a 1:1 ratio.\n        \"\"\"\n        return (\n            self.most_positive_activation_records[\n                self._get_top_activation_slices(activation_record_slice_params)[\"valid\"]",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/activations/activations.py:167-190"
+    },
+    "67": {
+        "file_id": 6,
+        "content": "This code defines two methods: \"calibration\" and \"valid_activation_records\". Both methods return a combination of top-activating records and random records in a 1:1 ratio, which can be used for explanation validation or evaluation.",
+        "type": "comment"
+    },
+    "68": {
+        "file_id": 6,
+        "content": "            ]\n            + self.random_sample[\n                self._get_random_activation_slices(activation_record_slice_params)[\"valid\"]\n            ]\n        )\n    def test_activation_records(\n        self,\n        activation_record_slice_params: ActivationRecordSliceParams,\n    ) -> list[ActivationRecord]:\n        \"\"\"\n        Test split, typically used for explanation evaluations that can't use the validation split.\n        Consists of top-activating records and random records in a 1:1 ratio.\n        \"\"\"\n        return (\n            self.most_positive_activation_records[\n                self._get_top_activation_slices(activation_record_slice_params)[\"test\"]\n            ]\n            + self.random_sample[\n                self._get_random_activation_slices(activation_record_slice_params)[\"test\"]\n            ]\n        )\ndef neuron_exists(\n    dataset_path: str, layer_index: Union[str, int], neuron_index: Union[str, int]\n) -> bool:\n    \"\"\"Return whether the specified neuron exists.\"\"\"\n    file = bf.join(dataset_path, \"neurons\", str(layer_index), f\"{neuron_index}.json\")",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/activations/activations.py:191-219"
+    },
+    "69": {
+        "file_id": 6,
+        "content": "The code defines three functions:\n1. \"get_activation_slices\": returns activation slices for training and validation splits based on the given parameters.\n2. \"test_activation_records\": returns a list of activation records used for explanation evaluations that can't use the validation split, containing top-activating records and random records in a 1:1 ratio.\n3. \"neuron_exists\": checks if a specified neuron exists based on given dataset path, layer index, and neuron index.",
+        "type": "comment"
+    },
+    "70": {
+        "file_id": 6,
+        "content": "    return bf.exists(file)\ndef load_neuron(\n    layer_index: Union[str, int],\n    neuron_index: Union[str, int],\n    dataset_path: str = \"https://openaipublic.blob.core.windows.net/neuron-explainer/data/collated-activations\",\n) -> NeuronRecord:\n    \"\"\"Load the NeuronRecord for the specified neuron.\"\"\"\n    url = \"/\".join([dataset_path, str(layer_index), f\"{neuron_index}.json\"])\n    url = standardize_azure_url(url)\n    with urllib.request.urlopen(url) as f:\n        neuron_record = loads(f.read())\n        if not isinstance(neuron_record, NeuronRecord):\n            raise ValueError(\n                f\"Stored data incompatible with current version of NeuronRecord dataclass.\"\n            )\n        return neuron_record\n@bbb.ensure_session\nasync def load_neuron_async(\n    layer_index: Union[str, int],\n    neuron_index: Union[str, int],\n    dataset_path: str = \"az://openaipublic/neuron-explainer/data/collated-activations\",\n) -> NeuronRecord:\n    \"\"\"Async version of load_neuron.\"\"\"\n    file = bf.join(dataset_path, str(layer_index), f\"{neuron_index}.json\")",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/activations/activations.py:220-247"
+    },
+    "71": {
+        "file_id": 6,
+        "content": "This code contains two functions, `load_neuron` and an asynchronous version `load_neuron_async`, that fetch NeuronRecord data from a specified neuron. It first constructs the URL to the dataset based on layer index and neuron index, then opens the URL and reads the JSON data. If the read data is not of type NeuronRecord, it raises an error. The asynchronous version uses BigBangEngine's `ensure_session` decorator for asynchronous execution.",
+        "type": "comment"
+    },
+    "72": {
+        "file_id": 6,
+        "content": "    return await read_neuron_file(file)\n@bbb.ensure_session\nasync def read_neuron_file(neuron_filename: str) -> NeuronRecord:\n    \"\"\"Like load_neuron_async, but takes a raw neuron filename.\"\"\"\n    raw_contents = await bbb.read.read_single(neuron_filename)\n    neuron_record = loads(raw_contents.decode(\"utf-8\"))\n    if not isinstance(neuron_record, NeuronRecord):\n        raise ValueError(\n            f\"Stored data incompatible with current version of NeuronRecord dataclass.\"\n        )\n    return neuron_record\ndef get_sorted_neuron_indices(dataset_path: str, layer_index: Union[str, int]) -> List[int]:\n    \"\"\"Returns the indices of all neurons in this layer, in ascending order.\"\"\"\n    layer_dir = bf.join(dataset_path, \"neurons\", str(layer_index))\n    return sorted(\n        [int(f.split(\".\")[0]) for f in bf.listdir(layer_dir) if f.split(\".\")[0].isnumeric()]\n    )\ndef get_sorted_layers(dataset_path: str) -> List[str]:\n    \"\"\"\n    Return the indices of all layers in this dataset, in ascending numerical order, as strings.",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/activations/activations.py:248-273"
+    },
+    "73": {
+        "file_id": 6,
+        "content": "This code retrieves neuron data from a file, checks its compatibility with the NeuronRecord dataclass, and provides functions to get sorted layer indices and layer names for a given dataset.",
+        "type": "comment"
+    },
+    "74": {
+        "file_id": 6,
+        "content": "    \"\"\"\n    return [\n        str(x)\n        for x in sorted(\n            [int(x) for x in bf.listdir(bf.join(dataset_path, \"neurons\")) if x.isnumeric()]\n        )\n    ]",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/activations/activations.py:274-280"
+    },
+    "75": {
+        "file_id": 6,
+        "content": "Gets numeric fold names from \"neurons\" directory and sorts them.",
+        "type": "comment"
+    },
+    "76": {
+        "file_id": 7,
+        "content": "/neuron-explainer/neuron_explainer/activations/token_connections.py",
+        "type": "filepath"
+    },
+    "77": {
+        "file_id": 7,
+        "content": "The code accesses a lookup table from an Azure dataset, containing tokens and their average activations for specified neuron using standardized URLs. This function then reads the file and displays its contents in a readable format.",
+        "type": "summary"
+    },
+    "78": {
+        "file_id": 7,
+        "content": "from dataclasses import dataclass\nfrom typing import List, Union\nimport blobfile as bf\nfrom neuron_explainer.fast_dataclasses import FastDataclass, loads, register_dataclass\nfrom neuron_explainer.azure import standardize_azure_url\nimport urllib.request\n@register_dataclass\n@dataclass\nclass TokensAndWeights(FastDataclass):\n    tokens: List[str]\n    strengths: List[float]\n@register_dataclass\n@dataclass\nclass WeightBasedSummaryOfNeuron(FastDataclass):\n    input_positive: TokensAndWeights\n    input_negative: TokensAndWeights\n    output_positive: TokensAndWeights\n    output_negative: TokensAndWeights\ndef load_token_weight_connections_of_neuron(\n    layer_index: Union[str, int],\n    neuron_index: Union[str, int],\n    dataset_path: str = \"https://openaipublic.blob.core.windows.net/neuron-explainer/data/related-tokens/weight-based\",\n) -> WeightBasedSummaryOfNeuron:\n    \"\"\"Load the TokenLookupTableSummaryOfNeuron for the specified neuron.\"\"\"\n    url = \"/\".join([dataset_path, str(layer_index), f\"{neuron_index}.json\"])\n    url = standardize_azure_url(url)",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/activations/token_connections.py:1-33"
+    },
+    "79": {
+        "file_id": 7,
+        "content": "Loading token-weight connections of a neuron from an Azure dataset. The function retrieves and returns the TokenLookupTableSummaryOfNeuron for the specified layer index and neuron index. It uses standardized Azure URLs for accessing the data.",
+        "type": "comment"
+    },
+    "80": {
+        "file_id": 7,
+        "content": "    with urllib.request.urlopen(url) as f:\n        return loads(f.read(), backwards_compatible=False)\n@register_dataclass\n@dataclass\nclass TokenLookupTableSummaryOfNeuron(FastDataclass):\n    \"\"\"List of tokens and the average activations of a given neuron in response to each\n    respective token. These are selected from among the tokens in the vocabulary with the\n    highest average activations across an internet text dataset, with the highest activations\n    first.\"\"\"\n    tokens: List[str]\n    average_activations: List[float]\ndef load_token_lookup_table_connections_of_neuron(\n    layer_index: Union[str, int],\n    neuron_index: Union[str, int],\n    dataset_path: str = \"https://openaipublic.blob.core.windows.net/neuron-explainer/data/related-tokens/activation-based\",\n) -> TokenLookupTableSummaryOfNeuron:\n    \"\"\"Load the TokenLookupTableSummaryOfNeuron for the specified neuron.\"\"\"\n    url = \"/\".join([dataset_path, str(layer_index), f\"{neuron_index}.json\"])\n    url = standardize_azure_url(url)\n    with urllib.request.urlopen(url) as f:",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/activations/token_connections.py:34-58"
+    },
+    "81": {
+        "file_id": 7,
+        "content": "This code loads a lookup table containing tokens and their average activations for a given neuron. The table is generated from the highest average activations across an internet text dataset, and the data is retrieved from an Azure URL.",
+        "type": "comment"
+    },
+    "82": {
+        "file_id": 7,
+        "content": "        return loads(f.read(), backwards_compatible=False)",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/activations/token_connections.py:59-59"
+    },
+    "83": {
+        "file_id": 7,
+        "content": "This function reads the file and returns its contents in a readable format.",
+        "type": "comment"
+    },
+    "84": {
+        "file_id": 8,
+        "content": "/neuron-explainer/neuron_explainer/api_client.py",
+        "type": "filepath"
+    },
+    "85": {
+        "file_id": 8,
+        "content": "The code initializes an API client with error handling, response caching for OpenAI requests, and implements exponential backoff for retry mechanisms. It uses HTTPX to make asynchronous requests and starts an event loop in the main function.",
+        "type": "summary"
+    },
+    "86": {
+        "file_id": 8,
+        "content": "import asyncio\nimport contextlib\nimport os\nimport random\nimport traceback\nfrom asyncio import Semaphore\nfrom functools import wraps\nfrom typing import Any, Callable, Optional\nimport httpx\nimport orjson\ndef is_api_error(err: Exception) -> bool:\n    if isinstance(err, httpx.HTTPStatusError):\n        response = err.response\n        error_data = response.json().get(\"error\", {})\n        error_message = error_data.get(\"message\")\n        if response.status_code in [400, 404, 415]:\n            if error_data.get(\"type\") == \"idempotency_error\":\n                print(f\"Retrying after idempotency error: {error_message} ({response.url})\")\n                return True\n            else:\n                # Invalid request\n                return False\n        else:\n            print(f\"Retrying after API error: {error_message} ({response.url})\")\n            return True\n    elif isinstance(err, httpx.ConnectError):\n        print(f\"Retrying after connection error... ({err.request.url})\")\n        return True\n    elif isinstance(err, httpx.TimeoutException):",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/api_client.py:1-34"
+    },
+    "87": {
+        "file_id": 8,
+        "content": "This function checks if the error thrown is an API error or a connection error. If it's an API error with status code 400, 404, or 415, it may be due to an idempotency error and can be retried. Otherwise, if it's a connection error, it also needs to be retried.",
+        "type": "comment"
+    },
+    "88": {
+        "file_id": 8,
+        "content": "        print(f\"Retrying after a timeout error... ({err.request.url})\")\n        return True\n    elif isinstance(err, httpx.ReadError):\n        print(f\"Retrying after a read error... ({err.request.url})\")\n        return True\n    print(f\"Retrying after an unexpected error: {repr(err)}\")\n    traceback.print_tb(err.__traceback__)\n    return True\ndef exponential_backoff(\n    retry_on: Callable[[Exception], bool] = lambda err: True\n) -> Callable[[Callable], Callable]:\n    \"\"\"\n    Returns a decorator which retries the wrapped function as long as the specified retry_on\n    function returns True for the exception, applying exponential backoff with jitter after\n    failures, up to a retry limit.\n    \"\"\"\n    init_delay_s = 1.0\n    max_delay_s = 10.0\n    # Roughly 30 minutes before we give up.\n    max_tries = 200\n    backoff_multiplier = 2.0\n    jitter = 0.2\n    def decorate(f: Callable) -> Callable:\n        assert asyncio.iscoroutinefunction(f)\n        @wraps(f)\n        async def f_retry(*args: Any, **kwargs: Any) -> None:",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/api_client.py:35-66"
+    },
+    "89": {
+        "file_id": 8,
+        "content": "The code defines a decorator function `exponential_backoff` that retries a wrapped asynchronous function with exponential backoff and jitter after failures. The retry attempts continue until the specified `retry_on` condition returns False or the maximum number of tries is reached. It also prints error messages and stack traces for unexpected errors during the retries.",
+        "type": "comment"
+    },
+    "90": {
+        "file_id": 8,
+        "content": "            delay_s = init_delay_s\n            for i in range(max_tries):\n                try:\n                    return await f(*args, **kwargs)\n                except Exception as err:\n                    if not retry_on(err) or i == max_tries - 1:\n                        raise\n                    jittered_delay = random.uniform(delay_s * (1 - jitter), delay_s * (1 + jitter))\n                    await asyncio.sleep(jittered_delay)\n                    delay_s = min(delay_s * backoff_multiplier, max_delay_s)\n        return f_retry\n    return decorate\nAPI_KEY = os.getenv(\"OPENAI_API_KEY\")\nassert API_KEY, \"Please set the OPENAI_API_KEY environment variable\"\nAPI_HTTP_HEADERS = {\n    \"Content-Type\": \"application/json\",\n    \"Authorization\": \"Bearer \" + API_KEY,\n}\nBASE_API_URL = \"https://api.openai.com/v1\"\nclass ApiClient:\n    \"\"\"Performs inference using the OpenAI API. Supports response caching and concurrency limits.\"\"\"\n    def __init__(\n        self,\n        model_name: str,\n        # If set, no more than this number of HTTP requests will be made concurrently.",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/api_client.py:67-98"
+    },
+    "91": {
+        "file_id": 8,
+        "content": "Code snippet handles API requests with retry mechanism and error handling. It sets the OpenAI API key, HTTP headers, and base API URL for making requests. The ApiClient class is initialized with a model_name parameter and supports response caching and concurrency limits.",
+        "type": "comment"
+    },
+    "92": {
+        "file_id": 8,
+        "content": "        max_concurrent: Optional[int] = None,\n        # Whether to cache request/response pairs in memory to avoid duplicating requests.\n        cache: bool = False,\n    ):\n        self.model_name = model_name\n        if max_concurrent is not None:\n            self._concurrency_check: Optional[Semaphore] = Semaphore(max_concurrent)\n        else:\n            self._concurrency_check = None\n        if cache:\n            self._cache: Optional[dict[str, Any]] = {}\n        else:\n            self._cache = None\n    @exponential_backoff(retry_on=is_api_error)\n    async def make_request(\n        self, timeout_seconds: Optional[int] = None, **kwargs: Any\n    ) -> dict[str, Any]:\n        if self._cache is not None:\n            key = orjson.dumps(kwargs)\n            if key in self._cache:\n                return self._cache[key]\n        async with contextlib.AsyncExitStack() as stack:\n            if self._concurrency_check is not None:\n                await stack.enter_async_context(self._concurrency_check)\n            http_client = await stack.enter_async_context(",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/api_client.py:99-126"
+    },
+    "93": {
+        "file_id": 8,
+        "content": "The code is initializing an API client with optional parameters for maximum concurrent requests, and whether to cache request/response pairs. It also has a method `make_request` which uses exponential backoff retry mechanism when making HTTP calls. If caching is enabled, it checks if the request has been cached before executing the call.",
+        "type": "comment"
+    },
+    "94": {
+        "file_id": 8,
+        "content": "                httpx.AsyncClient(timeout=timeout_seconds)\n            )\n            # If the request has a \"messages\" key, it should be sent to the /chat/completions\n            # endpoint. Otherwise, it should be sent to the /completions endpoint.\n            url = BASE_API_URL + (\"/chat/completions\" if \"messages\" in kwargs else \"/completions\")\n            kwargs[\"model\"] = self.model_name\n            response = await http_client.post(url, headers=API_HTTP_HEADERS, json=kwargs)\n        # The response json has useful information but the exception doesn't include it, so print it\n        # out then reraise.\n        try:\n            response.raise_for_status()\n        except Exception as e:\n            print(response.json())\n            raise e\n        if self._cache is not None:\n            self._cache[key] = response.json()\n        return response.json()\nif __name__ == \"__main__\":\n    async def main() -> None:\n        client = ApiClient(model_name=\"gpt-3.5-turbo\", max_concurrent=1)\n        print(await client.make_request(prompt=\"Why did the chicken cross the road?\", max_tokens=9))",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/api_client.py:127-150"
+    },
+    "95": {
+        "file_id": 8,
+        "content": "This code is creating an instance of `ApiClient` class and making a request to OpenAI API using the `make_request` method. The request URL depends on whether the input has \"messages\" key or not, and it uses HTTPX client for asynchronous requests. If there's an error in the response, it prints the JSON data then re-raises the exception. If a cache is set, the response JSON will be cached under the specified key.",
+        "type": "comment"
+    },
+    "96": {
+        "file_id": 8,
+        "content": "    asyncio.run(main())",
+        "type": "code",
+        "location": "/neuron-explainer/neuron_explainer/api_client.py:152-152"
+    },
+    "97": {
+        "file_id": 8,
+        "content": "This code starts an asynchronous event loop and runs the main function.",
+        "type": "comment"
+    },
+    "98": {
+        "file_id": 9,
+        "content": "/neuron-explainer/neuron_explainer/azure.py",
+        "type": "filepath"
+    },
+    "99": {
+        "file_id": 9,
+        "content": "This function converts the input URL to Azure format if it starts with \"az://openaipublic/\".",
+        "type": "summary"
+    }
+}

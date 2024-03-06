@@ -1,0 +1,10 @@
+{
+    "summary": "Imports CSS and Feed component, sets up React Router for routing between components.",
+    "details": [
+        {
+            "comment": "Imports CSS and Feed component, sets up React Router for routing between components.",
+            "location": "\"/media/root/Toshiba XG3/works/automated-interpretability/docs/src/neuron-viewer/src/App.jsx\":0-16",
+            "content": "import \"./App.css\"\nimport Feed from \"./feed\"\nimport React from \"react\"\nimport { Routes, Route, HashRouter } from \"react-router-dom\"\nfunction App() {\n  return (\n    <HashRouter>\n      <Routes>\n        <Route path=\"/\" element={<Feed />} />\n        <Route path=\"/layers/:layer/neurons/:neuron\" element={<Feed />} />\n      </Routes>\n    </HashRouter>\n  )\n}\nexport default App"
+        }
+    ]
+}

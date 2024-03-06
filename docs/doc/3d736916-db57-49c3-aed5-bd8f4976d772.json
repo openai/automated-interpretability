@@ -1,0 +1,15 @@
+{
+    "summary": "The TokenHeatmap React component visualizes token activations as a heatmap, with optional user-specified colors and boundaries. It manages loading state and provides tooltips for activation values, while the mentioned colored span functionality seems unrelated to the main focus of the summary.",
+    "details": [
+        {
+            "comment": "This code is a React component called TokenHeatmap that takes in an array of tokens and their activations, and renders them as a heatmap. It uses the DEFAULT_COLORS and DEFAULT_BOUNDARIES if not specified by the user. The component handles loading state and provides tooltips for activation values when not in loading state.",
+            "location": "\"/media/root/Toshiba XG3/works/automated-interpretability/docs/src/neuron-viewer/src/tokenHeatmap.tsx\":0-22",
+            "content": "import React from \"react\"\nimport { interpolateColor, Color, getInterpolatedColor, DEFAULT_COLORS, DEFAULT_BOUNDARIES, TokenAndActivation } from './types'\ntype Props = {\n  tokens: TokenAndActivation[], \n  loading?: boolean, \n  colors?: Color[], \n  boundaries?: number[]\n}\nexport default function TokenHeatmap({ tokens, loading, colors = DEFAULT_COLORS, boundaries = DEFAULT_BOUNDARIES }: Props) {\n    // <div className=\"block\" style={{width:'100%', whiteSpace: 'pre', overflowX: 'scroll' }}>\n  return (\n    <div className=\"block\" style={{width:'100%', whiteSpace: 'pre-wrap'}}>\n      {tokens.map(({ token, activation, normalized_activation }, i) => {\n        const color = getInterpolatedColor(colors, boundaries, normalized_activation || activation);\n        return <span key={i}\n          title={loading ? '' : `Activation: ${activation.toFixed(2)}`}\n          className={`${loading ? \"animate-pulse\" : \"\"}`}\n          style={{\n            transition: \"500ms ease-in all\",\n            background: loading\n              ? `rgba(0, 0, 0, 0.03)`"
+        },
+        {
+            "comment": "Creates a colored span for each token in the input text, using RGB values to determine color intensity.",
+            "location": "\"/media/root/Toshiba XG3/works/automated-interpretability/docs/src/neuron-viewer/src/tokenHeatmap.tsx\":23-31",
+            "content": "              : `rgba(${color.r}, ${color.g}, ${color.b}, 0.5)`,\n          }}\n        >\n          {token}\n        </span>\n      })}\n    </div>\n  )\n}"
+        }
+    ]
+}

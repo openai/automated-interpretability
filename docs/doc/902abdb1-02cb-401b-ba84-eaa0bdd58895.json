@@ -1,0 +1,10 @@
+{
+    "summary": "This code is a setup script for the \"neuron_explainer\" package. It specifies package name, dependencies, and required Python version.",
+    "details": [
+        {
+            "comment": "This code is a setup script for the \"neuron_explainer\" package. It specifies package name, dependencies, and required Python version.",
+            "location": "\"/media/root/Toshiba XG3/works/automated-interpretability/docs/src/neuron-explainer/setup.py\":0-20",
+            "content": "from setuptools import setup, find_packages\nsetup(\n    name=\"neuron_explainer\",\n    packages=find_packages(),\n    version=\"0.0.1\",\n    author=\"OpenAI\",\n    install_requires=[\n        \"httpx>=0.22\",\n        \"scikit-learn\",\n        \"boostedblob>=0.13.0\",\n        \"tiktoken\",\n        \"blobfile\",\n        \"numpy\",\n        \"pytest\",\n        \"orjson\",\n    ],\n    url=\"\",\n    description=\"\",\n    python_requires='>=3.9',\n)"
+        }
+    ]
+}

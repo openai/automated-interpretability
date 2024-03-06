@@ -1,0 +1,15 @@
+{
+    "summary": "The code imports libraries, sets up the OpenAI API key, initializes the explainer model, and loops through each puzzle to generate explanations. It generates one explanation for a given input, checks if there's only 1 explanation, assigns it to 'model_generated_explanation', and prints both the explanation and expected answer for the puzzle.",
+    "details": [
+        {
+            "comment": "Code imports necessary libraries, sets up OpenAI API key, initializes the explainer model, and begins looping through each puzzle in PUZZLES_BY_NAME to generate explanations.",
+            "location": "\"/media/root/Toshiba XG3/works/automated-interpretability/docs/src/neuron-explainer/demos/explain_puzzles.py\":0-37",
+            "content": "#!/usr/bin/env python\n# coding: utf-8\n# In[ ]:\nget_ipython().run_line_magic('load_ext', 'autoreload')\nget_ipython().run_line_magic('autoreload', '2')\n# In[ ]:\nimport os\nos.environ[\"OPENAI_API_KEY\"] = \"put-key-here\"\nfrom neuron_explainer.activations.activation_records import calculate_max_activation\nfrom neuron_explainer.explanations.explainer import TokenActivationPairExplainer\nfrom neuron_explainer.explanations.prompt_builder import PromptFormat\nfrom neuron_explainer.explanations.puzzles import PUZZLES_BY_NAME\nEXPLAINER_MODEL_NAME = \"gpt-4\"\nexplainer = TokenActivationPairExplainer(\n    model_name=EXPLAINER_MODEL_NAME,\n    prompt_format=PromptFormat.HARMONY_V4,\n    max_concurrent=1,\n)\nfor puzzle_name, puzzle in PUZZLES_BY_NAME.items():\n    print(f\"{puzzle_name=}\")\n    puzzle_answer = puzzle.explanation\n    # Generate an explanation for the puzzle.\n    explanations = await explainer.generate_explanations(\n        all_activation_records=puzzle.activation_records,\n        max_activation=calculate_max_activation(puzzle.activation_records),"
+        },
+        {
+            "comment": "This code generates one explanation for a given input and asserts that the number of explanations is equal to 1. It then assigns the generated explanation to 'model_generated_explanation' and prints it along with the expected answer for the puzzle.",
+            "location": "\"/media/root/Toshiba XG3/works/automated-interpretability/docs/src/neuron-explainer/demos/explain_puzzles.py\":38-43",
+            "content": "        num_samples=1,\n    )\n    assert len(explanations) == 1\n    model_generated_explanation = explanations[0]\n    print(f\"{model_generated_explanation=}\")\n    print(f\"{puzzle_answer=}\\n\")"
+        }
+    ]
+}

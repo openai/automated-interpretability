@@ -1,0 +1,13 @@
+{
+    "500": {
+        "file_id": 42,
+        "content": "/** @type {import('tailwindcss').Config} */\nmodule.exports = {\n  content: [\"./src/**/*.{html,js,jsx}\"],\n  theme: {\n    extend: {},\n  },\n  plugins: [],\n}",
+        "type": "code",
+        "location": "/neuron-viewer/tailwind.config.js:1-8"
+    },
+    "501": {
+        "file_id": 42,
+        "content": "Configuring Tailwind CSS with content from \"./src/**/*.{html,js,jsx}\" and empty extend and plugins.",
+        "type": "comment"
+    }
+}

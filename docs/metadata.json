@@ -1,0 +1,225 @@
+{
+    "url": {
+        "full": "https://github.com/openai/automated-interpretability",
+        "partial": "openai/automated-interpretability"
+    },
+    "file_mapping": {
+        "0": {
+            "filepath": "/README.md",
+            "entry_id": 0,
+            "language_id": "plain-text"
+        },
+        "1": {
+            "filepath": "/neuron-explainer/README.md",
+            "entry_id": 14,
+            "language_id": "plain-text"
+        },
+        "2": {
+            "filepath": "/neuron-explainer/demos/explain_puzzles.py",
+            "entry_id": 18,
+            "language_id": "python"
+        },
+        "3": {
+            "filepath": "/neuron-explainer/demos/generate_and_score_explanation.py",
+            "entry_id": 24,
+            "language_id": "python"
+        },
+        "4": {
+            "filepath": "/neuron-explainer/demos/generate_and_score_token_look_up_table_explanation.py",
+            "entry_id": 32,
+            "language_id": "python"
+        },
+        "5": {
+            "filepath": "/neuron-explainer/neuron_explainer/activations/activation_records.py",
+            "entry_id": 40,
+            "language_id": "python"
+        },
+        "6": {
+            "filepath": "/neuron-explainer/neuron_explainer/activations/activations.py",
+            "entry_id": 52,
+            "language_id": "python"
+        },
+        "7": {
+            "filepath": "/neuron-explainer/neuron_explainer/activations/token_connections.py",
+            "entry_id": 76,
+            "language_id": "python"
+        },
+        "8": {
+            "filepath": "/neuron-explainer/neuron_explainer/api_client.py",
+            "entry_id": 84,
+            "language_id": "python"
+        },
+        "9": {
+            "filepath": "/neuron-explainer/neuron_explainer/azure.py",
+            "entry_id": 98,
+            "language_id": "python"
+        },
+        "10": {
+            "filepath": "/neuron-explainer/neuron_explainer/explanations/calibrated_simulator.py",
+            "entry_id": 102,
+            "language_id": "python"
+        },
+        "11": {
+            "filepath": "/neuron-explainer/neuron_explainer/explanations/explainer.py",
+            "entry_id": 120,
+            "language_id": "python"
+        },
+        "12": {
+            "filepath": "/neuron-explainer/neuron_explainer/explanations/explanations.py",
+            "entry_id": 164,
+            "language_id": "python"
+        },
+        "13": {
+            "filepath": "/neuron-explainer/neuron_explainer/explanations/prompt_builder.py",
+            "entry_id": 184,
+            "language_id": "python"
+        },
+        "14": {
+            "filepath": "/neuron-explainer/neuron_explainer/explanations/puzzles.py",
+            "entry_id": 196,
+            "language_id": "python"
+        },
+        "15": {
+            "filepath": "/neuron-explainer/neuron_explainer/explanations/scoring.py",
+            "entry_id": 204,
+            "language_id": "python"
+        },
+        "16": {
+            "filepath": "/neuron-explainer/neuron_explainer/explanations/simulator.py",
+            "entry_id": 218,
+            "language_id": "python"
+        },
+        "17": {
+            "filepath": "/neuron-explainer/neuron_explainer/explanations/test_explainer.py",
+            "entry_id": 284,
+            "language_id": "python"
+        },
+        "18": {
+            "filepath": "/neuron-explainer/neuron_explainer/explanations/test_simulator.py",
+            "entry_id": 300,
+            "language_id": "python"
+        },
+        "19": {
+            "filepath": "/neuron-explainer/neuron_explainer/explanations/token_space_few_shot_examples.py",
+            "entry_id": 318,
+            "language_id": "python"
+        },
+        "20": {
+            "filepath": "/neuron-explainer/neuron_explainer/fast_dataclasses/__init__.py",
+            "entry_id": 330,
+            "language_id": "python"
+        },
+        "21": {
+            "filepath": "/neuron-explainer/neuron_explainer/fast_dataclasses/fast_dataclasses.py",
+            "entry_id": 334,
+            "language_id": "python"
+        },
+        "22": {
+            "filepath": "/neuron-explainer/neuron_explainer/fast_dataclasses/test_fast_dataclasses.py",
+            "entry_id": 342,
+            "language_id": "python"
+        },
+        "23": {
+            "filepath": "/neuron-explainer/setup.py",
+            "entry_id": 350,
+            "language_id": "python"
+        },
+        "24": {
+            "filepath": "/neuron-viewer/README.md",
+            "entry_id": 354,
+            "language_id": "markdown"
+        },
+        "25": {
+            "filepath": "/neuron-viewer/python/server.py",
+            "entry_id": 358,
+            "language_id": "python"
+        },
+        "26": {
+            "filepath": "/neuron-viewer/src/App.jsx",
+            "entry_id": 364,
+            "language_id": "jsx"
+        },
+        "27": {
+            "filepath": "/neuron-viewer/src/feed.jsx",
+            "entry_id": 368,
+            "language_id": "jsx"
+        },
+        "28": {
+            "filepath": "/neuron-viewer/src/heatmapGrid.tsx",
+            "entry_id": 374,
+            "language_id": "tsx"
+        },
+        "29": {
+            "filepath": "/neuron-viewer/src/index.jsx",
+            "entry_id": 378,
+            "language_id": "jsx"
+        },
+        "30": {
+            "filepath": "/neuron-viewer/src/interpAPI.ts",
+            "entry_id": 382,
+            "language_id": "ts"
+        },
+        "31": {
+            "filepath": "/neuron-viewer/src/panes/datasetList.jsx",
+            "entry_id": 394,
+            "language_id": "jsx"
+        },
+        "32": {
+            "filepath": "/neuron-viewer/src/panes/explanation.jsx",
+            "entry_id": 404,
+            "language_id": "jsx"
+        },
+        "33": {
+            "filepath": "/neuron-viewer/src/panes/index.js",
+            "entry_id": 418,
+            "language_id": "javascript"
+        },
+        "34": {
+            "filepath": "/neuron-viewer/src/panes/similarNeurons.jsx",
+            "entry_id": 422,
+            "language_id": "jsx"
+        },
+        "35": {
+            "filepath": "/neuron-viewer/src/panes/topTokens.jsx",
+            "entry_id": 432,
+            "language_id": "jsx"
+        },
+        "36": {
+            "filepath": "/neuron-viewer/src/reportWebVitals.js",
+            "entry_id": 444,
+            "language_id": "javascript"
+        },
+        "37": {
+            "filepath": "/neuron-viewer/src/simulationHeatmap.tsx",
+            "entry_id": 448,
+            "language_id": "tsx"
+        },
+        "38": {
+            "filepath": "/neuron-viewer/src/tokenHeatmap.tsx",
+            "entry_id": 460,
+            "language_id": "tsx"
+        },
+        "39": {
+            "filepath": "/neuron-viewer/src/types.ts",
+            "entry_id": 466,
+            "language_id": "ts"
+        },
+        "40": {
+            "filepath": "/neuron-viewer/src/utils.ts",
+            "entry_id": 474,
+            "language_id": "ts"
+        },
+        "41": {
+            "filepath": "/neuron-viewer/src/welcome.tsx",
+            "entry_id": 478,
+            "language_id": "tsx"
+        },
+        "42": {
+            "filepath": "/neuron-viewer/tailwind.config.js",
+            "entry_id": 498,
+            "language_id": "javascript"
+        }
+    },
+    "project_name": "automated-interpretability",
+    "split_count": 6
+}

@@ -1,0 +1,10 @@
+{
+    "summary": "This code defines a function `reportWebVitals` that, when given a callback function as an argument, uses the `web-vitals` library to measure and report various web vital metrics like CLS, FID, FCP, LCP, TTFB. If no callback or invalid callback is passed, it does nothing.",
+    "details": [
+        {
+            "comment": "This code defines a function `reportWebVitals` that, when given a callback function as an argument, uses the `web-vitals` library to measure and report various web vital metrics like CLS, FID, FCP, LCP, TTFB. If no callback or invalid callback is passed, it does nothing.",
+            "location": "\"/media/root/Toshiba XG3/works/automated-interpretability/docs/src/neuron-viewer/src/reportWebVitals.js\":0-12",
+            "content": "const reportWebVitals = onPerfEntry => {\n    if (onPerfEntry && onPerfEntry instanceof Function) {\n      import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {\n        getCLS(onPerfEntry);\n        getFID(onPerfEntry);\n        getFCP(onPerfEntry);\n        getLCP(onPerfEntry);\n        getTTFB(onPerfEntry);\n      });\n    }\n  };\n  export default reportWebVitals;"
+        }
+    ]
+}

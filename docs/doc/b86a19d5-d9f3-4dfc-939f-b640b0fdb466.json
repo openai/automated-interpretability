@@ -1,0 +1,10 @@
+{
+    "summary": "This code exports a functional component that takes an array of 2D arrays of \"TokenAndActivation\" objects and renders a heatmap for each token. The tokens are displayed within a block-style div, with each token's heatmap displayed inside its respective div.",
+    "details": [
+        {
+            "comment": "This code exports a functional component that takes an array of 2D arrays of \"TokenAndActivation\" objects and renders a heatmap for each token. The tokens are displayed within a block-style div, with each token's heatmap displayed inside its respective div.",
+            "location": "\"/media/root/Toshiba XG3/works/automated-interpretability/docs/src/neuron-viewer/src/heatmapGrid.tsx\":0-13",
+            "content": "import { TokenAndActivation } from \"./types\"\nimport TokenHeatmap from \"./tokenHeatmap\";\nexport default ({ allTokens }: { allTokens: TokenAndActivation[][]}) => {\n  return (\n    <div className=\"\">\n      {allTokens.map((tokens, i) => (\n        <div className=\"block my-3 border p-3 m-2 rounded-md\" style={{ }} key={i}>\n          <TokenHeatmap tokens={tokens} />\n        </div>\n      ))}\n    </div>\n  );\n};"
+        }
+    ]
+}
